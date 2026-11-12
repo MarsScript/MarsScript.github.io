@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eclipse Chat</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="apple-touch-icon" href="favicon.ico">
-
+  <link rel="icon" type="image/png" href="Eclipse.png">
+  
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS SDK -->
@@ -171,9 +170,24 @@
         </div>
 
         <div class="p-3 bg-eclipse-950 border-t border-darkBorder shrink-0">
+          <!-- Image Attachment Preview (Global) -->
+          <div id="globalImagePreviewBar" class="hidden mb-2 p-2 bg-darkCard border border-darkBorder rounded-xl flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <img id="globalImagePreviewThumb" src="" alt="Preview" class="w-10 h-10 rounded-lg object-cover border border-eclipse-500/40">
+              <span class="text-xs text-slate-300 font-medium">Photo attached</span>
+            </div>
+            <button type="button" onclick="clearChatImage('global')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 flex items-center justify-center transition-all">
+              <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+          </div>
+
           <form onsubmit="sendGlobalMessage(event)" class="flex items-center gap-2">
-            <input type="text" id="globalInput" placeholder="Type a message in Global Chat..." required autocomplete="off" class="flex-1 bg-darkCard border border-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all">
-            <button type="submit" class="w-11 h-11 rounded-2xl bg-eclipse-600 hover:bg-eclipse-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-lg shadow-eclipse-600/30 shrink-0">
+            <input type="file" id="globalPhotoInput" accept="image/*" class="hidden" onchange="handleChatPhotoSelect(event, 'global')">
+            <button type="button" onclick="document.getElementById('globalPhotoInput').click()" title="Attach Photo" class="w-11 h-11 rounded-2xl bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-300 hover:text-eclipse-400 flex items-center justify-center transition-all shrink-0 active:scale-95">
+              <i class="fa-regular fa-image text-base"></i>
+            </button>
+            <input type="text" id="globalInput" placeholder="Type a message in Global Chat..." autocomplete="off" class="flex-1 bg-darkCard border border-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all">
+            <button type="submit" id="globalSendBtn" class="w-11 h-11 rounded-2xl bg-eclipse-600 hover:bg-eclipse-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-lg shadow-eclipse-600/30 shrink-0">
               <i class="fa-solid fa-paper-plane text-sm"></i>
             </button>
           </form>
@@ -226,8 +240,23 @@
           </div>
 
           <div class="p-3 bg-eclipse-950 border-t border-darkBorder shrink-0">
+            <!-- Image Attachment Preview (DM) -->
+            <div id="dmImagePreviewBar" class="hidden mb-2 p-2 bg-darkCard border border-darkBorder rounded-xl flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <img id="dmImagePreviewThumb" src="" alt="Preview" class="w-10 h-10 rounded-lg object-cover border border-eclipse-500/40">
+                <span class="text-xs text-slate-300 font-medium">Photo attached</span>
+              </div>
+              <button type="button" onclick="clearChatImage('dm')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark text-xs"></i>
+              </button>
+            </div>
+
             <form onsubmit="sendDirectMessage(event)" class="flex items-center gap-2">
-              <input type="text" id="dmInput" placeholder="Send a message..." disabled required autocomplete="off" class="flex-1 bg-darkCard border border-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all disabled:opacity-50">
+              <input type="file" id="dmPhotoInput" accept="image/*" class="hidden" onchange="handleChatPhotoSelect(event, 'dm')">
+              <button type="button" id="dmPhotoBtn" disabled onclick="document.getElementById('dmPhotoInput').click()" title="Attach Photo" class="w-11 h-11 rounded-2xl bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-300 hover:text-eclipse-400 flex items-center justify-center transition-all shrink-0 active:scale-95 disabled:opacity-50">
+                <i class="fa-regular fa-image text-base"></i>
+              </button>
+              <input type="text" id="dmInput" placeholder="Send a message..." disabled autocomplete="off" class="flex-1 bg-darkCard border border-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all disabled:opacity-50">
               <button type="submit" id="dmSubmitBtn" disabled class="w-11 h-11 rounded-2xl bg-eclipse-600 hover:bg-eclipse-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-lg shadow-eclipse-600/30 shrink-0 disabled:opacity-50">
                 <i class="fa-solid fa-paper-plane text-sm"></i>
               </button>
@@ -288,6 +317,10 @@
                   ?
                 </div>
               </div>
+              <input type="file" id="pfpFileInput" accept="image/*" class="hidden" onchange="handlePfpUpload(event)">
+              <button id="changePfpBtn" onclick="document.getElementById('pfpFileInput').click()" class="px-3 py-1.5 bg-eclipse-600 hover:bg-eclipse-500 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5 mt-1">
+                <i class="fa-solid fa-camera text-[11px]"></i> Change Icon
+              </button>
             </div>
 
             <div class="flex-1 text-center sm:text-left space-y-2">
@@ -358,6 +391,16 @@
     </div>
   </div>
 
+  <!-- FULLSCREEN IMAGE LIGHTBOX MODAL -->
+  <div id="imageLightboxModal" onclick="closeImageLightbox()" class="fixed inset-0 bg-eclipse-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="relative max-w-3xl max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
+      <button onclick="closeImageLightbox()" class="absolute -top-3 -right-3 w-9 h-9 rounded-full bg-darkCard border border-darkBorder text-slate-200 hover:text-white flex items-center justify-center shadow-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img id="lightboxImage" src="" alt="Full view" class="max-w-full max-h-[85vh] rounded-2xl border border-darkBorder shadow-2xl object-contain">
+    </div>
+  </div>
+
   <script>
     const SUPABASE_URL = 'https://qpqnmbhqjxtgoaekvqsa.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_hMYMiWm1ihQjc7L7tQSo6w_ZmWL_Q-H';
@@ -373,6 +416,18 @@
     let activeChatId = null;
     let activeChatType = 'dm'; // 'dm' or 'group'
     let groupsCache = JSON.parse(localStorage.getItem('eclipse_groups_cache') || '[]');
+    let pollingInterval = null;
+
+    // State hashes to prevent constant flashing/re-rendering on unchanged data
+    let lastGlobalSignature = '';
+    let lastDMSignature = '';
+    let lastSidebarSignature = '';
+
+    // Pending photo attachments
+    let pendingGlobalImage = null;
+    let pendingDMImage = null;
+
+    const IMAGE_MSG_PREFIX = '__ECLIPSE_IMG__::';
 
     const colorPalette = ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899'];
 
@@ -383,12 +438,213 @@
       return colorPalette[Math.abs(hash) % colorPalette.length];
     }
 
-    function getAvatarIconHtml(userObj, sizeClasses = 'w-8 h-8 text-xs') {
-      const username = (typeof userObj === 'string' ? userObj : (userObj && userObj.username ? userObj.username : '?'));
-      const initial = username.charAt(0).toUpperCase();
-      const bg = getAvatarColor(username.toLowerCase());
-
+    function getAvatarLetterFallback(username, sizeClasses) {
+      const initial = (username || '?').charAt(0).toUpperCase();
+      const bg = getAvatarColor((username || '?').toLowerCase());
       return `<div class="${sizeClasses} rounded-full font-extrabold flex items-center justify-center shrink-0 shadow-md text-white" style="background-color: ${bg};">${initial}</div>`;
+    }
+
+    function getAvatarIconHtml(userObj, sizeClasses = 'w-8 h-8 text-xs') {
+      let username = '?';
+      let avatarUrl = null;
+
+      if (typeof userObj === 'string') {
+        username = userObj;
+        if (currentUser && currentUser.username_lower === username.toLowerCase() && currentUser.avatar_url) {
+          avatarUrl = currentUser.avatar_url;
+        } else {
+          const found = allUsersCache.find(u => u.username_lower === username.toLowerCase());
+          if (found && found.avatar_url) avatarUrl = found.avatar_url;
+        }
+      } else if (userObj && typeof userObj === 'object') {
+        username = userObj.username || '?';
+        avatarUrl = userObj.avatar_url || null;
+      }
+
+      if (avatarUrl) {
+        return `<img src="${avatarUrl}" alt="${escapeHTML(username)}" class="${sizeClasses} rounded-full object-cover border border-eclipse-500/60 shrink-0 shadow-md" onerror="this.outerHTML = getAvatarLetterFallback('${escapeHTML(username)}', '${sizeClasses}');">`;
+      }
+      return getAvatarLetterFallback(username, sizeClasses);
+    }
+
+    /* PFP UPLOAD & 160x160 CANVAS COMPRESSION (NO APPROVAL QUEUE) */
+    function compressImageToJpeg(file, maxSize = 160, quality = 0.78) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = maxSize;
+            canvas.height = maxSize;
+            const ctx = canvas.getContext('2d');
+
+            // Center-crop square so PFPs never look stretched
+            const minSide = Math.min(img.width, img.height);
+            const sx = (img.width - minSide) / 2;
+            const sy = (img.height - minSide) / 2;
+
+            ctx.fillStyle = '#0b0e14';
+            ctx.fillRect(0, 0, maxSize, maxSize);
+            ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, maxSize, maxSize);
+
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = reject;
+          img.src = event.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handlePfpUpload(event) {
+      const file = event.target.files[0];
+      if (!file || !currentUser || !supabaseClient) return;
+
+      const btn = document.getElementById('changePfpBtn');
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[11px]"></i> Saving...`;
+
+      try {
+        const compressedDataUrl = await compressImageToJpeg(file, 160, 0.78);
+
+        const { error } = await supabaseClient
+          .from('users')
+          .update({ avatar_url: compressedDataUrl })
+          .eq('id', currentUser.id);
+
+        if (error) {
+          showToast('Could not save icon: ' + error.message, 'error');
+        } else {
+          currentUser.avatar_url = compressedDataUrl;
+          const cachedIdx = allUsersCache.findIndex(u => u.id === currentUser.id);
+          if (cachedIdx !== -1) allUsersCache[cachedIdx].avatar_url = compressedDataUrl;
+
+          renderProfileTab();
+          lastGlobalSignature = '';
+          lastDMSignature = '';
+          showToast('Profile icon updated!', 'success');
+        }
+      } catch (err) {
+        showToast('Failed to process image.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+        event.target.value = '';
+      }
+    }
+
+    /* CHAT PHOTO COMPRESSION (PRESERVES ASPECT RATIO) */
+    function compressChatPhoto(file, maxDimension = 720, quality = 0.75) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxDimension || height > maxDimension) {
+              if (width > height) {
+                height = Math.round((height * maxDimension) / width);
+                width = maxDimension;
+              } else {
+                width = Math.round((width * maxDimension) / height);
+                height = maxDimension;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = reject;
+          img.src = event.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleChatPhotoSelect(event, channel) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      try {
+        const compressedDataUrl = await compressChatPhoto(file, 720, 0.75);
+        if (channel === 'global') {
+          pendingGlobalImage = compressedDataUrl;
+          document.getElementById('globalImagePreviewThumb').src = compressedDataUrl;
+          document.getElementById('globalImagePreviewBar').classList.remove('hidden');
+        } else {
+          pendingDMImage = compressedDataUrl;
+          document.getElementById('dmImagePreviewThumb').src = compressedDataUrl;
+          document.getElementById('dmImagePreviewBar').classList.remove('hidden');
+        }
+      } catch (err) {
+        showToast('Could not attach photo.', 'error');
+      } finally {
+        event.target.value = '';
+      }
+    }
+
+    function clearChatImage(channel) {
+      if (channel === 'global') {
+        pendingGlobalImage = null;
+        document.getElementById('globalImagePreviewBar').classList.add('hidden');
+        document.getElementById('globalImagePreviewThumb').src = '';
+      } else {
+        pendingDMImage = null;
+        document.getElementById('dmImagePreviewBar').classList.add('hidden');
+        document.getElementById('dmImagePreviewThumb').src = '';
+      }
+    }
+
+    function encodeMessagePayload(text, imageDataUrl) {
+      if (!imageDataUrl) return text;
+      return IMAGE_MSG_PREFIX + JSON.stringify({ text: text || '', img: imageDataUrl });
+    }
+
+    function renderMessageBodyHtml(rawContent) {
+      if (typeof rawContent === 'string' && rawContent.startsWith(IMAGE_MSG_PREFIX)) {
+        try {
+          const payload = JSON.parse(rawContent.slice(IMAGE_MSG_PREFIX.length));
+          const safeText = payload.text ? `<p class="mb-2">${escapeHTML(payload.text)}</p>` : '';
+          const safeImg = payload.img ? `<img src="${payload.img}" alt="Shared photo" onclick="openImageLightbox('${payload.img}')" class="max-w-full max-h-64 rounded-xl object-cover cursor-pointer border border-white/10 hover:opacity-95 transition-opacity">` : '';
+          return `${safeText}${safeImg}`;
+        } catch (e) {
+          return escapeHTML(rawContent);
+        }
+      }
+      return escapeHTML(rawContent);
+    }
+
+    function openImageLightbox(src) {
+      document.getElementById('lightboxImage').src = src;
+      document.getElementById('imageLightboxModal').classList.remove('hidden');
+    }
+
+    function closeImageLightbox() {
+      document.getElementById('imageLightboxModal').classList.add('hidden');
+      document.getElementById('lightboxImage').src = '';
+    }
+
+    /* ADMIN ROLE ENFORCEMENT FOR FAREED */
+    async function ensureFareedAdmin(userObj) {
+      if (!userObj || !supabaseClient) return userObj;
+      const isFareed = userObj.username_lower === 'fareed';
+      const needsRole = isFareed && userObj.role !== 'Admin';
+      if (needsRole) {
+        await supabaseClient.from('users').update({ role: 'Admin' }).eq('id', userObj.id);
+        userObj.role = 'Admin';
+      }
+      return userObj;
     }
 
     /* AUTHENTICATION */
@@ -427,6 +683,7 @@
         return;
       }
 
+      user = await ensureFareedAdmin(user);
       currentUser = user;
       openApp();
     }
@@ -450,7 +707,7 @@
         }
 
         const { data: allUsers } = await supabaseClient.from('users').select('id');
-        const role = (allUsers && allUsers.length === 0) || lowerName === 'testbot' ? 'Admin' : 'Member';
+        const role = (allUsers && allUsers.length === 0) || lowerName === 'testbot' || lowerName === 'fareed' ? 'Admin' : 'Member';
 
         const { data: newUser, error } = await supabaseClient.from('users').insert([{
           username: username,
@@ -464,13 +721,14 @@
           return;
         }
 
-        currentUser = newUser;
+        currentUser = await ensureFareedAdmin(newUser);
         openApp();
       }
     }
 
     function logout() {
       currentUser = null;
+      if (pollingInterval) clearInterval(pollingInterval);
       location.reload();
     }
 
@@ -480,8 +738,8 @@
       document.getElementById('appContent').classList.remove('hidden');
       document.getElementById('bottomNav').classList.remove('hidden');
 
-      setupRealtimeSubscriptions();
       loadAllUsersCache();
+      startPolling();
       switchMainTab('global');
     }
 
@@ -489,51 +747,26 @@
       if (supabaseClient) {
         const { data } = await supabaseClient.from('users').select('*');
         allUsersCache = data || [];
+        if (currentUser) {
+          const freshMe = allUsersCache.find(u => u.id === currentUser.id);
+          if (freshMe) currentUser = freshMe;
+        }
       }
     }
 
-    /* REALTIME SUBSCRIPTIONS */
-    function setupRealtimeSubscriptions() {
-      if (!supabaseClient) return;
-
-      try {
-        supabaseClient.channel('global_messages_realtime')
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'global_messages' }, () => {
-            if (activeTab === 'global') renderGlobalMessages();
-          })
-          .subscribe((status, err) => {
-            if (err) console.log("Realtime connection notice: Falling back to HTTP polling mode.");
-          });
-
-        supabaseClient.channel('direct_messages_realtime')
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'direct_messages' }, () => {
-            if (activeTab === 'dms') {
-              renderDMSidebar();
-              renderDMMessages();
-            }
-          })
-          .subscribe();
-
-        supabaseClient.channel('friendships_realtime')
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, () => {
-            if (activeTab === 'friends') renderFriendsTab();
-            if (activeTab === 'profile') renderProfileTab();
-          })
-          .subscribe();
-      } catch (err) {
-        console.log("WebSocket restricted in canvas environment. Using cloud REST polling.");
-      }
-
-      // Fallback polling interval to ensure snappy multi-device sync without WebSockets
-      setInterval(() => {
-        if (!currentUser) return;
+    /* POLLING LOOP (REPLACES WEBSOCKETS FOR IPAD & CODE PREVIEW STABILITY) */
+    function startPolling() {
+      if (pollingInterval) clearInterval(pollingInterval);
+      pollingInterval = setInterval(async () => {
+        await loadAllUsersCache();
         if (activeTab === 'global') renderGlobalMessages();
-        if (activeTab === 'dms') {
+        else if (activeTab === 'dms') {
           renderDMSidebar();
           if (activeChatId) renderDMMessages();
+        } else if (activeTab === 'friends') {
+          renderFriendsTab();
         }
-        if (activeTab === 'friends') renderFriendsTab();
-      }, 3000);
+      }, 4000);
     }
 
     /* TAB NAVIGATION */
@@ -577,11 +810,15 @@
 
     /* GLOBAL CHAT */
     async function renderGlobalMessages() {
-      const feed = document.getElementById('globalMessageFeed');
-      feed.innerHTML = '';
-
       if (!supabaseClient) return;
       const { data: messages } = await supabaseClient.from('global_messages').select('*').order('created_at', { ascending: false });
+      
+      const sig = JSON.stringify(messages || []);
+      if (sig === lastGlobalSignature) return; // Zero flashing if nothing changed
+      lastGlobalSignature = sig;
+
+      const feed = document.getElementById('globalMessageFeed');
+      feed.innerHTML = '';
 
       if (!messages || messages.length === 0) {
         feed.innerHTML = `
@@ -597,6 +834,7 @@
         const isMe = msg.sender_username.toLowerCase() === currentUser.username_lower;
         const isAdmin = currentUser.role === 'Admin';
         const avatarHtml = getAvatarIconHtml(msg.sender_username, 'w-6 h-6 text-[10px]');
+        const bodyHtml = renderMessageBodyHtml(msg.content);
 
         const msgEl = document.createElement('div');
         msgEl.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} group mb-2 animate-fade-in`;
@@ -615,7 +853,7 @@
             ` : ''}
           </div>
           <div class="max-w-[85%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${isMe ? 'bg-eclipse-600 text-white rounded-tr-none' : 'bg-darkCard text-slate-100 border border-darkBorder rounded-tl-none'} shadow-md">
-            ${escapeHTML(msg.content)}
+            ${bodyHtml}
           </div>
         `;
         feed.appendChild(msgEl);
@@ -626,76 +864,82 @@
       e.preventDefault();
       const input = document.getElementById('globalInput');
       const text = input.value.trim();
-      if (!text || !supabaseClient) return;
+      if ((!text && !pendingGlobalImage) || !supabaseClient) return;
+
+      const payload = encodeMessagePayload(text, pendingGlobalImage);
+      clearChatImage('global');
 
       await supabaseClient.from('global_messages').insert([{
         sender_username: currentUser.username,
         sender_role: currentUser.role,
-        content: text
+        content: payload
       }]);
 
       input.value = '';
+      lastGlobalSignature = '';
       renderGlobalMessages();
     }
 
     async function deleteGlobalMessage(msgId) {
       if (!currentUser || currentUser.role !== 'Admin' || !supabaseClient) return;
       await supabaseClient.from('global_messages').delete().eq('id', msgId);
+      lastGlobalSignature = '';
       renderGlobalMessages();
     }
 
     /* DMs & GROUP CHAT */
     async function renderDMSidebar() {
       const container = document.getElementById('dmConversationList');
-      container.innerHTML = '';
+      if (!container) return;
+
+      let sidebarHtml = '';
 
       // Groups
       groupsCache.forEach(group => {
         if (!group.members.includes(currentUser.username_lower)) return;
         const isActive = activeChatId === group.id && activeChatType === 'group';
-
-        const card = document.createElement('div');
-        card.className = `p-3 flex items-center gap-3 cursor-pointer transition-all ${isActive ? 'bg-darkCard border-l-4 border-eclipse-500' : 'hover:bg-darkCard/50'}`;
-        card.onclick = () => openGroupChat(group.id);
-
-        card.innerHTML = `
-          <div class="w-10 h-10 rounded-full bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-bold flex items-center justify-center text-sm shrink-0">
-            <i class="fa-solid fa-users text-xs"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <h4 class="text-xs font-bold text-slate-100 truncate">${escapeHTML(group.name)}</h4>
-            <p class="text-[11px] text-slate-400 truncate mt-0.5">Group Channel</p>
+        sidebarHtml += `
+          <div onclick="openGroupChat('${group.id}')" class="p-3 flex items-center gap-3 cursor-pointer transition-all ${isActive ? 'bg-darkCard border-l-4 border-eclipse-500' : 'hover:bg-darkCard/50'}">
+            <div class="w-10 h-10 rounded-full bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-bold flex items-center justify-center text-sm shrink-0">
+              <i class="fa-solid fa-users text-xs"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-xs font-bold text-slate-100 truncate">${escapeHTML(group.name)}</h4>
+              <p class="text-[11px] text-slate-400 truncate mt-0.5">Group Channel</p>
+            </div>
           </div>
         `;
-        container.appendChild(card);
       });
 
-      // Friends/Direct Messages
-      if (!supabaseClient) return;
-      const { data: friendships } = await supabaseClient.from('friendships')
-        .select('*')
-        .or(`user_a.eq.${currentUser.username_lower},user_b.eq.${currentUser.username_lower}`)
-        .eq('status', 'accepted');
+      // Friends / Direct Messages
+      if (supabaseClient) {
+        const { data: friendships } = await supabaseClient.from('friendships')
+          .select('*')
+          .or(`user_a.eq.${currentUser.username_lower},user_b.eq.${currentUser.username_lower}`)
+          .eq('status', 'accepted');
 
-      if (friendships) {
-        friendships.forEach(f => {
-          const friendName = f.user_a === currentUser.username_lower ? f.user_b : f.user_a;
-          const isActive = activeChatId === friendName && activeChatType === 'dm';
-          const avatarHtml = getAvatarIconHtml(friendName, 'w-10 h-10 text-sm');
+        if (friendships) {
+          friendships.forEach(f => {
+            const friendName = f.user_a === currentUser.username_lower ? f.user_b : f.user_a;
+            const isActive = activeChatId === friendName && activeChatType === 'dm';
+            const avatarHtml = getAvatarIconHtml(friendName, 'w-10 h-10 text-sm');
 
-          const card = document.createElement('div');
-          card.className = `p-3 flex items-center gap-3 cursor-pointer transition-all ${isActive ? 'bg-darkCard border-l-4 border-eclipse-500' : 'hover:bg-darkCard/50'}`;
-          card.onclick = () => openDMChat(friendName);
+            sidebarHtml += `
+              <div onclick="openDMChat('${friendName}')" class="p-3 flex items-center gap-3 cursor-pointer transition-all ${isActive ? 'bg-darkCard border-l-4 border-eclipse-500' : 'hover:bg-darkCard/50'}">
+                <div class="shrink-0">${avatarHtml}</div>
+                <div class="flex-1 min-w-0">
+                  <h4 class="text-xs font-bold text-slate-100 truncate">${escapeHTML(friendName)}</h4>
+                  <p class="text-[11px] text-slate-400 truncate mt-0.5">${escapeHTML(friendName)}@eclipse.internal</p>
+                </div>
+              </div>
+            `;
+          });
+        }
+      }
 
-          card.innerHTML = `
-            <div class="shrink-0">${avatarHtml}</div>
-            <div class="flex-1 min-w-0">
-              <h4 class="text-xs font-bold text-slate-100 truncate">${escapeHTML(friendName)}</h4>
-              <p class="text-[11px] text-slate-400 truncate mt-0.5">${escapeHTML(friendName)}@eclipse.internal</p>
-            </div>
-          `;
-          container.appendChild(card);
-        });
+      if (sidebarHtml !== lastSidebarSignature) {
+        lastSidebarSignature = sidebarHtml;
+        container.innerHTML = sidebarHtml;
       }
     }
 
@@ -711,6 +955,7 @@
     function openDMChat(targetName) {
       activeChatId = targetName;
       activeChatType = 'dm';
+      lastDMSignature = '';
       renderDMSidebar();
 
       document.getElementById('dmActiveAvatar').innerHTML = getAvatarIconHtml(targetName, 'w-8 h-8 text-xs');
@@ -718,6 +963,7 @@
       
       document.getElementById('dmInput').disabled = false;
       document.getElementById('dmSubmitBtn').disabled = false;
+      document.getElementById('dmPhotoBtn').disabled = false;
 
       const chatPanel = document.getElementById('dmChatPanel');
       chatPanel.classList.remove('hidden');
@@ -729,6 +975,7 @@
     function openGroupChat(groupId) {
       activeChatId = groupId;
       activeChatType = 'group';
+      lastDMSignature = '';
       renderDMSidebar();
 
       const group = groupsCache.find(g => g.id === groupId);
@@ -739,6 +986,7 @@
       
       document.getElementById('dmInput').disabled = false;
       document.getElementById('dmSubmitBtn').disabled = false;
+      document.getElementById('dmPhotoBtn').disabled = false;
 
       const chatPanel = document.getElementById('dmChatPanel');
       chatPanel.classList.remove('hidden');
@@ -757,9 +1005,7 @@
 
     async function renderDMMessages() {
       if (!activeChatId || !supabaseClient) return;
-      const feed = document.getElementById('dmMessageFeed');
-      feed.innerHTML = '';
-
+      
       let messages = [];
       if (activeChatType === 'dm') {
         const { data } = await supabaseClient.from('direct_messages')
@@ -775,6 +1021,13 @@
         messages = data || [];
       }
 
+      const sig = JSON.stringify(messages);
+      if (sig === lastDMSignature) return; // Zero flashing
+      lastDMSignature = sig;
+
+      const feed = document.getElementById('dmMessageFeed');
+      feed.innerHTML = '';
+
       if (messages.length === 0) {
         feed.innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-slate-500 py-12">
@@ -787,6 +1040,7 @@
 
       messages.forEach(msg => {
         const isMe = msg.sender_username.toLowerCase() === currentUser.username_lower;
+        const bodyHtml = renderMessageBodyHtml(msg.content);
 
         const msgEl = document.createElement('div');
         msgEl.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} group mb-2 animate-fade-in`;
@@ -797,13 +1051,8 @@
             <span class="text-[9px] text-slate-500 font-mono">${formatTime(msg.created_at)}</span>
           </div>
           <div class="max-w-[85%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${isMe ? 'bg-eclipse-600 text-white rounded-tr-none' : 'bg-darkCard text-slate-100 border border-darkBorder rounded-tl-none'} shadow-md">
-            ${escapeHTML(msg.content)}
+            ${bodyHtml}
           </div>
-          ${!isMe ? `
-            <div class="text-[9px] text-indigo-400 font-medium mt-0.5 flex items-center gap-1">
-              <i class="fa-solid fa-check-double text-[8px]"></i> Read
-            </div>
-          ` : ''}
         `;
         feed.appendChild(msgEl);
       });
@@ -813,20 +1062,24 @@
       e.preventDefault();
       const input = document.getElementById('dmInput');
       const text = input.value.trim();
-      if (!text || !activeChatId || !supabaseClient) return;
+      if ((!text && !pendingDMImage) || !activeChatId || !supabaseClient) return;
+
+      const payload = encodeMessagePayload(text, pendingDMImage);
+      clearChatImage('dm');
 
       await supabaseClient.from('direct_messages').insert([{
         sender_username: currentUser.username,
         receiver_username: activeChatId,
-        content: text
+        content: payload
       }]);
 
       input.value = '';
+      lastDMSignature = '';
       renderDMMessages();
       renderDMSidebar();
     }
 
-    /* FRIENDS TAB (REQUESTS & MY FRIENDS) */
+    /* FRIENDS TAB */
     function renderFriendsTab() {
       renderFriendRequests();
       renderMyFriendsList();
@@ -834,9 +1087,8 @@
 
     async function renderFriendRequests() {
       const container = document.getElementById('friendRequestsList');
-      container.innerHTML = '';
+      if (!container || !supabaseClient) return;
 
-      if (!supabaseClient) return;
       const { data: pendingRequests } = await supabaseClient.from('friendships')
         .select('*')
         .eq('user_b', currentUser.username_lower)
@@ -849,6 +1101,7 @@
         return;
       }
 
+      container.innerHTML = '';
       pendingRequests.forEach(req => {
         const senderName = req.user_a;
         const avatarHtml = getAvatarIconHtml(senderName, 'w-9 h-9 text-xs');
@@ -878,9 +1131,8 @@
 
     async function renderMyFriendsList() {
       const container = document.getElementById('friendsHorizontalList');
-      container.innerHTML = '';
+      if (!container || !supabaseClient) return;
 
-      if (!supabaseClient) return;
       const { data: friendsData } = await supabaseClient.from('friendships')
         .select('*')
         .or(`user_a.eq.${currentUser.username_lower},user_b.eq.${currentUser.username_lower}`)
@@ -893,6 +1145,7 @@
         return;
       }
 
+      container.innerHTML = '';
       friendsData.forEach(f => {
         const friendName = f.user_a === currentUser.username_lower ? f.user_b : f.user_a;
         const avatarHtml = getAvatarIconHtml(friendName, 'w-10 h-10 text-sm');
@@ -1026,6 +1279,7 @@
     /* PROFILE VIEW */
     async function renderProfileTab() {
       if (!currentUser) return;
+      currentUser = await ensureFareedAdmin(currentUser);
 
       document.getElementById('profileAvatarContainer').innerHTML = getAvatarIconHtml(currentUser, 'w-full h-full text-3xl');
       document.getElementById('profileUsername').innerText = currentUser.username;
@@ -1047,6 +1301,7 @@
     /* HELPERS */
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
+      if (!container) return;
       const toast = document.createElement('div');
       
       let bg = 'bg-darkCard border-darkBorder text-slate-200';
