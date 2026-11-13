@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Eclipse Chat</title>
   <link rel="icon" type="image/png" href="Eclipse.png">
   
@@ -77,9 +77,22 @@
     }
 
     .glass-panel {
-      background: rgba(21, 26, 35, 0.85);
+      background: rgba(21, 26, 35, 0.88);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(31, 41, 55, 0.8);
+    }
+
+    /* Prevent iOS Safari input focus zoom & scroll jumping */
+    input, textarea, select {
+      font-size: 16px !important;
+    }
+    @media (min-width: 640px) {
+      input, textarea, select {
+        font-size: 13px !important;
+      }
+    }
+    html, body {
+      overscroll-behavior-y: none;
     }
   </style>
 </head>
@@ -89,7 +102,7 @@
   <div id="toastContainer" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 pointer-events-none flex flex-col gap-2"></div>
 
   <!-- MAIN APP CONTAINER -->
-  <div class="flex-1 flex flex-col max-w-4xl w-full mx-auto h-full relative bg-eclipse-950 shadow-2xl border-x border-darkBorder">
+  <div class="flex-1 flex flex-col max-w-4xl w-full mx-auto h-full relative bg-eclipse-950 shadow-2xl border-x border-darkBorder overflow-hidden">
 
     <!-- HEADER BAR -->
     <header id="appHeader" class="hidden h-16 glass-panel border-b border-darkBorder px-4 flex items-center justify-between shrink-0 z-20">
@@ -106,8 +119,9 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <button onclick="openPatchNotesModal()" title="Patch Notes" class="px-2.5 h-9 rounded-xl bg-darkCard hover:bg-slate-800 text-indigo-400 hover:text-indigo-300 flex items-center justify-center gap-1.5 transition-all border border-darkBorder active:scale-95 text-xs font-bold">
-          <i class="fa-solid fa-scroll"></i> <span class="hidden sm:inline">Patch Notes</span>
+        <button onclick="openPatchNotesModal()" title="Patch Notes & Changelog" class="px-2.5 h-9 rounded-xl bg-darkCard hover:bg-slate-800 text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 text-xs font-bold transition-all border border-darkBorder active:scale-95">
+          <i class="fa-solid fa-scroll"></i>
+          <span class="hidden sm:inline">Patch Notes</span>
         </button>
         <button onclick="logout()" title="Logout" class="w-9 h-9 rounded-xl bg-darkCard hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-all border border-darkBorder active:scale-95">
           <i class="fa-solid fa-right-from-bracket"></i>
@@ -123,7 +137,7 @@
             <img src="Eclipse.png" alt="Eclipse Logo" class="eclipse-logo-circle" onerror="this.onerror=null; this.src='https://placehold.co/100x100/0b0e14/ffffff?text=E';">
           </div>
           <h2 class="text-2xl font-bold text-white tracking-tight">Welcome to Eclipse</h2>
-          <p class="text-xs text-slate-400 mt-1">Cloud connected messaging platform</p>
+          <p class="text-xs text-slate-400 mt-1">Social feed & cloud messaging platform</p>
         </div>
 
         <div class="flex bg-eclipse-950 p-1 rounded-xl mb-6 border border-darkBorder">
@@ -149,7 +163,7 @@
         <!-- Signup Form -->
         <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-4 hidden">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Username (Case-insensitive)</label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Username (Permanent Handle)</label>
             <input type="text" id="signupUser" required placeholder="e.g. Alex" class="w-full px-3 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all">
           </div>
           <div>
@@ -164,40 +178,59 @@
     </div>
 
     <!-- MAIN APPLICATION CONTAINER -->
-    <main id="appContent" class="flex-1 flex flex-col min-h-0 relative hidden">
+    <main id="appContent" class="flex-1 flex flex-col min-h-0 relative hidden overflow-hidden">
       
       <!-- TAB 1: GLOBAL CHAT VIEW -->
       <section id="globalChatTab" class="flex-1 flex flex-col h-full min-h-0 animate-fade-in">
-        <div id="globalMessageFeed" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 flex flex-col-reverse">
+        <div id="globalMessageFeed" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 flex flex-col-reverse" style="overflow-anchor: auto;">
           <!-- Global Messages Rendered Here -->
         </div>
 
-        <div class="p-3 bg-eclipse-950 border-t border-darkBorder shrink-0">
-          <!-- Image Attachment Preview (Global) -->
-          <div id="globalImagePreviewBar" class="hidden mb-2 p-2 bg-darkCard border border-darkBorder rounded-xl flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <img id="globalImagePreviewThumb" src="" alt="Preview" class="w-10 h-10 rounded-lg object-cover border border-eclipse-500/40">
-              <span class="text-xs text-slate-300 font-medium">Photo attached</span>
-            </div>
-            <button type="button" onclick="clearChatImage('global')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 flex items-center justify-center transition-all">
-              <i class="fa-solid fa-xmark text-xs"></i>
-            </button>
+        <!-- Pending Photo Attachment Preview -->
+        <div id="globalImagePreviewBar" class="hidden px-4 py-2 bg-darkCard/90 border-t border-darkBorder flex items-center justify-between shrink-0">
+          <div class="flex items-center gap-2.5">
+            <img id="globalImagePreviewThumb" src="" alt="Preview" class="w-10 h-10 rounded-lg object-cover border border-eclipse-500/50">
+            <span class="text-xs text-slate-300 font-medium">Photo attached</span>
           </div>
+          <button type="button" onclick="clearChatImage('global')" class="text-xs text-red-400 hover:text-red-300 px-2 py-1 rounded-lg bg-red-500/10">
+            <i class="fa-solid fa-xmark"></i> Remove
+          </button>
+        </div>
 
+        <div class="p-3 bg-eclipse-950 border-t border-darkBorder shrink-0">
           <form onsubmit="sendGlobalMessage(event)" class="flex items-center gap-2">
-            <input type="file" id="globalPhotoInput" accept="image/*" class="hidden" onchange="handleChatPhotoSelect(event, 'global')">
-            <button type="button" onclick="document.getElementById('globalPhotoInput').click()" title="Attach Photo" class="w-11 h-11 rounded-2xl bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-300 hover:text-eclipse-400 flex items-center justify-center transition-all shrink-0 active:scale-95">
+            <input type="file" id="globalImageInput" accept="image/*" class="hidden" onchange="handleChatImageSelect(event, 'global')">
+            <button type="button" onclick="document.getElementById('globalImageInput').click()" title="Upload Photo" class="w-11 h-11 rounded-2xl bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-300 hover:text-eclipse-400 flex items-center justify-center transition-all shrink-0 active:scale-95">
               <i class="fa-regular fa-image text-base"></i>
             </button>
             <input type="text" id="globalInput" placeholder="Type a message in Global Chat..." autocomplete="off" class="flex-1 bg-darkCard border border-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all">
-            <button type="submit" id="globalSendBtn" class="w-11 h-11 rounded-2xl bg-eclipse-600 hover:bg-eclipse-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-lg shadow-eclipse-600/30 shrink-0">
+            <button type="submit" class="w-11 h-11 rounded-2xl bg-eclipse-600 hover:bg-eclipse-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-lg shadow-eclipse-600/30 shrink-0">
               <i class="fa-solid fa-paper-plane text-sm"></i>
             </button>
           </form>
         </div>
       </section>
 
-      <!-- TAB 2: DMs & GROUP CHATS VIEW -->
+      <!-- TAB 2: SOCIAL FEED TAB (TIKTOK-STYLE) -->
+      <section id="feedTab" class="flex-1 flex flex-col h-full min-h-0 animate-fade-in hidden">
+        <!-- Feed Top Sub-nav & Upload Button -->
+        <div class="px-4 py-2.5 bg-eclipse-950/90 border-b border-darkBorder flex items-center justify-between shrink-0">
+          <div class="flex items-center gap-4">
+            <button id="feedFilterForYou" onclick="setFeedFilter('foryou')" class="text-xs font-extrabold text-white border-b-2 border-eclipse-500 pb-1 transition-all">For You</button>
+            <button id="feedFilterFollowing" onclick="setFeedFilter('following')" class="text-xs font-bold text-slate-400 hover:text-white pb-1 transition-all">Following</button>
+          </div>
+          <button onclick="openCreatePostModal()" class="px-3 py-1.5 bg-gradient-to-r from-eclipse-600 to-indigo-500 hover:from-eclipse-500 hover:to-indigo-400 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-eclipse-600/25 active:scale-95 transition-all">
+            <i class="fa-solid fa-plus"></i> Post Media
+          </button>
+        </div>
+
+        <!-- Feed Stream -->
+        <div id="socialFeedList" class="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+          <!-- Social Posts Rendered Here -->
+        </div>
+      </section>
+
+      <!-- TAB 3: DMs & GROUP CHATS VIEW -->
       <section id="dmsTab" class="flex-1 flex h-full min-h-0 animate-fade-in hidden">
         <div id="dmSidebar" class="w-full sm:w-80 bg-robloxDark border-r border-darkBorder flex flex-col h-full shrink-0">
           <div class="p-3.5 border-b border-darkBorder flex items-center justify-between">
@@ -235,28 +268,28 @@
             </div>
           </div>
 
-          <div id="dmMessageFeed" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 flex flex-col-reverse">
+          <div id="dmMessageFeed" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 flex flex-col-reverse" style="overflow-anchor: auto;">
             <div class="h-full flex flex-col items-center justify-center text-slate-500 py-12">
               <i class="fa-regular fa-comments text-4xl mb-3 text-eclipse-500/40"></i>
               <p class="text-xs font-medium">Select a conversation to start chatting</p>
             </div>
           </div>
 
-          <div class="p-3 bg-eclipse-950 border-t border-darkBorder shrink-0">
-            <!-- Image Attachment Preview (DM) -->
-            <div id="dmImagePreviewBar" class="hidden mb-2 p-2 bg-darkCard border border-darkBorder rounded-xl flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <img id="dmImagePreviewThumb" src="" alt="Preview" class="w-10 h-10 rounded-lg object-cover border border-eclipse-500/40">
-                <span class="text-xs text-slate-300 font-medium">Photo attached</span>
-              </div>
-              <button type="button" onclick="clearChatImage('dm')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 flex items-center justify-center transition-all">
-                <i class="fa-solid fa-xmark text-xs"></i>
-              </button>
+          <!-- DM Image Attachment Preview -->
+          <div id="dmImagePreviewBar" class="hidden px-4 py-2 bg-darkCard/90 border-t border-darkBorder flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-2.5">
+              <img id="dmImagePreviewThumb" src="" alt="Preview" class="w-10 h-10 rounded-lg object-cover border border-eclipse-500/50">
+              <span class="text-xs text-slate-300 font-medium">Photo attached</span>
             </div>
+            <button type="button" onclick="clearChatImage('dm')" class="text-xs text-red-400 hover:text-red-300 px-2 py-1 rounded-lg bg-red-500/10">
+              <i class="fa-solid fa-xmark"></i> Remove
+            </button>
+          </div>
 
+          <div class="p-3 bg-eclipse-950 border-t border-darkBorder shrink-0">
             <form onsubmit="sendDirectMessage(event)" class="flex items-center gap-2">
-              <input type="file" id="dmPhotoInput" accept="image/*" class="hidden" onchange="handleChatPhotoSelect(event, 'dm')">
-              <button type="button" id="dmPhotoBtn" disabled onclick="document.getElementById('dmPhotoInput').click()" title="Attach Photo" class="w-11 h-11 rounded-2xl bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-300 hover:text-eclipse-400 flex items-center justify-center transition-all shrink-0 active:scale-95 disabled:opacity-50">
+              <input type="file" id="dmImageInput" accept="image/*" class="hidden" onchange="handleChatImageSelect(event, 'dm')">
+              <button type="button" id="dmImageBtn" disabled onclick="document.getElementById('dmImageInput').click()" title="Upload Photo" class="w-11 h-11 rounded-2xl bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-300 hover:text-eclipse-400 flex items-center justify-center transition-all shrink-0 disabled:opacity-50">
                 <i class="fa-regular fa-image text-base"></i>
               </button>
               <input type="text" id="dmInput" placeholder="Send a message..." disabled autocomplete="off" class="flex-1 bg-darkCard border border-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all disabled:opacity-50">
@@ -268,9 +301,8 @@
         </div>
       </section>
 
-      <!-- TAB 3: FRIENDS TAB -->
+      <!-- TAB 4: FRIENDS TAB -->
       <section id="friendsTab" class="flex-1 flex flex-col h-full overflow-hidden p-4 sm:p-6 space-y-4 animate-fade-in hidden min-h-0">
-        <!-- Search & Send Bar -->
         <div class="glass-panel border border-darkBorder rounded-2xl p-4 shrink-0">
           <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-2">
             <i class="fa-solid fa-user-plus text-amber-400"></i> ADD FRIENDS BY EMAIL / USERNAME
@@ -283,9 +315,7 @@
           </div>
         </div>
 
-        <!-- Two Divided Lists Container -->
         <div class="flex-1 flex flex-col gap-4 min-h-0 overflow-y-auto">
-          <!-- Section 1: Friend Requests -->
           <div class="glass-panel border border-darkBorder rounded-2xl p-4 shrink-0">
             <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-3 flex items-center justify-between">
               <span><i class="fa-solid fa-clock mr-2"></i>FRIEND REQUESTS</span>
@@ -296,7 +326,6 @@
             </div>
           </div>
 
-          <!-- Section 2: My Friends -->
           <div class="flex-1 flex flex-col glass-panel border border-darkBorder rounded-2xl p-4 min-h-0">
             <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center justify-between shrink-0">
               <span><i class="fa-solid fa-user-group text-indigo-400 mr-2"></i>MY FRIENDS</span>
@@ -310,136 +339,100 @@
         </div>
       </section>
 
-      <!-- TAB 4: PROFILE & ADMIN VIEW -->
-      <section id="profileTab" class="flex-1 flex flex-col h-full overflow-y-auto p-4 sm:p-6 space-y-5 animate-fade-in hidden">
+      <!-- TAB 5: TIKTOK-STYLE PROFILE VIEW (OWN OR VIEWING OTHER USER) -->
+      <section id="profileTab" class="flex-1 flex flex-col h-full overflow-y-auto p-4 sm:p-6 space-y-4 animate-fade-in hidden">
         <!-- Back bar when viewing another user's profile -->
-        <div id="viewingUserBanner" class="hidden flex items-center justify-between bg-darkCard border border-darkBorder rounded-2xl px-4 py-2.5">
-          <button onclick="viewMyProfile()" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-2">
+        <div id="viewingOtherUserBar" class="hidden flex items-center justify-between bg-darkCard border border-darkBorder px-3.5 py-2 rounded-2xl">
+          <button onclick="viewMyOwnProfile()" class="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5">
             <i class="fa-solid fa-arrow-left"></i> Back to My Profile
           </button>
-          <span class="text-[11px] text-slate-400 font-mono">Viewing Public Profile</span>
+          <span class="text-[11px] text-slate-400 font-medium">Public Profile</span>
         </div>
 
-        <!-- TikTok-Style Profile Header Card -->
+        <!-- TikTok-inspired Profile Header Card -->
         <div class="glass-panel border border-darkBorder rounded-3xl p-5 sm:p-6 relative overflow-hidden shadow-2xl">
           <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5">
-            <!-- Avatar + Upload -->
+            <!-- Avatar + Upload PFP (only on own profile) -->
             <div class="flex flex-col items-center shrink-0">
-              <div class="relative w-24 h-24 mb-2">
+              <div class="relative w-24 h-24">
                 <div id="profileAvatarContainer" class="w-24 h-24 rounded-full border-2 border-eclipse-500 flex items-center justify-center text-3xl font-extrabold shadow-xl overflow-hidden">
                   ?
                 </div>
+                <input type="file" id="pfpUploadInput" accept="image/*" class="hidden" onchange="handlePfpUpload(event)">
               </div>
-              <input type="file" id="pfpFileInput" accept="image/*" class="hidden" onchange="handlePfpUpload(event)">
-              <button id="changePfpBtn" onclick="document.getElementById('pfpFileInput').click()" class="px-3 py-1.5 bg-eclipse-600 hover:bg-eclipse-500 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5 mt-1">
-                <i class="fa-solid fa-camera text-[11px]"></i> Change Icon
+              <button id="changeIconBtn" onclick="document.getElementById('pfpUploadInput').click()" class="mt-2 px-3 py-1 bg-darkCard hover:bg-slate-800 border border-darkBorder text-[11px] font-bold text-indigo-400 rounded-xl flex items-center gap-1.5 transition-all shadow active:scale-95">
+                <i class="fa-solid fa-camera"></i> Change Icon
               </button>
             </div>
 
-            <!-- Names, Stats, Actions & Bio -->
-            <div class="flex-1 text-center sm:text-left space-y-2.5 w-full min-w-0">
+            <!-- User Details, TikTok Stats, Action Buttons & Bio -->
+            <div class="flex-1 text-center sm:text-left space-y-2.5 w-full">
               <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                 <h2 id="profileDisplayName" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">Display Name</h2>
-                <span id="profileUsernameHandle" class="text-xs text-slate-400 font-mono">@username</span>
-                <span id="profileAdminBadge" class="hidden px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/30 text-[10px] font-bold uppercase tracking-wider">
+                <span id="profileHandle" class="text-xs text-slate-400 font-mono">@username</span>
+                <span id="profileAdminBadge" class="hidden px-2.5 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30 text-[10px] font-bold uppercase tracking-wider">
                   <i class="fa-solid fa-shield"></i> Admin
                 </span>
-                <span id="profileBannedBadge" class="hidden px-2.5 py-0.5 rounded-full bg-rose-600/20 text-rose-400 border border-rose-500/40 text-[10px] font-bold uppercase tracking-wider">
-                  <i class="fa-solid fa-ban"></i> Banned
+                <span id="profileBannedBadge" class="hidden px-2.5 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold uppercase tracking-wider">
+                  <i class="fa-solid fa-ban"></i> BANNED
                 </span>
               </div>
 
-              <!-- TikTok Stats Row: Following | Followers | Likes | Friends -->
+              <!-- TikTok-Style Stats Row: Following | Followers | Likes | Friends -->
               <div class="flex items-center justify-center sm:justify-start gap-5 pt-1">
-                <div>
-                  <span id="statFollowing" class="text-base font-extrabold text-white">0</span>
+                <div class="text-center sm:text-left">
+                  <span id="statFollowing" class="text-base sm:text-lg font-extrabold text-white">0</span>
                   <span class="text-xs text-slate-400 ml-1">Following</span>
                 </div>
-                <div>
-                  <span id="statFollowers" class="text-base font-extrabold text-white">0</span>
+                <div class="text-center sm:text-left">
+                  <span id="statFollowers" class="text-base sm:text-lg font-extrabold text-white">0</span>
                   <span class="text-xs text-slate-400 ml-1">Followers</span>
                 </div>
-                <div>
-                  <span id="statLikes" class="text-base font-extrabold text-white">0</span>
+                <div class="text-center sm:text-left">
+                  <span id="statTotalLikes" class="text-base sm:text-lg font-extrabold text-white">0</span>
                   <span class="text-xs text-slate-400 ml-1">Likes</span>
                 </div>
-                <div>
-                  <span id="statFriends" class="text-base font-extrabold text-white">0</span>
+                <div class="text-center sm:text-left">
+                  <span id="statFriends" class="text-base sm:text-lg font-extrabold text-white">0</span>
                   <span class="text-xs text-slate-400 ml-1">Friends</span>
                 </div>
               </div>
 
-              <!-- Action Buttons (Own Profile vs Other User Profile) -->
-              <div id="ownProfileActions" class="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
-                <button onclick="openEditProfileModal()" class="px-4 py-1.5 bg-darkCard hover:bg-slate-800 border border-darkBorder text-white rounded-xl text-xs font-bold transition-all">
-                  Edit profile
-                </button>
-                <button onclick="openCreatePostModal()" class="px-4 py-1.5 bg-eclipse-600 hover:bg-eclipse-500 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5">
-                  <i class="fa-solid fa-plus"></i> Post Media
-                </button>
+              <!-- Profile Action Buttons (Edit Profile / Post OR Follow / Friend / Admin Ban) -->
+              <div id="profileActionRow" class="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                <!-- Dynamically populated for self vs other user -->
               </div>
 
-              <div id="otherProfileActions" class="hidden flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
-                <button id="profileFollowBtn" onclick="toggleFollowProfile()" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-all shadow">
-                  Follow
-                </button>
-                <button id="profileFriendBtn" onclick="sendFriendFromProfile()" class="px-4 py-1.5 bg-eclipse-600 hover:bg-eclipse-500 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5">
-                  <i class="fa-solid fa-user-plus"></i> Friend
-                </button>
-                <button id="profileMessageBtn" onclick="messageViewedProfile()" class="px-3.5 py-1.5 bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-200 rounded-xl text-xs font-bold transition-all">
-                  Message
-                </button>
-                <button id="profileAdminBanBtn" onclick="toggleBanViewedProfile()" class="hidden px-3.5 py-1.5 bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 rounded-xl text-xs font-bold transition-all">
-                  <i class="fa-solid fa-gavel"></i> Ban Account
-                </button>
+              <!-- Bio Section (400 character max) -->
+              <div class="pt-2">
+                <p id="profileBioText" class="text-xs sm:text-sm text-slate-200 whitespace-pre-line break-words leading-relaxed">No bio yet.</p>
               </div>
-
-              <!-- Bio Section (Max 400 chars, supports links & line breaks) -->
-              <p id="profileBioText" class="text-xs text-slate-200 whitespace-pre-line break-words pt-1 leading-relaxed">No bio yet.</p>
             </div>
           </div>
         </div>
 
-        <!-- TikTok Sub-Tabs Under Bio (Posts / Favorites / Liked) -->
-        <div class="flex flex-col flex-1 min-h-0">
-          <div class="flex border-b border-darkBorder mb-4 gap-2">
-            <button id="subTabPosts" onclick="switchProfileSubTab('posts')" class="px-4 py-2 text-xs font-bold text-white border-b-2 border-eclipse-500 flex items-center gap-1.5">
+        <!-- Posts Under Bio (TikTok Sub-Tabs: Posts | Favorites | Liked) -->
+        <div class="glass-panel border border-darkBorder rounded-3xl overflow-hidden flex-1 flex flex-col min-h-[260px]">
+          <div class="grid grid-cols-3 border-b border-darkBorder bg-eclipse-950/60">
+            <button id="profSubTabPosts" onclick="switchProfileSubTab('posts')" class="py-3 text-xs font-extrabold text-white border-b-2 border-eclipse-500 flex items-center justify-center gap-1.5 transition-all">
               <i class="fa-solid fa-table-cells"></i> Posts
             </button>
-            <button id="subTabFavorites" onclick="switchProfileSubTab('favorites')" class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5">
+            <button id="profSubTabFavorites" onclick="switchProfileSubTab('favorites')" class="py-3 text-xs font-bold text-slate-400 hover:text-white flex items-center justify-center gap-1.5 transition-all">
               <i class="fa-regular fa-bookmark"></i> Favorites
             </button>
-            <button id="subTabLiked" onclick="switchProfileSubTab('liked')" class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5">
+            <button id="profSubTabLiked" onclick="switchProfileSubTab('liked')" class="py-3 text-xs font-bold text-slate-400 hover:text-white flex items-center justify-center gap-1.5 transition-all">
               <i class="fa-regular fa-heart"></i> Liked
             </button>
           </div>
 
-          <!-- TikTok-Style Media Grid -->
-          <div id="profilePostsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 pb-6">
-            <!-- Profile Media Cards Rendered Here -->
+          <div id="profilePostsGrid" class="p-3 sm:p-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <!-- Posts Grid Rendered Here -->
           </div>
-        </div>
-      </section>
-
-      <!-- TAB 5: FEED TAB (TIKTOK FOR YOU / FOLLOWING STREAM) -->
-      <section id="feedTab" class="flex-1 flex flex-col h-full min-h-0 animate-fade-in hidden">
-        <div class="p-3 border-b border-darkBorder glass-panel flex items-center justify-between shrink-0">
-          <div class="flex items-center gap-2">
-            <button id="feedFilterAll" onclick="setFeedFilter('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-eclipse-600 text-white shadow">For You</button>
-            <button id="feedFilterFollowing" onclick="setFeedFilter('following')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-darkCard text-slate-400 hover:text-white">Following</button>
-          </div>
-          <button onclick="openCreatePostModal()" class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center gap-1.5 shadow">
-            <i class="fa-solid fa-plus"></i> Create Post
-          </button>
-        </div>
-
-        <div id="feedStreamContainer" class="flex-1 overflow-y-auto p-4 space-y-5 min-h-0">
-          <!-- Feed Posts Rendered Here -->
         </div>
       </section>
     </main>
 
-    <!-- BOTTOM TAB NAVIGATION -->
+    <!-- BOTTOM TAB NAVIGATION (5 TABS) -->
     <nav id="bottomNav" class="hidden h-16 bg-eclipse-950 border-t border-darkBorder grid grid-cols-5 shrink-0 z-20">
       <button id="navGlobal" onclick="switchMainTab('global')" class="flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white transition-all tab-active">
         <i class="fa-solid fa-earth-americas text-base"></i>
@@ -457,7 +450,7 @@
         <i class="fa-solid fa-user-group text-base"></i>
         <span class="text-[10px] font-bold tracking-wide">Friends</span>
       </button>
-      <button id="navProfile" onclick="viewMyProfile()" class="flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white transition-all">
+      <button id="navProfile" onclick="viewMyOwnProfile()" class="flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white transition-all">
         <i class="fa-solid fa-user text-base"></i>
         <span class="text-[10px] font-bold tracking-wide">Profile</span>
       </button>
@@ -465,194 +458,229 @@
 
   </div>
 
-  <!-- PATCH NOTES MODAL WITH GRAY SHADOW MASK & RED X BUTTON -->
-  <div id="patchNotesModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-panel border border-darkBorder rounded-3xl max-w-lg w-full max-h-[82vh] flex flex-col shadow-2xl relative animate-slide-up overflow-hidden">
-      <!-- Header with Red X button at top -->
-      <div class="p-4 sm:p-5 border-b border-darkBorder flex items-center justify-between bg-eclipse-950/90 shrink-0">
+  <!-- PATCH NOTES MODAL WITH GRAY SHADOW MASK OVER EVERYTHING & RED X BUTTON -->
+  <div id="patchNotesModal" class="fixed inset-0 bg-neutral-900/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-darkCard border border-slate-700 rounded-3xl max-w-lg w-full max-h-[82vh] flex flex-col shadow-[0_25px_70px_rgba(0,0,0,0.85)] relative animate-slide-up overflow-hidden">
+      <!-- Top Header with Red X Button -->
+      <div class="px-6 py-4 border-b border-darkBorder flex items-center justify-between bg-eclipse-950/90 shrink-0">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl bg-eclipse-600/20 border border-eclipse-500/40 text-indigo-400 flex items-center justify-center">
-            <i class="fa-solid fa-scroll"></i>
+          <div class="w-8 h-8 rounded-xl bg-eclipse-600/20 border border-eclipse-500/40 text-eclipse-400 flex items-center justify-center">
+            <i class="fa-solid fa-sparkles"></i>
           </div>
           <div>
             <h3 class="text-base font-extrabold text-white tracking-tight">Eclipse Patch Notes</h3>
-            <p class="text-[11px] text-slate-400">Full update history & version changelog</p>
+            <p class="text-[11px] text-slate-400">Complete update history & changelog</p>
           </div>
         </div>
-        <button onclick="closePatchNotesModal()" title="Close Patch Notes" class="w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-all active:scale-95">
-          <i class="fa-solid fa-xmark text-sm"></i>
+        <button onclick="closePatchNotesModal()" title="Close Patch Notes" class="w-9 h-9 rounded-xl bg-red-600 hover:bg-red-500 text-white font-extrabold flex items-center justify-center shadow-lg shadow-red-600/30 transition-all active:scale-95">
+          <i class="fa-solid fa-xmark text-base"></i>
         </button>
       </div>
 
-      <!-- Scrolling Frame Body -->
-      <div class="flex-1 overflow-y-auto p-5 space-y-5 text-xs leading-relaxed">
-        <div class="bg-eclipse-950/80 border border-eclipse-500/30 rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-2">
-            <span class="px-2.5 py-0.5 rounded-full bg-eclipse-600 text-white font-bold text-[10px]">LATEST — v4.0 Social & Feed Update</span>
-            <span class="text-[10px] text-slate-400 font-mono">Nov 2026</span>
+      <!-- Scrollable Patch Notes Content -->
+      <div class="p-6 overflow-y-auto space-y-5 text-xs leading-relaxed text-slate-300">
+        <!-- v4.0 Latest -->
+        <div class="p-4 rounded-2xl bg-eclipse-950/90 border border-eclipse-500/40 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded-full bg-eclipse-600 text-white font-bold text-[10px] uppercase">Latest • v4.0</span>
+            <span class="text-[11px] text-slate-400 font-mono">Social & TikTok Profile Update</span>
           </div>
-          <ul class="list-disc list-inside space-y-1.5 text-slate-200">
-            <li><strong class="text-indigo-300">TikTok-Style Profiles & Bio:</strong> Added customizable user bios (up to 400 characters) with posts displayed directly beneath your bio.</li>
-            <li><strong class="text-indigo-300">Display Names & 3-Day Cooldown:</strong> Set custom display names while keeping your <code class="text-amber-300">@username</code> handle permanent (can be changed once every 3 days).</li>
-            <li><strong class="text-indigo-300">Clickable Global Chat Profiles:</strong> Tap any username or avatar in Global Chat to open their profile, follow them, or send a friend request directly.</li>
-            <li><strong class="text-indigo-300">New Feed Tab (Images & Videos):</strong> Upload photos or short videos with captions, plus full Likes, Favorites, Comments, and Followers/Following counts.</li>
-            <li><strong class="text-indigo-300">Admin Moderation Powers:</strong> Admins (<strong>Fareed</strong> & <strong>TestBot</strong>) can delete posts/videos and ban accounts directly from user profiles.</li>
-            <li><strong class="text-indigo-300">Patch Notes Modal:</strong> Added this scrollable update history with gray backdrop mask.</li>
+          <h4 class="text-sm font-bold text-white">TikTok-Style Profiles, Social Feed & Admin Controls</h4>
+          <ul class="list-disc pl-4 space-y-1 text-slate-300">
+            <li><strong class="text-white">TikTok-Inspired Profiles:</strong> Added Following, Followers, Likes, and Friends counters alongside a <strong class="text-indigo-300">400-character max Bio</strong> and Posts/Favorites/Liked tabs right under your bio.</li>
+            <li><strong class="text-white">Display Names (3-Day Cooldown):</strong> Customize your display name while keeping your permanent <code class="text-indigo-300">@username</code> handle locked. Display names can be updated once every 3 days.</li>
+            <li><strong class="text-white">New Feed Tab (Images & Videos):</strong> Upload photos and videos with captions, browse <em>For You</em> & <em>Following</em> feeds, and leave Likes, Comments, and Favorites.</li>
+            <li><strong class="text-white">Clickable Global Chat Profiles & Auto-Follow:</strong> Tap any user in Global Chat to open their profile, follow them, or press <strong>Friend</strong> to send a request. New accounts automatically follow Fareed and existing members!</li>
+            <li><strong class="text-white">Smooth Non-Jumping Chat:</strong> Fixed chat feeds teleporting to the top when sending or receiving messages.</li>
+            <li><strong class="text-white">Admin Moderation (Fareed & TestBot):</strong> Admins can delete videos/posts and ban or unban accounts directly from user profiles.</li>
           </ul>
         </div>
 
-        <div class="bg-eclipse-950/60 border border-darkBorder rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-2">
-            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold text-[10px]">v3.2 — Photo Sharing & Zero-Flash Sync</span>
+        <!-- v3.0 -->
+        <div class="p-4 rounded-2xl bg-eclipse-950/60 border border-darkBorder space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-[10px] uppercase">v3.0</span>
+            <span class="text-[11px] text-slate-400 font-mono">Media & Stability Update</span>
           </div>
-          <ul class="list-disc list-inside space-y-1.5 text-slate-300">
-            <li>Added photo attachments & full-screen lightbox viewer inside both Global Chat and Direct Messages.</li>
-            <li>Granted automatic Admin moderation privileges to the <strong>Fareed</strong> account.</li>
-            <li>Implemented message signature diffing to eliminate chat feed flashing during live sync.</li>
+          <h4 class="text-sm font-bold text-white">Chat Photo Sharing, Fareed Admin & Zero-Flash Polling</h4>
+          <ul class="list-disc pl-4 space-y-1 text-slate-300">
+            <li><strong class="text-white">Photo Uploads in Chat:</strong> Added image attachments with instant previews and full-screen lightbox viewing in Global Chat and DMs.</li>
+            <li><strong class="text-white">Zero-Flash Sync:</strong> Replaced full DOM re-renders with smart message signature diffing so chat feeds never flicker or flash.</li>
+            <li><strong class="text-white">Fareed Admin Privileges:</strong> Granted full Admin badge and message moderation controls to the Fareed account.</li>
           </ul>
         </div>
 
-        <div class="bg-eclipse-950/60 border border-darkBorder rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-2">
-            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold text-[10px]">v3.0 — Instant Profile Pictures (PFPs)</span>
+        <!-- v2.0 -->
+        <div class="p-4 rounded-2xl bg-eclipse-950/60 border border-darkBorder space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold text-[10px] uppercase">v2.0</span>
+            <span class="text-[11px] text-slate-400 font-mono">Profile Icons & PFP Update</span>
           </div>
-          <ul class="list-disc list-inside space-y-1.5 text-slate-300">
-            <li>Added instant Profile Picture (PFP) uploads with automatic 160x160 JPEG center-crop compression and cloud sync (no verification queue required).</li>
-            <li>Preserved deterministic colored initial letter badges as automatic fallbacks.</li>
+          <h4 class="text-sm font-bold text-white">Custom Profile Pictures (PFPs) & Instant Compression</h4>
+          <ul class="list-disc pl-4 space-y-1 text-slate-300">
+            <li><strong class="text-white">Custom PFP Uploads:</strong> Added the <em>Change Icon</em> button allowing users to upload custom profile pictures compressed cleanly to 160x160 JPEGs.</li>
+            <li><strong class="text-white">Cross-App Avatar Sync:</strong> Synced uploaded PFPs across Global Chat, Direct Messages, Friends lists, and Group Chats with automatic color-coded letter fallbacks.</li>
           </ul>
         </div>
 
-        <div class="bg-eclipse-950/60 border border-darkBorder rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-2">
-            <span class="px-2.5 py-0.5 rounded-full bg-slate-700 text-slate-200 font-bold text-[10px]">v2.0 — iPad Safari Compatibility & GitHub Pages</span>
+        <!-- v1.0 -->
+        <div class="p-4 rounded-2xl bg-eclipse-950/60 border border-darkBorder space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded-full bg-slate-700 text-slate-200 font-bold text-[10px] uppercase">v1.0</span>
+            <span class="text-[11px] text-slate-400 font-mono">Initial Launch</span>
           </div>
-          <ul class="list-disc list-inside space-y-1.5 text-slate-300">
-            <li>Replaced sandbox-restricted WebSockets with a rock-solid REST polling engine for seamless Safari & iPad performance on <code class="text-indigo-300">MarsScript.github.io</code>.</li>
-            <li>Added Roblox-style newest-first message stacking, Group Chats, and the Friends request system with green ✓ / red ✕ buttons.</li>
-          </ul>
-        </div>
-
-        <div class="bg-eclipse-950/60 border border-darkBorder rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-2">
-            <span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-bold text-[10px]">v1.0 — Original Eclipse Launch</span>
-          </div>
-          <ul class="list-disc list-inside space-y-1.5 text-slate-400">
-            <li>Initial release featuring the classic Eclipse circular logo badge, dark slate glassmorphism UI, case-insensitive username login, and Global Lounge chat.</li>
+          <h4 class="text-sm font-bold text-white">Eclipse Chat Foundation & GitHub Pages Deployment</h4>
+          <ul class="list-disc pl-4 space-y-1 text-slate-300">
+            <li>Launched Eclipse with custom <code class="text-indigo-300">Eclipse.png</code> circular branding and favicon on <code class="text-indigo-300">MarsScript.github.io</code>.</li>
+            <li>Built Global Lounge chat, 1-on-1 Direct Messages, Group Chats, Friend Requests, and Supabase cloud authentication.</li>
           </ul>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- EDIT PROFILE MODAL (DISPLAY NAME WITH 3-DAY COOLDOWN + 400 CHAR BIO) -->
-  <div id="editProfileModal" class="fixed inset-0 bg-eclipse-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+  <!-- EDIT PROFILE MODAL (DISPLAY NAME WITH 3-DAY COOLDOWN + 400-CHAR BIO) -->
+  <div id="editProfileModal" class="fixed inset-0 bg-eclipse-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-panel border border-darkBorder rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-slide-up">
       <button onclick="closeEditProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
         <i class="fa-solid fa-xmark text-base"></i>
       </button>
-      <h3 class="text-base font-bold text-white mb-4">Edit Profile</h3>
-      <div class="space-y-4">
+      <h3 class="text-base font-extrabold text-white mb-1">Edit Profile</h3>
+      <p class="text-[11px] text-slate-400 mb-4">Your @username remains permanent. Display name can change once every 3 days.</p>
+
+      <form onsubmit="saveProfileEdits(event)" class="space-y-4">
         <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="text-xs font-semibold text-slate-300">Display Name</label>
-            <span id="displayNameCooldownNote" class="text-[10px] text-amber-400">Can be changed once every 3 days</span>
-          </div>
-          <input type="text" id="editDisplayNameInput" maxlength="32" placeholder="Enter display name" class="w-full px-3 py-2 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500">
-          <p class="text-[10px] text-slate-500 mt-1">Your permanent username handle remains unchanged.</p>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Permanent Username</label>
+          <input type="text" id="editPermanentUsername" disabled class="w-full px-3 py-2 bg-eclipse-950/60 border border-darkBorder rounded-xl text-xs text-slate-500 font-mono cursor-not-allowed">
         </div>
+
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="text-xs font-semibold text-slate-300">Bio</label>
+            <label class="block text-xs font-semibold text-slate-300">Display Name</label>
+            <span id="displayNameCooldownHint" class="text-[10px] text-indigo-400 font-semibold">Available now</span>
+          </div>
+          <input type="text" id="editDisplayNameInput" maxlength="30" required placeholder="Enter display name" class="w-full px-3 py-2 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500">
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-slate-300">Bio</label>
             <span id="bioCharCounter" class="text-[10px] text-slate-400 font-mono">0 / 400</span>
           </div>
-          <textarea id="editBioInput" rows="4" maxlength="400" oninput="updateBioCounter()" placeholder="Write something about yourself (links allowed)..." class="w-full px-3 py-2 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500 resize-none"></textarea>
+          <textarea id="editBioInput" rows="4" maxlength="400" oninput="updateBioCounter()" placeholder="Tell people about yourself, your games, or links..." class="w-full px-3 py-2 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500 resize-none"></textarea>
         </div>
-        <button onclick="saveProfileEdits()" class="w-full py-2.5 bg-eclipse-600 hover:bg-eclipse-500 text-white font-bold rounded-xl text-xs transition-all shadow">
-          Save Profile
+
+        <button type="submit" class="w-full py-2.5 bg-eclipse-600 hover:bg-eclipse-500 text-white font-bold rounded-xl text-xs transition-all shadow">
+          Save Profile Changes
         </button>
-      </div>
+      </form>
     </div>
   </div>
 
-  <!-- CREATE POST MODAL (IMAGE OR VIDEO UPLOAD) -->
-  <div id="createPostModal" class="fixed inset-0 bg-eclipse-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+  <!-- CREATE POST MODAL (UPLOAD IMAGE OR VIDEO) -->
+  <div id="createPostModal" class="fixed inset-0 bg-eclipse-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-panel border border-darkBorder rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-slide-up">
       <button onclick="closeCreatePostModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
         <i class="fa-solid fa-xmark text-base"></i>
       </button>
-      <h3 class="text-base font-bold text-white mb-4">Create New Post</h3>
-      <div class="space-y-4">
+      <h3 class="text-base font-extrabold text-white mb-1">Create Post</h3>
+      <p class="text-[11px] text-slate-400 mb-4">Share an image or short video to your profile & feed</p>
+
+      <form onsubmit="submitSocialPost(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Select Photo or Video</label>
-          <input type="file" id="postMediaFileInput" accept="image/*,video/*" onchange="handlePostMediaSelect(event)" class="w-full text-xs text-slate-300 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-eclipse-600 file:text-white hover:file:bg-eclipse-500 cursor-pointer">
-          <div id="postMediaPreviewBox" class="hidden mt-3 rounded-2xl overflow-hidden border border-darkBorder bg-eclipse-950 max-h-56 flex items-center justify-center"></div>
+          <input type="file" id="postMediaInput" accept="image/*,video/*" class="hidden" onchange="handlePostMediaSelect(event)">
+          <div onclick="document.getElementById('postMediaInput').click()" class="border-2 border-dashed border-darkBorder hover:border-eclipse-500 rounded-2xl p-5 text-center cursor-pointer bg-eclipse-950/70 transition-all">
+            <div id="postMediaPlaceholder">
+              <i class="fa-solid fa-cloud-arrow-up text-2xl text-indigo-400 mb-2"></i>
+              <p class="text-xs font-bold text-white">Tap to select Image or Video</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">Supports JPG, PNG, GIF, MP4, WebM</p>
+            </div>
+            <div id="postMediaPreviewWrapper" class="hidden">
+              <img id="postImagePreview" src="" alt="Preview" class="hidden max-h-48 mx-auto rounded-xl object-contain">
+              <video id="postVideoPreview" src="" controls class="hidden max-h-48 mx-auto rounded-xl"></video>
+              <p class="text-[10px] text-indigo-400 font-semibold mt-2">Tap to change media</p>
+            </div>
+          </div>
         </div>
+
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-1">Caption</label>
-          <textarea id="postCaptionInput" rows="2" maxlength="250" placeholder="Add a caption..." class="w-full px-3 py-2 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500 resize-none"></textarea>
+          <textarea id="postCaptionInput" rows="2" maxlength="250" placeholder="Write a caption for your post..." class="w-full px-3 py-2 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500 resize-none"></textarea>
         </div>
-        <button id="submitPostBtn" onclick="publishNewPost()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition-all shadow">
-          Post to Feed & Profile
+
+        <button type="submit" id="submitPostBtn" class="w-full py-2.5 bg-eclipse-600 hover:bg-eclipse-500 text-white font-bold rounded-xl text-xs transition-all shadow">
+          Publish Post
         </button>
-      </div>
+      </form>
     </div>
   </div>
 
-  <!-- POST DETAIL / COMMENTS MODAL -->
-  <div id="postDetailModal" class="fixed inset-0 bg-eclipse-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-panel border border-darkBorder rounded-3xl max-w-lg w-full max-h-[88vh] flex flex-col shadow-2xl relative animate-slide-up overflow-hidden">
-      <div class="p-3.5 border-b border-darkBorder flex items-center justify-between shrink-0">
+  <!-- POST DETAIL / COMMENTS / ADMIN DELETE MODAL -->
+  <div id="postDetailModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-darkCard border border-darkBorder rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-slide-up">
+      <div class="px-4 py-3 border-b border-darkBorder flex items-center justify-between bg-eclipse-950 shrink-0">
         <div id="postModalAuthorInfo" class="flex items-center gap-2 cursor-pointer"></div>
         <div class="flex items-center gap-2">
-          <button id="postModalAdminDeleteBtn" onclick="deleteActiveModalPost()" class="hidden px-2.5 py-1 rounded-lg bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 text-[11px] font-bold">
-            <i class="fa-solid fa-trash"></i> Delete Post
+          <button id="postModalAdminDeleteBtn" onclick="deleteActiveModalPost()" class="hidden px-2.5 py-1 bg-red-600 hover:bg-red-500 text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
+            <i class="fa-solid fa-trash"></i> Delete
           </button>
-          <button onclick="closePostDetailModal()" class="w-8 h-8 rounded-full bg-darkCard hover:bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center">
+          <button onclick="closePostDetailModal()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
       </div>
 
-      <div class="flex-1 overflow-y-auto p-4 space-y-4">
-        <div id="postModalMediaContainer" class="rounded-2xl overflow-hidden bg-black flex items-center justify-center"></div>
-        <p id="postModalCaption" class="text-xs text-slate-200 whitespace-pre-line"></p>
+      <div class="overflow-y-auto flex-1 p-4 space-y-4">
+        <div id="postModalMediaContainer" class="bg-black rounded-2xl overflow-hidden flex items-center justify-center max-h-80"></div>
+        <p id="postModalCaption" class="text-xs sm:text-sm text-slate-200"></p>
 
-        <!-- Like / Favorite / Comment Counts -->
-        <div class="flex items-center gap-4 pt-2 border-t border-darkBorder">
-          <button id="postModalLikeBtn" onclick="togglePostLike(activeModalPostId)" class="flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-rose-400">
-            <i class="fa-solid fa-heart"></i> <span id="postModalLikeCount">0</span>
-          </button>
-          <button id="postModalFavBtn" onclick="togglePostFavorite(activeModalPostId)" class="flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-amber-400">
-            <i class="fa-solid fa-bookmark"></i> <span id="postModalFavCount">0</span>
-          </button>
-          <span class="flex items-center gap-1.5 text-xs font-bold text-slate-400">
-            <i class="fa-solid fa-comment"></i> <span id="postModalCommentCount">0</span>
-          </span>
-        </div>
+        <!-- Likes / Favorites / Comments Bar -->
+        <div id="postModalActionsBar" class="flex items-center gap-5 py-2 border-y border-darkBorder text-xs"></div>
 
-        <!-- Comments List -->
-        <div class="space-y-2.5 pt-2">
-          <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Comments</h4>
-          <div id="postModalCommentsList" class="space-y-2"></div>
+        <!-- Comments Section -->
+        <div class="space-y-2.5">
+          <h4 class="text-xs font-bold text-slate-300">Comments</h4>
+          <div id="postModalCommentsList" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
         </div>
       </div>
 
-      <!-- Add Comment Form -->
-      <form onsubmit="submitPostComment(event)" class="p-3 border-t border-darkBorder bg-eclipse-950 flex items-center gap-2 shrink-0">
-        <input type="text" id="postCommentInput" placeholder="Write a comment..." required class="flex-1 bg-darkCard border border-darkBorder rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-eclipse-500">
-        <button type="submit" class="px-3.5 py-2 bg-eclipse-600 hover:bg-eclipse-500 text-white rounded-xl text-xs font-bold">Post</button>
+      <form onsubmit="submitPostComment(event)" class="p-3 bg-eclipse-950 border-t border-darkBorder flex items-center gap-2 shrink-0">
+        <input type="text" id="postCommentInput" required maxlength="200" placeholder="Add a comment..." class="flex-1 bg-darkCard border border-darkBorder rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-eclipse-500">
+        <button type="submit" class="px-3.5 py-2 bg-eclipse-600 hover:bg-eclipse-500 text-white font-bold rounded-xl text-xs">Post</button>
       </form>
     </div>
   </div>
 
-  <!-- FULLSCREEN IMAGE LIGHTBOX MODAL -->
-  <div id="imageLightboxModal" onclick="closeImageLightbox()" class="fixed inset-0 bg-eclipse-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="relative max-w-3xl max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
-      <button onclick="closeImageLightbox()" class="absolute -top-3 -right-3 w-9 h-9 rounded-full bg-darkCard border border-darkBorder text-slate-200 hover:text-white flex items-center justify-center shadow-lg">
-        <i class="fa-solid fa-xmark"></i>
+  <!-- CREATE GROUP CHAT MODAL -->
+  <div id="createGroupModal" class="fixed inset-0 bg-eclipse-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel border border-darkBorder rounded-3xl max-w-sm w-full p-6 shadow-2xl relative animate-slide-up">
+      <button onclick="closeCreateGroupModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-base"></i>
       </button>
-      <img id="lightboxImage" src="" alt="Full view" class="max-w-full max-h-[85vh] rounded-2xl border border-darkBorder shadow-2xl object-contain">
+      <h3 class="text-base font-bold text-white mb-4">Create Group Chat</h3>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Group Name</label>
+          <input type="text" id="groupNameInput" placeholder="e.g. Squad Chat" class="w-full px-3 py-2 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Select Friends to Add</label>
+          <div id="groupMembersSelection" class="max-h-40 overflow-y-auto space-y-1.5 p-2 bg-eclipse-950 rounded-xl border border-darkBorder">
+          </div>
+        </div>
+        <button onclick="confirmCreateGroup()" class="w-full py-2.5 bg-eclipse-600 hover:bg-eclipse-500 text-white font-bold rounded-xl text-xs transition-all shadow">
+          Create Group
+        </button>
+      </div>
     </div>
+  </div>
+
+  <!-- FULL-SCREEN IMAGE LIGHTBOX MODAL -->
+  <div id="imageLightboxModal" onclick="closeImageLightbox()" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <button onclick="closeImageLightbox()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-darkCard/90 border border-darkBorder text-white flex items-center justify-center text-base hover:bg-slate-800">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <img id="lightboxFullImg" src="" alt="Full Image" class="max-w-full max-h-[88vh] rounded-2xl shadow-2xl border border-darkBorder object-contain" onclick="event.stopPropagation()">
   </div>
 
   <script>
@@ -666,34 +694,42 @@
 
     let currentUser = null;
     let allUsersCache = [];
+    let avatarUrlCache = {};
     let activeTab = 'global';
     let activeChatId = null;
-    let activeChatType = 'dm'; // 'dm' or 'group'
+    let activeChatType = 'dm';
     let groupsCache = JSON.parse(localStorage.getItem('eclipse_groups_cache') || '[]');
     let pollingInterval = null;
 
-    // State hashes to prevent constant flashing/re-rendering on unchanged data
+    // Pending image attachments & anti-flash signatures
+    let pendingGlobalImage = null;
+    let pendingDMImage = null;
     let lastGlobalSignature = '';
     let lastDMSignature = '';
     let lastSidebarSignature = '';
 
-    // Profile, Social & Feed State
-    let viewedProfileUsername = null; // null means viewing own profile
-    let activeProfileSubTab = 'posts'; // 'posts' | 'favorites' | 'liked'
-    let feedFilterMode = 'all'; // 'all' | 'following'
-    let pendingPostMedia = null; // { type: 'image'|'video', dataUrl: string }
-    let activeModalPostId = null;
-
-    // Social Metadata Store (Synced via Supabase global_messages system records + local cache for instant load)
-    const SOCIAL_EVENT_PREFIX = '__ECLIPSE_SOCIAL__::';
-    let socialState = JSON.parse(localStorage.getItem('eclipse_social_state_v1') || '{"profiles":{},"follows":{},"bans":{},"posts":[]}');
+    // Social Feed, Profiles, Display Names, Bios, Follows & Bans State
+    const SOCIAL_EVENT_PREFIX = '__ECLIPSE_SOCIAL_EVT__:';
     let processedSocialEventIds = new Set();
+    let viewingProfileUsername = null;
+    let currentProfileSubTab = 'posts';
+    let currentFeedFilter = 'foryou';
+    let activeModalPostId = null;
+    let pendingPostMedia = null;
+    let pendingPostMediaType = null;
 
-    // Pending photo attachments
-    let pendingGlobalImage = null;
-    let pendingDMImage = null;
+    let socialState = JSON.parse(localStorage.getItem('eclipse_social_state_v1') || JSON.stringify({
+      profiles: {},
+      follows: {},
+      posts: [],
+      bans: {}
+    }));
+    if (!socialState.profiles) socialState.profiles = {};
+    if (!socialState.follows) socialState.follows = {};
+    if (!socialState.posts) socialState.posts = [];
+    if (!socialState.bans) socialState.bans = {};
 
-    const IMAGE_MSG_PREFIX = '__ECLIPSE_IMG__::';
+    const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
     const colorPalette = ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899'];
 
     function getAvatarColor(name) {
@@ -703,30 +739,29 @@
       return colorPalette[Math.abs(hash) % colorPalette.length];
     }
 
-    async function loadAllUsersCache() {
-      if (supabaseClient) {
-        const { data } = await supabaseClient.from('users').select('*');
-        if (data) allUsersCache = data;
-      }
-    }
-
-    function getUserDisplayName(usernameLower) {
-      const lower = (usernameLower || '').toLowerCase();
-      const meta = socialState.profiles[lower];
-      if (meta && meta.displayName) return meta.displayName;
-      const found = allUsersCache.find(u => u.username_lower === lower);
-      return found ? found.username : usernameLower;
-    }
-
-    function isAccountAdmin(usernameLower) {
-      const lower = (usernameLower || '').toLowerCase();
-      if (lower === 'fareed' || lower === 'testbot') return true;
-      const found = allUsersCache.find(u => u.username_lower === lower);
-      return found && found.role === 'Admin';
-    }
-
     function isAccountBanned(usernameLower) {
       return !!socialState.bans[(usernameLower || '').toLowerCase()];
+    }
+
+    function ensureDefaultFollowsForUser(usernameLower) {
+      const lower = (usernameLower || '').toLowerCase();
+      if (!lower) return;
+      if (!socialState.follows[lower]) socialState.follows[lower] = [];
+
+      const targets = new Set(['fareed']);
+      allUsersCache.forEach(u => {
+        if (u && u.username_lower) targets.add(u.username_lower.toLowerCase());
+      });
+
+      let changed = false;
+      targets.forEach(target => {
+        if (target && target !== lower && !socialState.follows[lower].includes(target)) {
+          socialState.follows[lower].push(target);
+          changed = true;
+        }
+      });
+
+      if (changed) saveSocialStateLocal();
     }
 
     function saveSocialStateLocal() {
@@ -737,68 +772,63 @@
 
     function applySocialEvent(evt) {
       if (!evt || !evt.type) return;
-      const p = evt.payload || {};
       if (evt.type === 'PROFILE_UPDATE') {
-        const u = (p.username_lower || '').toLowerCase();
-        if (!u) return;
-        socialState.profiles[u] = {
-          ...(socialState.profiles[u] || {}),
-          displayName: p.displayName !== undefined ? p.displayName : (socialState.profiles[u]?.displayName || ''),
-          bio: p.bio !== undefined ? p.bio : (socialState.profiles[u]?.bio || ''),
-          lastDisplayNameChange: p.lastDisplayNameChange || (socialState.profiles[u]?.lastDisplayNameChange || 0)
-        };
+        const u = evt.username_lower;
+        if (!socialState.profiles[u]) socialState.profiles[u] = {};
+        if (evt.displayName !== undefined) socialState.profiles[u].displayName = evt.displayName;
+        if (evt.displayNameUpdatedAt !== undefined) socialState.profiles[u].displayNameUpdatedAt = evt.displayNameUpdatedAt;
+        if (evt.bio !== undefined) socialState.profiles[u].bio = evt.bio;
+        if (evt.avatarUrl !== undefined) {
+          socialState.profiles[u].avatarUrl = evt.avatarUrl;
+          avatarUrlCache[u] = evt.avatarUrl;
+        }
       } else if (evt.type === 'FOLLOW_TOGGLE') {
-        const follower = (p.follower || '').toLowerCase();
-        const target = (p.target || '').toLowerCase();
-        if (!follower || !target) return;
+        const { follower, target, following } = evt;
         if (!socialState.follows[follower]) socialState.follows[follower] = [];
-        const idx = socialState.follows[follower].indexOf(target);
-        if (p.following && idx === -1) socialState.follows[follower].push(target);
-        if (!p.following && idx !== -1) socialState.follows[follower].splice(idx, 1);
-      } else if (evt.type === 'BAN_TOGGLE') {
-        const target = (p.target || '').toLowerCase();
-        if (!target) return;
-        if (p.banned) socialState.bans[target] = true;
-        else delete socialState.bans[target];
-      } else if (evt.type === 'POST_CREATE') {
-        if (!p.post || !p.post.id) return;
-        if (!socialState.posts.some(x => x.id === p.post.id)) {
-          socialState.posts.unshift(p.post);
+        if (following) {
+          if (!socialState.follows[follower].includes(target)) socialState.follows[follower].push(target);
+        } else {
+          socialState.follows[follower] = socialState.follows[follower].filter(x => x !== target);
         }
-      } else if (evt.type === 'POST_DELETE') {
-        socialState.posts = socialState.posts.filter(x => x.id !== p.postId);
-      } else if (evt.type === 'POST_LIKE') {
-        const post = socialState.posts.find(x => x.id === p.postId);
-        const u = (p.user || '').toLowerCase();
-        if (post && u) {
+      } else if (evt.type === 'NEW_POST') {
+        if (!socialState.posts.some(p => p.id === evt.post.id)) {
+          socialState.posts.unshift(evt.post);
+        }
+      } else if (evt.type === 'DELETE_POST') {
+        socialState.posts = socialState.posts.filter(p => p.id !== evt.postId);
+      } else if (evt.type === 'POST_REACT') {
+        const post = socialState.posts.find(p => p.id === evt.postId);
+        if (post) {
           if (!post.likes) post.likes = [];
-          const idx = post.likes.indexOf(u);
-          if (p.liked && idx === -1) post.likes.push(u);
-          if (!p.liked && idx !== -1) post.likes.splice(idx, 1);
-        }
-      } else if (evt.type === 'POST_FAV') {
-        const post = socialState.posts.find(x => p.id === p.postId);
-        const u = (p.user || '').toLowerCase();
-        if (post && u) {
           if (!post.favorites) post.favorites = [];
-          const idx = post.favorites.indexOf(u);
-          if (p.favorited && idx === -1) post.favorites.push(u);
-          if (!p.favorited && idx !== -1) post.favorites.splice(idx, 1);
+          if (evt.kind === 'like') {
+            if (evt.active && !post.likes.includes(evt.user)) post.likes.push(evt.user);
+            if (!evt.active) post.likes = post.likes.filter(u => u !== evt.user);
+          } else if (evt.kind === 'favorite') {
+            if (evt.active && !post.favorites.includes(evt.user)) post.favorites.push(evt.user);
+            if (!evt.active) post.favorites = post.favorites.filter(u => u !== evt.user);
+          }
         }
       } else if (evt.type === 'POST_COMMENT') {
-        const post = socialState.posts.find(x => x.id === p.postId);
-        if (post && p.comment) {
+        const post = socialState.posts.find(p => p.id === evt.postId);
+        if (post) {
           if (!post.comments) post.comments = [];
-          if (!post.comments.some(c => c.id === p.comment.id)) {
-            post.comments.push(p.comment);
+          if (!post.comments.some(c => c.id === evt.comment.id)) {
+            post.comments.push(evt.comment);
           }
+        }
+      } else if (evt.type === 'BAN_TOGGLE') {
+        if (evt.banned) {
+          socialState.bans[evt.target] = true;
+        } else {
+          delete socialState.bans[evt.target];
         }
       }
       saveSocialStateLocal();
     }
 
     async function broadcastSocialEvent(type, payload) {
-      const evt = { type, payload, ts: Date.now() };
+      const evt = { type, ...payload, ts: Date.now() };
       applySocialEvent(evt);
       if (supabaseClient && currentUser) {
         try {
@@ -811,173 +841,131 @@
       }
     }
 
-    /* PATCH NOTES MODAL */
-    function openPatchNotesModal() {
-      document.getElementById('patchNotesModal').classList.remove('hidden');
+    function isAdminUser(userObj) {
+      if (!userObj) return false;
+      const lower = (userObj.username_lower || userObj.username || '').toLowerCase();
+      return userObj.role === 'Admin' || lower === 'fareed' || lower === 'testbot';
     }
 
-    function closePatchNotesModal() {
-      document.getElementById('patchNotesModal').classList.add('hidden');
+    async function ensureFareedAdmin(userObj) {
+      if (!userObj) return userObj;
+      if (isAdminUser(userObj)) {
+        if (userObj.role !== 'Admin') {
+          userObj.role = 'Admin';
+          if (supabaseClient && userObj.id) {
+            try {
+              await supabaseClient.from('users').update({ role: 'Admin' }).eq('id', userObj.id);
+            } catch (err) {}
+          }
+        }
+      }
+      return userObj;
     }
 
-    function getAvatarLetterFallback(username, sizeClasses) {
-      const initial = (username || '?').charAt(0).toUpperCase();
-      const bg = getAvatarColor((username || '?').toLowerCase());
-      return `<div class="${sizeClasses} rounded-full font-extrabold flex items-center justify-center shrink-0 shadow-md text-white" style="background-color: ${bg};">${initial}</div>`;
+    async function loadAllUsersCache() {
+      if (supabaseClient) {
+        const { data } = await supabaseClient.from('users').select('*');
+        if (data) {
+          allUsersCache = data;
+          data.forEach(u => {
+            if (u.avatar_url) {
+              avatarUrlCache[u.username_lower] = u.avatar_url;
+            }
+            ensureDefaultFollowsForUser(u.username_lower);
+          });
+        }
+      }
+    }
+
+    function getUserDisplayName(usernameLower) {
+      const lower = (usernameLower || '').toLowerCase();
+      const prof = socialState.profiles[lower];
+      if (prof && prof.displayName) return prof.displayName;
+      const found = allUsersCache.find(u => u.username_lower === lower);
+      return found ? found.username : (usernameLower || 'User');
+    }
+
+    function getUserBio(usernameLower) {
+      const lower = (usernameLower || '').toLowerCase();
+      const prof = socialState.profiles[lower];
+      return (prof && prof.bio) ? prof.bio : '';
     }
 
     function getAvatarIconHtml(userObj, sizeClasses = 'w-8 h-8 text-xs') {
-      let username = '?';
-      let avatarUrl = null;
+      const username = (typeof userObj === 'string' ? userObj : (userObj && userObj.username ? userObj.username : '?'));
+      const lower = username.toLowerCase();
+      const initial = username.charAt(0).toUpperCase();
+      const bg = getAvatarColor(lower);
 
-      if (typeof userObj === 'string') {
-        username = userObj;
-        if (currentUser && currentUser.username_lower === username.toLowerCase() && currentUser.avatar_url) {
-          avatarUrl = currentUser.avatar_url;
-        } else {
-          const found = allUsersCache.find(u => u.username_lower === username.toLowerCase());
-          if (found && found.avatar_url) avatarUrl = found.avatar_url;
+      let avatarUrl = (typeof userObj === 'object' && userObj && userObj.avatar_url)
+        ? userObj.avatar_url
+        : avatarUrlCache[lower];
+
+      if (!avatarUrl && socialState.profiles[lower] && socialState.profiles[lower].avatarUrl) {
+        avatarUrl = socialState.profiles[lower].avatarUrl;
+      }
+
+      if (!avatarUrl && allUsersCache.length > 0) {
+        const found = allUsersCache.find(u => u.username_lower === lower);
+        if (found && found.avatar_url) {
+          avatarUrl = found.avatar_url;
+          avatarUrlCache[lower] = avatarUrl;
         }
-      } else if (userObj && typeof userObj === 'object') {
-        username = userObj.username || '?';
-        avatarUrl = userObj.avatar_url || null;
       }
 
       if (avatarUrl) {
-        return `<img src="${avatarUrl}" alt="${escapeHTML(username)}" class="${sizeClasses} rounded-full object-cover border border-eclipse-500/60 shrink-0 shadow-md" onerror="this.outerHTML = getAvatarLetterFallback('${escapeHTML(username)}', '${sizeClasses}');">`;
+        return `<img src="${avatarUrl}" alt="${escapeHTML(username)}" class="${sizeClasses} rounded-full object-cover shrink-0 shadow-md border border-eclipse-500/40 bg-eclipse-950" onerror="this.onerror=null; this.outerHTML='<div class=\\'${sizeClasses} rounded-full font-extrabold flex items-center justify-center shrink-0 shadow-md text-white\\' style=\\'background-color: ${bg};\\'>${initial}</div>';">`;
       }
-      return getAvatarLetterFallback(username, sizeClasses);
+
+      return `<div class="${sizeClasses} rounded-full font-extrabold flex items-center justify-center shrink-0 shadow-md text-white" style="background-color: ${bg};">${initial}</div>`;
     }
 
-    /* PFP UPLOAD & 160x160 CANVAS COMPRESSION (NO APPROVAL QUEUE) */
-    function compressImageToJpeg(file, maxSize = 160, quality = 0.78) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = maxSize;
-            canvas.height = maxSize;
-            const ctx = canvas.getContext('2d');
-
-            // Center-crop square so PFPs never look stretched
-            const minSide = Math.min(img.width, img.height);
-            const sx = (img.width - minSide) / 2;
-            const sy = (img.height - minSide) / 2;
-
-            ctx.fillStyle = '#0b0e14';
-            ctx.fillRect(0, 0, maxSize, maxSize);
-            ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, maxSize, maxSize);
-
-            resolve(canvas.toDataURL('image/jpeg', quality));
-          };
-          img.onerror = reject;
-          img.src = event.target.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function handlePfpUpload(event) {
-      const file = event.target.files[0];
-      if (!file || !currentUser || !supabaseClient) return;
-
-      const btn = document.getElementById('changePfpBtn');
-      const originalHtml = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[11px]"></i> Saving...`;
-
-      try {
-        const compressedDataUrl = await compressImageToJpeg(file, 160, 0.78);
-
-        const { error } = await supabaseClient
-          .from('users')
-          .update({ avatar_url: compressedDataUrl })
-          .eq('id', currentUser.id);
-
-        if (error) {
-          showToast('Could not save icon: ' + error.message, 'error');
-        } else {
-          currentUser.avatar_url = compressedDataUrl;
-          const cachedIdx = allUsersCache.findIndex(u => u.id === currentUser.id);
-          if (cachedIdx !== -1) allUsersCache[cachedIdx].avatar_url = compressedDataUrl;
-
-          renderProfileTab();
-          lastGlobalSignature = '';
-          lastDMSignature = '';
-          showToast('Profile icon updated!', 'success');
-        }
-      } catch (err) {
-        showToast('Failed to process image.', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
-        event.target.value = '';
-      }
-    }
-
-    /* CHAT PHOTO COMPRESSION (PRESERVES ASPECT RATIO) */
-    function compressChatPhoto(file, maxDimension = 720, quality = 0.75) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => {
-            let width = img.width;
-            let height = img.height;
-
-            if (width > maxDimension || height > maxDimension) {
-              if (width > height) {
-                height = Math.round((height * maxDimension) / width);
-                width = maxDimension;
-              } else {
-                width = Math.round((width * maxDimension) / height);
-                height = maxDimension;
-              }
-            }
-
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            resolve(canvas.toDataURL('image/jpeg', quality));
-          };
-          img.onerror = reject;
-          img.src = event.target.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function handleChatPhotoSelect(event, channel) {
-      const file = event.target.files[0];
+    /* CHAT PHOTO UPLOAD & PAYLOAD HELPERS */
+    function handleChatImageSelect(e, target) {
+      const file = e.target.files[0];
       if (!file) return;
 
-      try {
-        const compressedDataUrl = await compressChatPhoto(file, 720, 0.75);
-        if (channel === 'global') {
-          pendingGlobalImage = compressedDataUrl;
-          document.getElementById('globalImagePreviewThumb').src = compressedDataUrl;
-          document.getElementById('globalImagePreviewBar').classList.remove('hidden');
-        } else {
-          pendingDMImage = compressedDataUrl;
-          document.getElementById('dmImagePreviewThumb').src = compressedDataUrl;
-          document.getElementById('dmImagePreviewBar').classList.remove('hidden');
-        }
-      } catch (err) {
-        showToast('Could not attach photo.', 'error');
-      } finally {
-        event.target.value = '';
-      }
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const maxDim = 640;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.72);
+          if (target === 'global') {
+            pendingGlobalImage = compressedDataUrl;
+            document.getElementById('globalImagePreviewThumb').src = compressedDataUrl;
+            document.getElementById('globalImagePreviewBar').classList.remove('hidden');
+          } else {
+            pendingDMImage = compressedDataUrl;
+            document.getElementById('dmImagePreviewThumb').src = compressedDataUrl;
+            document.getElementById('dmImagePreviewBar').classList.remove('hidden');
+          }
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
     }
 
-    function clearChatImage(channel) {
-      if (channel === 'global') {
+    function clearChatImage(target) {
+      if (target === 'global') {
         pendingGlobalImage = null;
         document.getElementById('globalImagePreviewBar').classList.add('hidden');
         document.getElementById('globalImagePreviewThumb').src = '';
@@ -989,44 +977,42 @@
     }
 
     function encodeMessagePayload(text, imageDataUrl) {
-      if (!imageDataUrl) return text;
-      return IMAGE_MSG_PREFIX + JSON.stringify({ text: text || '', img: imageDataUrl });
+      if (imageDataUrl) {
+        return JSON.stringify({ __eclipse_img: imageDataUrl, text: text || '' });
+      }
+      return text;
     }
 
     function renderMessageBodyHtml(rawContent) {
-      if (typeof rawContent === 'string' && rawContent.startsWith(IMAGE_MSG_PREFIX)) {
+      if (typeof rawContent === 'string' && rawContent.startsWith('{"__eclipse_img":')) {
         try {
-          const payload = JSON.parse(rawContent.slice(IMAGE_MSG_PREFIX.length));
-          const safeText = payload.text ? `<p class="mb-2">${escapeHTML(payload.text)}</p>` : '';
-          const safeImg = payload.img ? `<img src="${payload.img}" alt="Shared photo" onclick="openImageLightbox('${payload.img}')" class="max-w-full max-h-64 rounded-xl object-cover cursor-pointer border border-white/10 hover:opacity-95 transition-opacity">` : '';
-          return `${safeText}${safeImg}`;
-        } catch (e) {
-          return escapeHTML(rawContent);
-        }
+          const parsed = JSON.parse(rawContent);
+          const imgHtml = `<img src="${parsed.__eclipse_img}" alt="Shared photo" onclick="openImageLightbox('${parsed.__eclipse_img}')" class="max-w-full max-h-60 rounded-xl object-cover cursor-pointer border border-white/10 hover:opacity-95 transition-opacity ${parsed.text ? 'mb-2' : ''}">`;
+          const textHtml = parsed.text ? `<div class="break-words">${escapeHTML(parsed.text)}</div>` : '';
+          return `${imgHtml}${textHtml}`;
+        } catch (err) {}
       }
-      return escapeHTML(rawContent);
+      return `<div class="break-words">${escapeHTML(rawContent)}</div>`;
     }
 
     function openImageLightbox(src) {
-      document.getElementById('lightboxImage').src = src;
+      document.getElementById('lightboxFullImg').src = src;
       document.getElementById('imageLightboxModal').classList.remove('hidden');
     }
 
     function closeImageLightbox() {
       document.getElementById('imageLightboxModal').classList.add('hidden');
-      document.getElementById('lightboxImage').src = '';
+      document.getElementById('lightboxFullImg').src = '';
     }
 
-    /* ADMIN ROLE ENFORCEMENT FOR FAREED & TESTBOT */
-    async function ensureFareedAdmin(userObj) {
-      if (!userObj || !supabaseClient) return userObj;
-      const isAdminUser = userObj.username_lower === 'fareed' || userObj.username_lower === 'testbot';
-      const needsRole = isAdminUser && userObj.role !== 'Admin';
-      if (needsRole) {
-        await supabaseClient.from('users').update({ role: 'Admin' }).eq('id', userObj.id);
-        userObj.role = 'Admin';
-      }
-      return userObj;
+    /* PATCH NOTES MODAL */
+    function openPatchNotesModal() {
+      document.getElementById('patchNotesModal').classList.remove('hidden');
+      localStorage.setItem('eclipse_patch_notes_seen_v4', 'true');
+    }
+
+    function closePatchNotesModal() {
+      document.getElementById('patchNotesModal').classList.add('hidden');
     }
 
     /* AUTHENTICATION */
@@ -1066,13 +1052,13 @@
       }
 
       await syncSocialEventsFromDB();
-      if (isAccountBanned(user.username_lower)) {
-        showToast('This account has been banned by an Admin.', 'error');
+      if (isAccountBanned(user.username_lower) && !isAdminUser(user)) {
+        showToast('This account has been banned by an administrator.', 'error');
         return;
       }
 
-      user = await ensureFareedAdmin(user);
-      currentUser = user;
+      currentUser = await ensureFareedAdmin(user);
+      if (currentUser.avatar_url) avatarUrlCache[currentUser.username_lower] = currentUser.avatar_url;
       openApp();
     }
 
@@ -1110,6 +1096,21 @@
         }
 
         currentUser = await ensureFareedAdmin(newUser);
+        await loadAllUsersCache();
+
+        // Automatically follow Fareed and all existing users on the website
+        const followTargets = new Set(['fareed']);
+        allUsersCache.forEach(u => {
+          if (u && u.username_lower && u.username_lower !== lowerName) {
+            followTargets.add(u.username_lower);
+          }
+        });
+        for (const target of followTargets) {
+          if (target !== lowerName) {
+            await broadcastSocialEvent('FOLLOW_TOGGLE', { follower: lowerName, target, following: true });
+          }
+        }
+
         openApp();
       }
     }
@@ -1120,42 +1121,89 @@
       location.reload();
     }
 
-    function openApp() {
+    async function openApp() {
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('appHeader').classList.remove('hidden');
       document.getElementById('appContent').classList.remove('hidden');
       document.getElementById('bottomNav').classList.remove('hidden');
 
-      loadAllUsersCache();
-      startPolling();
+      await loadAllUsersCache();
+      await syncSocialEventsFromDB();
+      ensureDefaultFollowsForUser(currentUser.username_lower);
+      setupRealtimeSubscriptions();
+      startPollingFallback();
+      viewingProfileUsername = currentUser.username_lower;
       switchMainTab('global');
 
-      // Show Patch Notes automatically once per version update
-      if (!localStorage.getItem('eclipse_seen_patch_v4')) {
-        localStorage.setItem('eclipse_seen_patch_v4', '1');
+      if (!localStorage.getItem('eclipse_patch_notes_seen_v4')) {
         openPatchNotesModal();
       }
     }
 
-    /* POLLING LOOP (REPLACES WEBSOCKETS FOR IPAD & CODE PREVIEW STABILITY) */
-    function startPolling() {
+    /* REALTIME & REST POLLING FALLBACK */
+    function setupRealtimeSubscriptions() {
+      if (!supabaseClient) return;
+
+      try {
+        supabaseClient.channel('global_messages_realtime')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'global_messages' }, () => {
+            if (activeTab === 'global') renderGlobalMessages();
+            else syncSocialEventsFromDB();
+          })
+          .subscribe();
+
+        supabaseClient.channel('direct_messages_realtime')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'direct_messages' }, () => {
+            if (activeTab === 'dms') {
+              renderDMSidebar();
+              renderDMMessages();
+            }
+          })
+          .subscribe();
+
+        supabaseClient.channel('friendships_realtime')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, () => {
+            if (activeTab === 'friends') renderFriendsTab();
+            if (activeTab === 'profile') renderProfileTab();
+          })
+          .subscribe();
+
+        supabaseClient.channel('users_realtime')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, async () => {
+            await loadAllUsersCache();
+            if (activeTab === 'profile') renderProfileTab();
+          })
+          .subscribe();
+      } catch (err) {
+        console.warn("Realtime WebSockets restricted; using REST polling.");
+      }
+    }
+
+    function startPollingFallback() {
       if (pollingInterval) clearInterval(pollingInterval);
       pollingInterval = setInterval(async () => {
+        if (!currentUser || !supabaseClient) return;
         await loadAllUsersCache();
-        if (currentUser && isAccountBanned(currentUser.username_lower)) {
-          showToast('Your account has been banned.', 'error');
+        if (isAccountBanned(currentUser.username_lower) && !isAdminUser(currentUser)) {
+          showToast('Your account was banned by an admin.', 'error');
           setTimeout(() => logout(), 1500);
           return;
         }
-        if (activeTab === 'global') renderGlobalMessages();
-        else if (activeTab === 'feed') renderFeedTab();
-        else if (activeTab === 'dms') {
-          renderDMSidebar();
-          if (activeChatId) renderDMMessages();
-        } else if (activeTab === 'friends') {
-          renderFriendsTab();
+        if (activeTab === 'global') {
+          renderGlobalMessages();
+        } else {
+          await syncSocialEventsFromDB();
+          if (activeTab === 'feed') renderSocialFeed();
+          else if (activeTab === 'dms') {
+            renderDMSidebar();
+            if (activeChatId) renderDMMessages();
+          } else if (activeTab === 'friends') {
+            renderFriendsTab();
+          } else if (activeTab === 'profile') {
+            renderProfileTab();
+          }
         }
-      }, 4000);
+      }, 3500);
     }
 
     /* TAB NAVIGATION */
@@ -1184,8 +1232,8 @@
       } else if (tab === 'feed') {
         feedTab.classList.remove('hidden');
         navFeed.classList.add('tab-active');
-        document.getElementById('headerSubtitle').innerText = 'Community Feed';
-        renderFeedTab();
+        document.getElementById('headerSubtitle').innerText = 'Eclipse Social Feed';
+        renderSocialFeed();
       } else if (tab === 'dms') {
         dmsTab.classList.remove('hidden');
         navDMs.classList.add('tab-active');
@@ -1199,7 +1247,8 @@
       } else if (tab === 'profile') {
         profileTab.classList.remove('hidden');
         navProfile.classList.add('tab-active');
-        document.getElementById('headerSubtitle').innerText = viewedProfileUsername ? `@${viewedProfileUsername}` : 'My Profile';
+        const targetLower = viewingProfileUsername || currentUser.username_lower;
+        document.getElementById('headerSubtitle').innerText = targetLower === currentUser.username_lower ? 'My Profile' : `@${targetLower}`;
         renderProfileTab();
       }
     }
@@ -1219,14 +1268,14 @@
           }
         }
       });
+      allUsersCache.forEach(u => ensureDefaultFollowsForUser(u.username_lower));
     }
 
-    /* GLOBAL CHAT */
+    /* GLOBAL CHAT (WITH CLICKABLE PROFILES & NO TOP TELEPORT) */
     async function renderGlobalMessages() {
       if (!supabaseClient) return;
       const { data: rawMessages } = await supabaseClient.from('global_messages').select('*').order('created_at', { ascending: false });
 
-      // Process any social sync events first (in chronological order)
       if (rawMessages && rawMessages.length > 0) {
         [...rawMessages].reverse().forEach(r => {
           if (typeof r.content === 'string' && r.content.startsWith(SOCIAL_EVENT_PREFIX)) {
@@ -1243,10 +1292,12 @@
       const messages = (rawMessages || []).filter(m => !(typeof m.content === 'string' && m.content.startsWith(SOCIAL_EVENT_PREFIX)));
       
       const sig = JSON.stringify(messages);
-      if (sig === lastGlobalSignature) return; // Zero flashing if nothing changed
+      if (sig === lastGlobalSignature) return;
       lastGlobalSignature = sig;
 
       const feed = document.getElementById('globalMessageFeed');
+      const prevScrollTop = feed.scrollTop;
+      const prevScrollHeight = feed.scrollHeight;
       feed.innerHTML = '';
 
       if (!messages || messages.length === 0) {
@@ -1262,7 +1313,7 @@
       messages.forEach(msg => {
         const senderLower = msg.sender_username.toLowerCase();
         const isMe = senderLower === currentUser.username_lower;
-        const isAdmin = currentUser.role === 'Admin';
+        const isAdmin = isAdminUser(currentUser);
         const avatarHtml = getAvatarIconHtml(msg.sender_username, 'w-6 h-6 text-[10px]');
         const displayName = getUserDisplayName(senderLower);
         const bodyHtml = renderMessageBodyHtml(msg.content);
@@ -1292,234 +1343,290 @@
         `;
         feed.appendChild(msgEl);
       });
+
+      if (Math.abs(prevScrollTop) <= 40) {
+        feed.scrollTop = 0;
+      } else {
+        const delta = feed.scrollHeight - prevScrollHeight;
+        feed.scrollTop = prevScrollTop - delta;
+      }
     }
-    /* PROFILE VIEW (TIKTOK-STYLE) & PUBLIC USER PROFILES */
-    function viewMyProfile() {
-      viewedProfileUsername = null;
+
+    async function sendGlobalMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('globalInput');
+      const text = input.value.trim();
+      if ((!text && !pendingGlobalImage) || !supabaseClient || !currentUser) return;
+
+      const payload = encodeMessagePayload(text, pendingGlobalImage);
+      clearChatImage('global');
+
+      await supabaseClient.from('global_messages').insert([{
+        sender_username: currentUser.username,
+        sender_role: currentUser.role,
+        content: payload
+      }]);
+
+      input.value = '';
+      lastGlobalSignature = '';
+      await renderGlobalMessages();
+      const feed = document.getElementById('globalMessageFeed');
+      if (feed) feed.scrollTop = 0;
+    }
+
+    async function deleteGlobalMessage(msgId) {
+      if (!isAdminUser(currentUser) || !supabaseClient) return;
+      await supabaseClient.from('global_messages').delete().eq('id', msgId);
+      lastGlobalSignature = '';
+      renderGlobalMessages();
+    }
+
+    /* TIKTOK-STYLE PROFILE VIEW & PUBLIC USER PROFILES */
+    function openUserProfile(usernameLower) {
+      viewingProfileUsername = (usernameLower || currentUser.username_lower).toLowerCase();
+      currentProfileSubTab = 'posts';
       switchMainTab('profile');
     }
 
-    function openUserProfile(usernameLower) {
-      const target = (usernameLower || '').toLowerCase();
-      if (!target) return;
-      if (currentUser && target === currentUser.username_lower) {
-        viewedProfileUsername = null;
-      } else {
-        viewedProfileUsername = target;
-      }
-      activeProfileSubTab = 'posts';
+    function viewMyOwnProfile() {
+      viewingProfileUsername = currentUser.username_lower;
+      currentProfileSubTab = 'posts';
       switchMainTab('profile');
     }
 
     function switchProfileSubTab(subTab) {
-      activeProfileSubTab = subTab;
-      ['posts', 'favorites', 'liked'].forEach(t => {
-        const btn = document.getElementById('subTab' + t.charAt(0).toUpperCase() + t.slice(1));
-        if (!btn) return;
-        if (t === subTab) {
-          btn.className = 'px-4 py-2 text-xs font-bold text-white border-b-2 border-eclipse-500 flex items-center gap-1.5';
-        } else {
-          btn.className = 'px-4 py-2 text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5';
-        }
-      });
-      renderProfilePostsGrid(viewedProfileUsername || currentUser.username_lower);
+      currentProfileSubTab = subTab;
+      renderProfileTab();
     }
 
     async function renderProfileTab() {
       if (!currentUser) return;
-      currentUser = await ensureFareedAdmin(currentUser);
-      await syncSocialEventsFromDB();
+      const targetLower = viewingProfileUsername || currentUser.username_lower;
+      const isSelf = targetLower === currentUser.username_lower;
 
-      const targetLower = viewedProfileUsername || currentUser.username_lower;
-      const isOwn = targetLower === currentUser.username_lower;
-      const targetUserObj = isOwn ? currentUser : (allUsersCache.find(u => u.username_lower === targetLower) || { username: targetLower, username_lower: targetLower });
+      let targetUserObj = isSelf ? currentUser : allUsersCache.find(u => u.username_lower === targetLower);
+      if (!targetUserObj) {
+        targetUserObj = { username: targetLower, username_lower: targetLower, role: (targetLower === 'fareed' || targetLower === 'testbot') ? 'Admin' : 'Member' };
+      }
 
-      document.getElementById('viewingUserBanner').classList.toggle('hidden', isOwn);
-      document.getElementById('changePfpBtn').classList.toggle('hidden', !isOwn);
-      document.getElementById('ownProfileActions').classList.toggle('hidden', !isOwn);
-      document.getElementById('otherProfileActions').classList.toggle('hidden', isOwn);
+      const backBar = document.getElementById('viewingOtherUserBar');
+      const changeIconBtn = document.getElementById('changeIconBtn');
+      if (isSelf) {
+        backBar.classList.add('hidden');
+        changeIconBtn.classList.remove('hidden');
+      } else {
+        backBar.classList.remove('hidden');
+        changeIconBtn.classList.add('hidden');
+      }
 
       document.getElementById('profileAvatarContainer').innerHTML = getAvatarIconHtml(targetUserObj, 'w-full h-full text-3xl');
       document.getElementById('profileDisplayName').innerText = getUserDisplayName(targetLower);
-      document.getElementById('profileUsernameHandle').innerText = `@${targetLower}`;
+      document.getElementById('profileHandle').innerText = `@${targetLower}`;
 
       const adminBadge = document.getElementById('profileAdminBadge');
-      adminBadge.classList.toggle('hidden', !isAccountAdmin(targetLower));
+      if (isAdminUser(targetUserObj)) adminBadge.classList.remove('hidden');
+      else adminBadge.classList.add('hidden');
 
       const bannedBadge = document.getElementById('profileBannedBadge');
-      bannedBadge.classList.toggle('hidden', !isAccountBanned(targetLower));
+      if (isAccountBanned(targetLower)) bannedBadge.classList.remove('hidden');
+      else bannedBadge.classList.add('hidden');
 
-      const bio = socialState.profiles[targetLower]?.bio || '';
-      document.getElementById('profileBioText').innerText = bio || (isOwn ? 'Tap "Edit profile" to add a bio (up to 400 characters).' : 'No bio yet.');
+      const bio = getUserBio(targetLower);
+      document.getElementById('profileBioText').innerText = bio ? bio : (isSelf ? 'Tap "Edit profile" to add a bio (up to 400 characters).' : 'No bio yet.');
 
-      // Following / Followers / Total Likes Stats
-      const followingCount = (socialState.follows[targetLower] || []).length;
-      let followersCount = 0;
+      // Calculate Following, Followers, Likes, Friends
+      const followingList = socialState.follows[targetLower] || [];
+      let followerCount = 0;
       Object.keys(socialState.follows).forEach(u => {
-        if ((socialState.follows[u] || []).includes(targetLower)) followersCount++;
-      });
-      let totalLikes = 0;
-      socialState.posts.filter(p => p.author_lower === targetLower).forEach(p => {
-        totalLikes += (p.likes || []).length;
+        if ((socialState.follows[u] || []).includes(targetLower)) followerCount++;
       });
 
-      document.getElementById('statFollowing').innerText = followingCount;
-      document.getElementById('statFollowers').innerText = followersCount;
-      document.getElementById('statLikes').innerText = totalLikes;
+      const userPosts = socialState.posts.filter(p => p.author_lower === targetLower);
+      const totalLikes = userPosts.reduce((sum, p) => sum + ((p.likes || []).length), 0);
 
+      document.getElementById('statFollowing').innerText = followingList.length;
+      document.getElementById('statFollowers').innerText = followerCount;
+      document.getElementById('statTotalLikes').innerText = totalLikes;
+
+      let friendStatus = 'none';
       if (supabaseClient) {
-        const { data: friendsData } = await supabaseClient.from('friendships')
+        const { data: allFriendships } = await supabaseClient.from('friendships')
           .select('*')
-          .or(`user_a.eq.${targetLower},user_b.eq.${targetLower}`)
-          .eq('status', 'accepted');
-        document.getElementById('statFriends').innerText = friendsData ? friendsData.length : 0;
+          .or(`user_a.eq.${targetLower},user_b.eq.${targetLower}`);
 
-        if (!isOwn) {
-          // Update Follow button
-          const amFollowing = (socialState.follows[currentUser.username_lower] || []).includes(targetLower);
-          const followBtn = document.getElementById('profileFollowBtn');
-          followBtn.innerText = amFollowing ? 'Following' : 'Follow';
-          followBtn.className = amFollowing
-            ? 'px-4 py-1.5 bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-200 rounded-xl text-xs font-bold transition-all'
-            : 'px-4 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-all shadow';
+        const acceptedCount = (allFriendships || []).filter(f => f.status === 'accepted').length;
+        document.getElementById('statFriends').innerText = acceptedCount;
 
-          // Update Friend button state
-          const { data: rel } = await supabaseClient.from('friendships')
-            .select('*')
-            .or(`and(user_a.eq.${currentUser.username_lower},user_b.eq.${targetLower}),and(user_a.eq.${targetLower},user_b.eq.${currentUser.username_lower})`);
-          const friendBtn = document.getElementById('profileFriendBtn');
-          if (rel && rel.length > 0) {
-            if (rel[0].status === 'accepted') {
-              friendBtn.innerHTML = `<i class="fa-solid fa-user-check"></i> Friends`;
-              friendBtn.disabled = true;
-            } else {
-              friendBtn.innerHTML = `<i class="fa-solid fa-clock"></i> Requested`;
-              friendBtn.disabled = true;
-            }
-          } else {
-            friendBtn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Friend`;
-            friendBtn.disabled = false;
-          }
-
-          // Admin Ban button (Fareed & TestBot)
-          const banBtn = document.getElementById('profileAdminBanBtn');
-          if (isAccountAdmin(currentUser.username_lower) && !isAccountAdmin(targetLower)) {
-            banBtn.classList.remove('hidden');
-            const banned = isAccountBanned(targetLower);
-            banBtn.innerHTML = banned ? `<i class="fa-solid fa-unlock"></i> Unban Account` : `<i class="fa-solid fa-gavel"></i> Ban Account`;
-          } else {
-            banBtn.classList.add('hidden');
-          }
+        if (!isSelf && allFriendships) {
+          const relation = allFriendships.find(f =>
+            (f.user_a === currentUser.username_lower && f.user_b === targetLower) ||
+            (f.user_b === currentUser.username_lower && f.user_a === targetLower)
+          );
+          if (relation) friendStatus = relation.status;
         }
       }
 
-      renderProfilePostsGrid(targetLower);
-    }
+      // Render Action Buttons Row
+      const actionRow = document.getElementById('profileActionRow');
+      if (isSelf) {
+        actionRow.innerHTML = `
+          <button onclick="openEditProfileModal()" class="px-4 py-2 bg-darkCard hover:bg-slate-800 border border-darkBorder text-white font-bold rounded-xl text-xs transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-pen"></i> Edit profile
+          </button>
+          <button onclick="openCreatePostModal()" class="px-4 py-2 bg-eclipse-600 hover:bg-eclipse-500 text-white font-bold rounded-xl text-xs transition-all flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-plus"></i> Upload Post
+          </button>
+        `;
+      } else {
+        const isFollowing = (socialState.follows[currentUser.username_lower] || []).includes(targetLower);
+        const followBtnHtml = isFollowing
+          ? `<button onclick="toggleFollowUser('${targetLower}')" class="px-4 py-2 bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-200 font-bold rounded-xl text-xs transition-all">Following</button>`
+          : `<button onclick="toggleFollowUser('${targetLower}')" class="px-5 py-2 bg-rose-500 hover:bg-rose-400 text-white font-bold rounded-xl text-xs transition-all shadow">Follow</button>`;
 
-    function renderProfilePostsGrid(targetLower) {
+        let friendBtnHtml = '';
+        if (friendStatus === 'accepted') {
+          friendBtnHtml = `<button onclick="startDMFromFriend('${targetLower}')" class="px-4 py-2 bg-eclipse-600 hover:bg-eclipse-500 text-white font-bold rounded-xl text-xs transition-all flex items-center gap-1.5"><i class="fa-solid fa-paper-plane"></i> Message</button>`;
+        } else if (friendStatus === 'pending') {
+          friendBtnHtml = `<button disabled class="px-4 py-2 bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold rounded-xl text-xs cursor-default">Request Sent</button>`;
+        } else {
+          friendBtnHtml = `<button onclick="sendFriendRequestToUser('${targetLower}')" class="px-4 py-2 bg-eclipse-600 hover:bg-eclipse-500 text-white font-bold rounded-xl text-xs transition-all flex items-center gap-1.5 shadow"><i class="fa-solid fa-user-plus"></i> Friend</button>`;
+        }
+
+        let adminBanBtnHtml = '';
+        if (isAdminUser(currentUser) && !isAdminUser(targetUserObj)) {
+          const banned = isAccountBanned(targetLower);
+          adminBanBtnHtml = banned
+            ? `<button onclick="toggleBanUser('${targetLower}', false)" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition-all flex items-center gap-1.5"><i class="fa-solid fa-user-check"></i> Unban Account</button>`
+            : `<button onclick="toggleBanUser('${targetLower}', true)" class="px-3.5 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition-all flex items-center gap-1.5 shadow"><i class="fa-solid fa-ban"></i> Ban Account</button>`;
+        }
+
+        actionRow.innerHTML = `${followBtnHtml}${friendBtnHtml}${adminBanBtnHtml}`;
+      }
+
+      // Profile Sub-Tabs Styling
+      const tPosts = document.getElementById('profSubTabPosts');
+      const tFavs = document.getElementById('profSubTabFavorites');
+      const tLiked = document.getElementById('profSubTabLiked');
+      [tPosts, tFavs, tLiked].forEach(el => {
+        el.className = 'py-3 text-xs font-bold text-slate-400 hover:text-white flex items-center justify-center gap-1.5 transition-all';
+      });
+      if (currentProfileSubTab === 'posts') {
+        tPosts.className = 'py-3 text-xs font-extrabold text-white border-b-2 border-eclipse-500 flex items-center justify-center gap-1.5 transition-all';
+      } else if (currentProfileSubTab === 'favorites') {
+        tFavs.className = 'py-3 text-xs font-extrabold text-white border-b-2 border-eclipse-500 flex items-center justify-center gap-1.5 transition-all';
+      } else {
+        tLiked.className = 'py-3 text-xs font-extrabold text-white border-b-2 border-eclipse-500 flex items-center justify-center gap-1.5 transition-all';
+      }
+
+      // Render Posts Under Bio
+      let displayPosts = [];
+      if (currentProfileSubTab === 'posts') {
+        displayPosts = socialState.posts.filter(p => p.author_lower === targetLower);
+      } else if (currentProfileSubTab === 'favorites') {
+        displayPosts = socialState.posts.filter(p => (p.favorites || []).includes(targetLower));
+      } else {
+        displayPosts = socialState.posts.filter(p => (p.likes || []).includes(targetLower));
+      }
+
       const grid = document.getElementById('profilePostsGrid');
-      if (!grid) return;
-
-      let list = [];
-      if (activeProfileSubTab === 'posts') {
-        list = socialState.posts.filter(p => p.author_lower === targetLower);
-      } else if (activeProfileSubTab === 'favorites') {
-        list = socialState.posts.filter(p => (p.favorites || []).includes(targetLower));
-      } else if (activeProfileSubTab === 'liked') {
-        list = socialState.posts.filter(p => (p.likes || []).includes(targetLower));
-      }
-
-      if (list.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-10 text-xs text-slate-500">No ${activeProfileSubTab} yet.</div>`;
-        return;
-      }
-
-      grid.innerHTML = '';
-      list.forEach(post => {
-        const card = document.createElement('div');
-        card.onclick = () => openPostDetailModal(post.id);
-        card.className = 'relative aspect-[3/4] rounded-2xl overflow-hidden bg-darkCard border border-darkBorder cursor-pointer group shadow-lg';
-
-        const mediaHtml = post.mediaType === 'video'
-          ? `<video src="${post.mediaUrl}" muted playsinline class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"></video>
-             <span class="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-black/70 text-white text-[10px]"><i class="fa-solid fa-play"></i></span>`
-          : `<img src="${post.mediaUrl}" alt="Post" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`;
-
-        card.innerHTML = `
-          ${mediaHtml}
-          <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-2.5 flex items-center justify-between text-white text-[11px] font-bold">
-            <span class="flex items-center gap-1"><i class="fa-regular fa-heart"></i> ${(post.likes || []).length}</span>
-            <span class="flex items-center gap-1"><i class="fa-regular fa-comment"></i> ${(post.comments || []).length}</span>
+      if (displayPosts.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-500">
+            <i class="fa-solid fa-film text-3xl mb-2 text-slate-600"></i>
+            <p class="text-xs font-medium">No ${currentProfileSubTab} to display yet.</p>
           </div>
         `;
-        grid.appendChild(card);
-      });
-    }
-
-    async function toggleFollowProfile() {
-      if (!viewedProfileUsername || !currentUser) return;
-      const target = viewedProfileUsername;
-      const me = currentUser.username_lower;
-      const currentlyFollowing = (socialState.follows[me] || []).includes(target);
-      await broadcastSocialEvent('FOLLOW_TOGGLE', { follower: me, target, following: !currentlyFollowing });
-      renderProfileTab();
-    }
-
-    async function sendFriendFromProfile() {
-      if (!viewedProfileUsername || !currentUser || !supabaseClient) return;
-      const targetName = viewedProfileUsername;
-      const { data: existing } = await supabaseClient.from('friendships')
-        .select('*')
-        .or(`and(user_a.eq.${currentUser.username_lower},user_b.eq.${targetName}),and(user_a.eq.${targetName},user_b.eq.${currentUser.username_lower})`);
-      if (existing && existing.length > 0) {
-        showToast('Friend request or friendship already exists!', 'info');
         return;
       }
+
+      grid.innerHTML = displayPosts.map(post => {
+        const likesCount = (post.likes || []).length;
+        const isVideo = post.mediaType === 'video';
+        return `
+          <div onclick="openPostDetailModal('${post.id}')" class="group relative aspect-[3/4] rounded-2xl bg-eclipse-950 border border-darkBorder overflow-hidden cursor-pointer shadow-md hover:border-eclipse-500/60 transition-all">
+            ${isVideo
+              ? `<video src="${post.mediaUrl}" muted playsinline class="w-full h-full object-cover"></video><span class="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-black/70 text-white text-[10px]"><i class="fa-solid fa-play"></i></span>`
+              : `<img src="${post.mediaUrl}" alt="Post" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+            }
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-2.5 flex items-end justify-between">
+              <p class="text-[11px] text-white font-semibold line-clamp-1 pr-2">${escapeHTML(post.caption || '')}</p>
+              <span class="text-[11px] text-white font-bold flex items-center gap-1 shrink-0">
+                <i class="fa-regular fa-heart"></i> ${likesCount}
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function toggleFollowUser(targetLower) {
+      if (!currentUser || targetLower === currentUser.username_lower) return;
+      const myFollows = socialState.follows[currentUser.username_lower] || [];
+      const nextFollowing = !myFollows.includes(targetLower);
+      await broadcastSocialEvent('FOLLOW_TOGGLE', {
+        follower: currentUser.username_lower,
+        target: targetLower,
+        following: nextFollowing
+      });
+      showToast(nextFollowing ? `Following @${targetLower}` : `Unfollowed @${targetLower}`, 'info');
+      renderProfileTab();
+    }
+
+    async function toggleBanUser(targetLower, shouldBan) {
+      if (!isAdminUser(currentUser)) return;
+      await broadcastSocialEvent('BAN_TOGGLE', { target: targetLower, banned: shouldBan });
+      showToast(shouldBan ? `Account @${targetLower} has been banned.` : `Account @${targetLower} unbanned.`, shouldBan ? 'error' : 'success');
+      renderProfileTab();
+    }
+
+    async function sendFriendRequestToUser(targetLower) {
+      if (!supabaseClient || !currentUser) return;
+      if (targetLower === currentUser.username_lower) return;
+
+      const { data: existing } = await supabaseClient.from('friendships')
+        .select('*')
+        .or(`and(user_a.eq.${currentUser.username_lower},user_b.eq.${targetLower}),and(user_a.eq.${targetLower},user_b.eq.${currentUser.username_lower})`);
+
+      if (existing && existing.length > 0) {
+        showToast('Friend request or friendship already exists!', 'info');
+        renderProfileTab();
+        return;
+      }
+
       await supabaseClient.from('friendships').insert([{
         user_a: currentUser.username_lower,
-        user_b: targetName,
+        user_b: targetLower,
         status: 'pending'
       }]);
-      showToast(`Sent friend request to @${targetName}!`, 'success');
+
+      showToast(`Friend request sent to @${targetLower}!`, 'success');
       renderProfileTab();
     }
 
-    function messageViewedProfile() {
-      if (!viewedProfileUsername) return;
-      startDMFromFriend(viewedProfileUsername);
-    }
-
-    async function toggleBanViewedProfile() {
-      if (!viewedProfileUsername || !currentUser || !isAccountAdmin(currentUser.username_lower)) return;
-      const target = viewedProfileUsername;
-      const nextBanned = !isAccountBanned(target);
-      await broadcastSocialEvent('BAN_TOGGLE', { target, banned: nextBanned, by: currentUser.username_lower });
-      showToast(nextBanned ? `Banned @${target}` : `Unbanned @${target}`, nextBanned ? 'error' : 'success');
-      renderProfileTab();
-    }
-
-    /* EDIT PROFILE MODAL (DISPLAY NAME 3-DAY COOLDOWN + 400 CHAR BIO) */
+    /* EDIT PROFILE MODAL (3-DAY DISPLAY NAME COOLDOWN & 400-CHAR BIO) */
     function openEditProfileModal() {
-      if (!currentUser) return;
-      const me = currentUser.username_lower;
-      const meta = socialState.profiles[me] || {};
-      document.getElementById('editDisplayNameInput').value = meta.displayName || currentUser.username;
-      document.getElementById('editBioInput').value = meta.bio || '';
+      const lower = currentUser.username_lower;
+      const prof = socialState.profiles[lower] || {};
+      document.getElementById('editPermanentUsername').value = `@${lower}`;
+      document.getElementById('editDisplayNameInput').value = getUserDisplayName(lower);
+      document.getElementById('editBioInput').value = getUserBio(lower);
       updateBioCounter();
 
-      const lastChange = meta.lastDisplayNameChange || 0;
-      const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
-      const remaining = threeDaysMs - (Date.now() - lastChange);
-      const inputEl = document.getElementById('editDisplayNameInput');
-      const noteEl = document.getElementById('displayNameCooldownNote');
+      const lastChanged = prof.displayNameUpdatedAt || 0;
+      const elapsed = Date.now() - lastChanged;
+      const hintEl = document.getElementById('displayNameCooldownHint');
+      const dnInput = document.getElementById('editDisplayNameInput');
 
-      if (remaining > 0) {
-        const hrs = Math.ceil(remaining / (1000 * 60 * 60));
-        inputEl.disabled = true;
-        noteEl.innerText = `Locked for ${hrs}h (3-day limit)`;
+      if (lastChanged > 0 && elapsed < THREE_DAYS_MS) {
+        const remainingMs = THREE_DAYS_MS - elapsed;
+        const hrs = Math.ceil(remainingMs / (1000 * 60 * 60));
+        hintEl.innerText = `Locked for ${hrs}h (3-day limit)`;
+        hintEl.className = 'text-[10px] text-amber-400 font-semibold';
+        dnInput.disabled = true;
       } else {
-        inputEl.disabled = false;
-        noteEl.innerText = 'Can be changed once every 3 days';
+        hintEl.innerText = 'Can change now (once every 3 days)';
+        hintEl.className = 'text-[10px] text-emerald-400 font-semibold';
+        dnInput.disabled = false;
       }
 
       document.getElementById('editProfileModal').classList.remove('hidden');
@@ -1534,135 +1641,109 @@
       document.getElementById('bioCharCounter').innerText = `${val.length} / 400`;
     }
 
-    async function saveProfileEdits() {
-      if (!currentUser) return;
-      const me = currentUser.username_lower;
-      const meta = socialState.profiles[me] || {};
-      const newDisplay = document.getElementById('editDisplayNameInput').value.trim();
+    async function saveProfileEdits(e) {
+      e.preventDefault();
+      const lower = currentUser.username_lower;
+      const prof = socialState.profiles[lower] || {};
+      const currentDN = getUserDisplayName(lower);
+      const newDN = document.getElementById('editDisplayNameInput').value.trim();
       const newBio = document.getElementById('editBioInput').value.slice(0, 400);
 
-      let lastDisplayNameChange = meta.lastDisplayNameChange || 0;
-      let finalDisplayName = meta.displayName || currentUser.username;
+      let displayNameToSave = currentDN;
+      let updatedAtToSave = prof.displayNameUpdatedAt || 0;
 
-      if (newDisplay && newDisplay !== finalDisplayName) {
-        const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
-        if (Date.now() - lastDisplayNameChange < threeDaysMs) {
-          showToast('Display name can only be changed every 3 days.', 'error');
+      if (newDN && newDN !== currentDN) {
+        const elapsed = Date.now() - updatedAtToSave;
+        if (updatedAtToSave > 0 && elapsed < THREE_DAYS_MS) {
+          showToast('Display name can only be changed once every 3 days!', 'error');
           return;
         }
-        finalDisplayName = newDisplay;
-        lastDisplayNameChange = Date.now();
+        displayNameToSave = newDN;
+        updatedAtToSave = Date.now();
       }
 
       await broadcastSocialEvent('PROFILE_UPDATE', {
-        username_lower: me,
-        displayName: finalDisplayName,
-        bio: newBio,
-        lastDisplayNameChange
+        username_lower: lower,
+        displayName: displayNameToSave,
+        displayNameUpdatedAt: updatedAtToSave,
+        bio: newBio
       });
 
       closeEditProfileModal();
-      showToast('Profile saved!', 'success');
+      showToast('Profile updated!', 'success');
       renderProfileTab();
     }
 
-    /* FEED TAB & TIKTOK MEDIA POSTS (IMAGES & VIDEOS) */
-    function setFeedFilter(mode) {
-      feedFilterMode = mode;
-      document.getElementById('feedFilterAll').className = mode === 'all'
-        ? 'px-3 py-1.5 rounded-xl text-xs font-bold bg-eclipse-600 text-white shadow'
-        : 'px-3 py-1.5 rounded-xl text-xs font-bold bg-darkCard text-slate-400 hover:text-white';
-      document.getElementById('feedFilterFollowing').className = mode === 'following'
-        ? 'px-3 py-1.5 rounded-xl text-xs font-bold bg-eclipse-600 text-white shadow'
-        : 'px-3 py-1.5 rounded-xl text-xs font-bold bg-darkCard text-slate-400 hover:text-white';
-      renderFeedTab();
+    /* UPLOAD PROFILE PICTURE */
+    async function handlePfpUpload(e) {
+      const file = e.target.files[0];
+      if (!file || !currentUser || !supabaseClient) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = async function() {
+          const canvas = document.createElement('canvas');
+          const size = 160;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+
+          const minDim = Math.min(img.width, img.height);
+          const sx = (img.width - minDim) / 2;
+          const sy = (img.height - minDim) / 2;
+          ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.78);
+
+          const { error } = await supabaseClient
+            .from('users')
+            .update({ avatar_url: compressedDataUrl })
+            .eq('id', currentUser.id);
+
+          if (error) {
+            showToast('Database error: ' + error.message, 'error');
+            return;
+          }
+
+          currentUser.avatar_url = compressedDataUrl;
+          avatarUrlCache[currentUser.username_lower] = compressedDataUrl;
+          await broadcastSocialEvent('PROFILE_UPDATE', {
+            username_lower: currentUser.username_lower,
+            avatarUrl: compressedDataUrl
+          });
+          await loadAllUsersCache();
+          renderProfileTab();
+          showToast('Profile picture updated!', 'success');
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
-    async function renderFeedTab() {
-      await syncSocialEventsFromDB();
-      const container = document.getElementById('feedStreamContainer');
-      if (!container) return;
-
-      let posts = [...socialState.posts];
-      if (feedFilterMode === 'following' && currentUser) {
-        const myFollowing = socialState.follows[currentUser.username_lower] || [];
-        posts = posts.filter(p => myFollowing.includes(p.author_lower));
+    /* SOCIAL FEED (POSTS, VIDEOS, LIKES, FAVORITES, COMMENTS) */
+    function setFeedFilter(filter) {
+      currentFeedFilter = filter;
+      const fyBtn = document.getElementById('feedFilterForYou');
+      const flBtn = document.getElementById('feedFilterFollowing');
+      if (filter === 'foryou') {
+        fyBtn.className = 'text-xs font-extrabold text-white border-b-2 border-eclipse-500 pb-1 transition-all';
+        flBtn.className = 'text-xs font-bold text-slate-400 hover:text-white pb-1 transition-all';
+      } else {
+        flBtn.className = 'text-xs font-extrabold text-white border-b-2 border-eclipse-500 pb-1 transition-all';
+        fyBtn.className = 'text-xs font-bold text-slate-400 hover:text-white pb-1 transition-all';
       }
-
-      if (posts.length === 0) {
-        container.innerHTML = `
-          <div class="h-full flex flex-col items-center justify-center text-slate-500 py-14">
-            <i class="fa-solid fa-clapperboard text-4xl mb-3 text-eclipse-500/40"></i>
-            <p class="text-xs font-medium">${feedFilterMode === 'following' ? 'Follow people to see their posts here!' : 'No posts yet. Be the first to post a photo or video!'}</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = '';
-      posts.forEach(post => {
-        const authorLower = post.author_lower;
-        const displayName = getUserDisplayName(authorLower);
-        const avatarHtml = getAvatarIconHtml(authorLower, 'w-9 h-9 text-xs');
-        const me = currentUser ? currentUser.username_lower : '';
-        const liked = (post.likes || []).includes(me);
-        const favorited = (post.favorites || []).includes(me);
-        const canDelete = isAccountAdmin(me) || authorLower === me;
-
-        const card = document.createElement('div');
-        card.className = 'glass-panel border border-darkBorder rounded-3xl overflow-hidden shadow-xl max-w-md mx-auto';
-
-        const mediaHtml = post.mediaType === 'video'
-          ? `<video src="${post.mediaUrl}" controls playsinline class="w-full max-h-96 bg-black object-contain"></video>`
-          : `<img src="${post.mediaUrl}" alt="Post" onclick="openPostDetailModal('${post.id}')" class="w-full max-h-96 bg-black object-contain cursor-pointer">`;
-
-        card.innerHTML = `
-          <div class="p-3.5 flex items-center justify-between">
-            <button type="button" onclick="openUserProfile('${escapeHTML(authorLower)}')" class="flex items-center gap-2.5 text-left hover:underline">
-              ${avatarHtml}
-              <div>
-                <div class="text-xs font-bold text-white flex items-center gap-1.5">
-                  <span>${escapeHTML(displayName)}</span>
-                  ${isAccountAdmin(authorLower) ? `<span class="px-1.5 py-0.2 bg-red-500/20 text-red-400 rounded text-[9px]">Admin</span>` : ''}
-                </div>
-                <div class="text-[10px] text-slate-400 font-mono">@${escapeHTML(authorLower)}</div>
-              </div>
-            </button>
-            ${canDelete ? `
-              <button onclick="deletePostById('${post.id}')" title="Delete Post" class="w-8 h-8 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 flex items-center justify-center text-xs">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            ` : ''}
-          </div>
-          ${mediaHtml}
-          <div class="p-3.5 space-y-2.5">
-            ${post.caption ? `<p class="text-xs text-slate-200 whitespace-pre-line">${escapeHTML(post.caption)}</p>` : ''}
-            <div class="flex items-center justify-between pt-1 border-t border-darkBorder/60">
-              <div class="flex items-center gap-4">
-                <button onclick="togglePostLike('${post.id}')" class="flex items-center gap-1.5 text-xs font-bold ${liked ? 'text-rose-500' : 'text-slate-400 hover:text-rose-400'}">
-                  <i class="${liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> <span>${(post.likes || []).length}</span>
-                </button>
-                <button onclick="openPostDetailModal('${post.id}')" class="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-indigo-400">
-                  <i class="fa-regular fa-comment"></i> <span>${(post.comments || []).length}</span>
-                </button>
-                <button onclick="togglePostFavorite('${post.id}')" class="flex items-center gap-1.5 text-xs font-bold ${favorited ? 'text-amber-400' : 'text-slate-400 hover:text-amber-400'}">
-                  <i class="${favorited ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i> <span>${(post.favorites || []).length}</span>
-                </button>
-              </div>
-              <span class="text-[10px] text-slate-500 font-mono">${formatTime(post.createdAt)}</span>
-            </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
+      renderSocialFeed();
     }
 
     function openCreatePostModal() {
       pendingPostMedia = null;
-      document.getElementById('postMediaFileInput').value = '';
+      pendingPostMediaType = null;
+      document.getElementById('postMediaPlaceholder').classList.remove('hidden');
+      document.getElementById('postMediaPreviewWrapper').classList.add('hidden');
+      document.getElementById('postImagePreview').classList.add('hidden');
+      document.getElementById('postVideoPreview').classList.add('hidden');
       document.getElementById('postCaptionInput').value = '';
-      document.getElementById('postMediaPreviewBox').classList.add('hidden');
-      document.getElementById('postMediaPreviewBox').innerHTML = '';
       document.getElementById('createPostModal').classList.remove('hidden');
     }
 
@@ -1670,106 +1751,193 @@
       document.getElementById('createPostModal').classList.add('hidden');
     }
 
-    async function handlePostMediaSelect(event) {
-      const file = event.target.files[0];
+    function handlePostMediaSelect(e) {
+      const file = e.target.files[0];
       if (!file) return;
-      const previewBox = document.getElementById('postMediaPreviewBox');
 
       if (file.type.startsWith('video/')) {
         if (file.size > 4.5 * 1024 * 1024) {
           showToast('Please select a short video under 4.5MB.', 'error');
-          event.target.value = '';
           return;
         }
         const reader = new FileReader();
-        reader.onload = (e) => {
-          pendingPostMedia = { type: 'video', dataUrl: e.target.result };
-          previewBox.innerHTML = `<video src="${e.target.result}" controls muted class="max-h-52 w-full object-contain"></video>`;
-          previewBox.classList.remove('hidden');
+        reader.onload = function(ev) {
+          pendingPostMedia = ev.target.result;
+          pendingPostMediaType = 'video';
+          document.getElementById('postMediaPlaceholder').classList.add('hidden');
+          document.getElementById('postMediaPreviewWrapper').classList.remove('hidden');
+          document.getElementById('postImagePreview').classList.add('hidden');
+          const vid = document.getElementById('postVideoPreview');
+          vid.src = pendingPostMedia;
+          vid.classList.remove('hidden');
         };
         reader.readAsDataURL(file);
       } else {
-        const compressed = await compressChatPhoto(file, 720, 0.78);
-        pendingPostMedia = { type: 'image', dataUrl: compressed };
-        previewBox.innerHTML = `<img src="${compressed}" class="max-h-52 w-full object-contain">`;
-        previewBox.classList.remove('hidden');
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const maxDim = 720;
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              else { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            pendingPostMedia = canvas.toDataURL('image/jpeg', 0.78);
+            pendingPostMediaType = 'image';
+
+            document.getElementById('postMediaPlaceholder').classList.add('hidden');
+            document.getElementById('postMediaPreviewWrapper').classList.remove('hidden');
+            document.getElementById('postVideoPreview').classList.add('hidden');
+            const im = document.getElementById('postImagePreview');
+            im.src = pendingPostMedia;
+            im.classList.remove('hidden');
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
       }
+      e.target.value = '';
     }
 
-    async function publishNewPost() {
-      if (!currentUser || !pendingPostMedia) {
+    async function submitSocialPost(e) {
+      e.preventDefault();
+      if (!pendingPostMedia) {
         showToast('Please select an image or video first.', 'error');
         return;
       }
-      const btn = document.getElementById('submitPostBtn');
-      btn.disabled = true;
-      btn.innerText = 'Publishing...';
+      const caption = document.getElementById('postCaptionInput').value.trim();
+      const post = {
+        id: 'post_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        author_lower: currentUser.username_lower,
+        mediaType: pendingPostMediaType,
+        mediaUrl: pendingPostMedia,
+        caption: caption,
+        likes: [],
+        favorites: [],
+        comments: [],
+        createdAt: Date.now()
+      };
 
-      try {
-        const caption = document.getElementById('postCaptionInput').value.trim();
-        const post = {
-          id: 'post_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-          author_lower: currentUser.username_lower,
-          mediaType: pendingPostMedia.type,
-          mediaUrl: pendingPostMedia.dataUrl,
-          caption,
-          likes: [],
-          favorites: [],
-          comments: [],
-          createdAt: new Date().toISOString()
-        };
+      await broadcastSocialEvent('NEW_POST', { post });
+      closeCreatePostModal();
+      showToast('Post published!', 'success');
+      if (activeTab === 'feed') renderSocialFeed();
+      if (activeTab === 'profile') renderProfileTab();
+    }
 
-        await broadcastSocialEvent('POST_CREATE', { post });
-        closeCreatePostModal();
-        showToast('Post published!', 'success');
-        if (activeTab === 'feed') renderFeedTab();
-        if (activeTab === 'profile') renderProfileTab();
-      } finally {
-        btn.disabled = false;
-        btn.innerText = 'Post to Feed & Profile';
+    function renderSocialFeed() {
+      const container = document.getElementById('socialFeedList');
+      let posts = [...socialState.posts];
+
+      if (currentFeedFilter === 'following') {
+        const myFollowing = socialState.follows[currentUser.username_lower] || [];
+        posts = posts.filter(p => myFollowing.includes(p.author_lower) || p.author_lower === currentUser.username_lower);
       }
+
+      if (posts.length === 0) {
+        container.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-slate-500 py-16">
+            <i class="fa-solid fa-clapperboard text-4xl mb-3 text-eclipse-500/40"></i>
+            <p class="text-xs font-bold text-slate-300">No posts in this feed yet</p>
+            <p class="text-[11px] text-slate-500 mt-1">Tap "+ Post Media" above to share an image or video!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = posts.map(post => {
+        const authorLower = post.author_lower;
+        const displayName = getUserDisplayName(authorLower);
+        const avatarHtml = getAvatarIconHtml(authorLower, 'w-9 h-9 text-xs');
+        const liked = (post.likes || []).includes(currentUser.username_lower);
+        const favorited = (post.favorites || []).includes(currentUser.username_lower);
+        const canDelete = isAdminUser(currentUser) || authorLower === currentUser.username_lower;
+
+        return `
+          <article class="glass-panel border border-darkBorder rounded-3xl overflow-hidden shadow-xl animate-fade-in">
+            <!-- Author Header -->
+            <div class="p-3.5 flex items-center justify-between">
+              <button type="button" onclick="openUserProfile('${escapeHTML(authorLower)}')" class="flex items-center gap-2.5 text-left hover:opacity-90">
+                ${avatarHtml}
+                <div>
+                  <h4 class="text-xs font-extrabold text-white leading-tight">${escapeHTML(displayName)}</h4>
+                  <p class="text-[10px] text-slate-400 font-mono">@${escapeHTML(authorLower)} • ${formatTime(post.createdAt)}</p>
+                </div>
+              </button>
+              ${canDelete ? `
+                <button onclick="deleteSocialPost('${post.id}')" title="Delete Post" class="px-2.5 py-1 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-[11px] font-bold transition-all">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              ` : ''}
+            </div>
+
+            <!-- Media -->
+            <div onclick="openPostDetailModal('${post.id}')" class="bg-black flex items-center justify-center max-h-96 overflow-hidden cursor-pointer">
+              ${post.mediaType === 'video'
+                ? `<video src="${post.mediaUrl}" controls playsinline onclick="event.stopPropagation()" class="w-full max-h-96 object-contain"></video>`
+                : `<img src="${post.mediaUrl}" alt="Post" class="w-full max-h-96 object-contain">`
+              }
+            </div>
+
+            <!-- Caption & Interactions -->
+            <div class="p-3.5 space-y-2.5">
+              ${post.caption ? `<p class="text-xs sm:text-sm text-slate-100 leading-relaxed">${escapeHTML(post.caption)}</p>` : ''}
+              <div class="flex items-center gap-5 pt-1 text-xs font-bold">
+                <button onclick="togglePostReaction('${post.id}', 'like')" class="flex items-center gap-1.5 ${liked ? 'text-rose-500' : 'text-slate-400 hover:text-white'} transition-all">
+                  <i class="${liked ? 'fa-solid' : 'fa-regular'} fa-heart text-base"></i>
+                  <span>${(post.likes || []).length}</span>
+                </button>
+                <button onclick="openPostDetailModal('${post.id}')" class="flex items-center gap-1.5 text-slate-400 hover:text-white transition-all">
+                  <i class="fa-regular fa-comment text-base"></i>
+                  <span>${(post.comments || []).length}</span>
+                </button>
+                <button onclick="togglePostReaction('${post.id}', 'favorite')" class="flex items-center gap-1.5 ${favorited ? 'text-amber-400' : 'text-slate-400 hover:text-white'} transition-all">
+                  <i class="${favorited ? 'fa-solid' : 'fa-regular'} fa-bookmark text-base"></i>
+                  <span>${(post.favorites || []).length}</span>
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
     }
 
-    async function togglePostLike(postId) {
-      if (!currentUser) return;
+    async function togglePostReaction(postId, kind) {
       const post = socialState.posts.find(p => p.id === postId);
-      if (!post) return;
-      const me = currentUser.username_lower;
-      const currentlyLiked = (post.likes || []).includes(me);
-      await broadcastSocialEvent('POST_LIKE', { postId, user: me, liked: !currentlyLiked });
-      if (activeTab === 'feed') renderFeedTab();
+      if (!post || !currentUser) return;
+      const list = kind === 'like' ? (post.likes || []) : (post.favorites || []);
+      const nextActive = !list.includes(currentUser.username_lower);
+      await broadcastSocialEvent('POST_REACT', {
+        postId,
+        kind,
+        user: currentUser.username_lower,
+        active: nextActive
+      });
+      if (activeTab === 'feed') renderSocialFeed();
       if (activeTab === 'profile') renderProfileTab();
-      if (activeModalPostId === postId) renderPostDetailModalContent(postId);
+      if (activeModalPostId === postId) renderPostDetailModalContent();
     }
 
-    async function togglePostFavorite(postId) {
-      if (!currentUser) return;
+    async function deleteSocialPost(postId) {
       const post = socialState.posts.find(p => p.id === postId);
       if (!post) return;
-      const me = currentUser.username_lower;
-      const currentlyFav = (post.favorites || []).includes(me);
-      await broadcastSocialEvent('POST_FAV', { postId, user: me, favorited: !currentlyFav });
-      if (activeTab === 'feed') renderFeedTab();
-      if (activeTab === 'profile') renderProfileTab();
-      if (activeModalPostId === postId) renderPostDetailModalContent(postId);
-    }
-
-    async function deletePostById(postId) {
-      if (!currentUser) return;
-      const post = socialState.posts.find(p => p.id === postId);
-      if (!post) return;
-      const me = currentUser.username_lower;
-      if (!isAccountAdmin(me) && post.author_lower !== me) return;
-      await broadcastSocialEvent('POST_DELETE', { postId, by: me });
+      if (!isAdminUser(currentUser) && post.author_lower !== currentUser.username_lower) return;
+      await broadcastSocialEvent('DELETE_POST', { postId });
       showToast('Post deleted.', 'info');
       if (activeModalPostId === postId) closePostDetailModal();
-      if (activeTab === 'feed') renderFeedTab();
+      if (activeTab === 'feed') renderSocialFeed();
       if (activeTab === 'profile') renderProfileTab();
     }
 
     function openPostDetailModal(postId) {
       activeModalPostId = postId;
-      renderPostDetailModalContent(postId);
+      renderPostDetailModalContent();
       document.getElementById('postDetailModal').classList.remove('hidden');
     }
 
@@ -1778,51 +1946,60 @@
       document.getElementById('postDetailModal').classList.add('hidden');
     }
 
-    function renderPostDetailModalContent(postId) {
-      const post = socialState.posts.find(p => p.id === postId);
-      if (!post) return;
-      const me = currentUser ? currentUser.username_lower : '';
+    function deleteActiveModalPost() {
+      if (activeModalPostId) deleteSocialPost(activeModalPostId);
+    }
+
+    function renderPostDetailModalContent() {
+      const post = socialState.posts.find(p => p.id === activeModalPostId);
+      if (!post) return closePostDetailModal();
+
       const authorLower = post.author_lower;
       const displayName = getUserDisplayName(authorLower);
+      const avatarHtml = getAvatarIconHtml(authorLower, 'w-8 h-8 text-xs');
 
-      const authorBox = document.getElementById('postModalAuthorInfo');
-      authorBox.onclick = () => { closePostDetailModal(); openUserProfile(authorLower); };
-      authorBox.innerHTML = `
-        ${getAvatarIconHtml(authorLower, 'w-8 h-8 text-xs')}
-        <div>
-          <div class="text-xs font-bold text-white">${escapeHTML(displayName)}</div>
-          <div class="text-[10px] text-slate-400 font-mono">@${escapeHTML(authorLower)}</div>
-        </div>
-      `;
+      const authorInfo = document.getElementById('postModalAuthorInfo');
+      authorInfo.innerHTML = `${avatarHtml}<div><div class="text-xs font-bold text-white">${escapeHTML(displayName)}</div><div class="text-[10px] text-slate-400">@${escapeHTML(authorLower)}</div></div>`;
+      authorInfo.onclick = () => {
+        closePostDetailModal();
+        openUserProfile(authorLower);
+      };
 
       const delBtn = document.getElementById('postModalAdminDeleteBtn');
-      delBtn.classList.toggle('hidden', !(isAccountAdmin(me) || authorLower === me));
+      if (isAdminUser(currentUser) || authorLower === currentUser.username_lower) {
+        delBtn.classList.remove('hidden');
+      } else {
+        delBtn.classList.add('hidden');
+      }
 
       const mediaContainer = document.getElementById('postModalMediaContainer');
       mediaContainer.innerHTML = post.mediaType === 'video'
-        ? `<video src="${post.mediaUrl}" controls autoplay playsinline class="w-full max-h-80 object-contain"></video>`
-        : `<img src="${post.mediaUrl}" class="w-full max-h-80 object-contain">`;
+        ? `<video src="${post.mediaUrl}" controls autoplay playsinline class="max-h-80 w-full object-contain"></video>`
+        : `<img src="${post.mediaUrl}" alt="Post" class="max-h-80 w-full object-contain">`;
 
       document.getElementById('postModalCaption').innerText = post.caption || '';
 
-      const liked = (post.likes || []).includes(me);
-      const favorited = (post.favorites || []).includes(me);
-      document.getElementById('postModalLikeBtn').className = `flex items-center gap-1.5 text-xs font-bold ${liked ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'}`;
-      document.getElementById('postModalLikeCount').innerText = (post.likes || []).length;
-      document.getElementById('postModalFavBtn').className = `flex items-center gap-1.5 text-xs font-bold ${favorited ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}`;
-      document.getElementById('postModalFavCount').innerText = (post.favorites || []).length;
-      document.getElementById('postModalCommentCount').innerText = (post.comments || []).length;
+      const liked = (post.likes || []).includes(currentUser.username_lower);
+      const favorited = (post.favorites || []).includes(currentUser.username_lower);
+
+      document.getElementById('postModalActionsBar').innerHTML = `
+        <button onclick="togglePostReaction('${post.id}', 'like')" class="flex items-center gap-1.5 font-bold ${liked ? 'text-rose-500' : 'text-slate-300 hover:text-white'}">
+          <i class="${liked ? 'fa-solid' : 'fa-regular'} fa-heart text-base"></i> ${(post.likes || []).length} Likes
+        </button>
+        <button onclick="togglePostReaction('${post.id}', 'favorite')" class="flex items-center gap-1.5 font-bold ${favorited ? 'text-amber-400' : 'text-slate-300 hover:text-white'}">
+          <i class="${favorited ? 'fa-solid' : 'fa-regular'} fa-bookmark text-base"></i> ${(post.favorites || []).length} Favorites
+        </button>
+      `;
 
       const commentsList = document.getElementById('postModalCommentsList');
-      if (!post.comments || post.comments.length === 0) {
-        commentsList.innerHTML = `<p class="text-xs text-slate-500">No comments yet.</p>`;
+      const comments = post.comments || [];
+      if (comments.length === 0) {
+        commentsList.innerHTML = `<p class="text-[11px] text-slate-500">No comments yet. Be the first!</p>`;
       } else {
-        commentsList.innerHTML = post.comments.map(c => `
-          <div class="bg-eclipse-950 border border-darkBorder rounded-xl p-2.5">
-            <div class="flex items-center justify-between mb-1">
-              <button type="button" onclick="closePostDetailModal(); openUserProfile('${escapeHTML(c.author_lower)}')" class="text-[11px] font-bold text-indigo-400 hover:underline">
-                ${escapeHTML(getUserDisplayName(c.author_lower))} <span class="text-slate-500 font-normal">@${escapeHTML(c.author_lower)}</span>
-              </button>
+        commentsList.innerHTML = comments.map(c => `
+          <div class="bg-eclipse-950 p-2.5 rounded-xl border border-darkBorder">
+            <div class="flex items-center justify-between mb-0.5">
+              <button type="button" onclick="closePostDetailModal(); openUserProfile('${escapeHTML(c.author_lower)}')" class="text-[11px] font-bold text-indigo-400 hover:underline">${escapeHTML(getUserDisplayName(c.author_lower))}</button>
               <span class="text-[9px] text-slate-500 font-mono">${formatTime(c.createdAt)}</span>
             </div>
             <p class="text-xs text-slate-200">${escapeHTML(c.text)}</p>
@@ -1833,88 +2010,79 @@
 
     async function submitPostComment(e) {
       e.preventDefault();
-      if (!currentUser || !activeModalPostId) return;
+      if (!activeModalPostId || !currentUser) return;
       const input = document.getElementById('postCommentInput');
       const text = input.value.trim();
       if (!text) return;
 
       const comment = {
-        id: 'cmt_' + Date.now(),
+        id: 'cmt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5),
         author_lower: currentUser.username_lower,
-        text,
-        createdAt: new Date().toISOString()
+        text: text,
+        createdAt: Date.now()
       };
 
       await broadcastSocialEvent('POST_COMMENT', { postId: activeModalPostId, comment });
       input.value = '';
-      renderPostDetailModalContent(activeModalPostId);
-      if (activeTab === 'feed') renderFeedTab();
-    }
-
-    function deleteActiveModalPost() {
-      if (activeModalPostId) deletePostById(activeModalPostId);
-    }
-
-    async function deleteGlobalMessage(msgId) {
-      if (!currentUser || currentUser.role !== 'Admin' || !supabaseClient) return;
-      await supabaseClient.from('global_messages').delete().eq('id', msgId);
-      lastGlobalSignature = '';
-      renderGlobalMessages();
+      renderPostDetailModalContent();
+      if (activeTab === 'feed') renderSocialFeed();
     }
 
     /* DMs & GROUP CHAT */
     async function renderDMSidebar() {
       const container = document.getElementById('dmConversationList');
-      if (!container) return;
+      if (!supabaseClient) return;
 
-      let sidebarHtml = '';
+      const { data: friendships } = await supabaseClient.from('friendships')
+        .select('*')
+        .or(`user_a.eq.${currentUser.username_lower},user_b.eq.${currentUser.username_lower}`)
+        .eq('status', 'accepted');
 
-      // Groups
+      const sidebarSig = JSON.stringify({ groupsCache, friendships, activeChatId, activeChatType, avatarUrlCache });
+      if (sidebarSig === lastSidebarSignature) return;
+      lastSidebarSignature = sidebarSig;
+
+      container.innerHTML = '';
+
       groupsCache.forEach(group => {
         if (!group.members.includes(currentUser.username_lower)) return;
         const isActive = activeChatId === group.id && activeChatType === 'group';
-        sidebarHtml += `
-          <div onclick="openGroupChat('${group.id}')" class="p-3 flex items-center gap-3 cursor-pointer transition-all ${isActive ? 'bg-darkCard border-l-4 border-eclipse-500' : 'hover:bg-darkCard/50'}">
-            <div class="w-10 h-10 rounded-full bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-bold flex items-center justify-center text-sm shrink-0">
-              <i class="fa-solid fa-users text-xs"></i>
-            </div>
-            <div class="flex-1 min-w-0">
-              <h4 class="text-xs font-bold text-slate-100 truncate">${escapeHTML(group.name)}</h4>
-              <p class="text-[11px] text-slate-400 truncate mt-0.5">Group Channel</p>
-            </div>
+
+        const card = document.createElement('div');
+        card.className = `p-3 flex items-center gap-3 cursor-pointer transition-all ${isActive ? 'bg-darkCard border-l-4 border-eclipse-500' : 'hover:bg-darkCard/50'}`;
+        card.onclick = () => openGroupChat(group.id);
+
+        card.innerHTML = `
+          <div class="w-10 h-10 rounded-full bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-bold flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-users text-xs"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="text-xs font-bold text-slate-100 truncate">${escapeHTML(group.name)}</h4>
+            <p class="text-[11px] text-slate-400 truncate mt-0.5">Group Channel</p>
           </div>
         `;
+        container.appendChild(card);
       });
 
-      // Friends / Direct Messages
-      if (supabaseClient) {
-        const { data: friendships } = await supabaseClient.from('friendships')
-          .select('*')
-          .or(`user_a.eq.${currentUser.username_lower},user_b.eq.${currentUser.username_lower}`)
-          .eq('status', 'accepted');
+      if (friendships) {
+        friendships.forEach(f => {
+          const friendName = f.user_a === currentUser.username_lower ? f.user_b : f.user_a;
+          const isActive = activeChatId === friendName && activeChatType === 'dm';
+          const avatarHtml = getAvatarIconHtml(friendName, 'w-10 h-10 text-sm');
 
-        if (friendships) {
-          friendships.forEach(f => {
-            const friendName = f.user_a === currentUser.username_lower ? f.user_b : f.user_a;
-            const isActive = activeChatId === friendName && activeChatType === 'dm';
-            const avatarHtml = getAvatarIconHtml(friendName, 'w-10 h-10 text-sm');
+          const card = document.createElement('div');
+          card.className = `p-3 flex items-center gap-3 cursor-pointer transition-all ${isActive ? 'bg-darkCard border-l-4 border-eclipse-500' : 'hover:bg-darkCard/50'}`;
+          card.onclick = () => openDMChat(friendName);
 
-            sidebarHtml += `
-              <div onclick="openDMChat('${friendName}')" class="p-3 flex items-center gap-3 cursor-pointer transition-all ${isActive ? 'bg-darkCard border-l-4 border-eclipse-500' : 'hover:bg-darkCard/50'}">
-                <div class="shrink-0">${avatarHtml}</div>
-                <div class="flex-1 min-w-0">
-                  <h4 class="text-xs font-bold text-slate-100 truncate">${escapeHTML(friendName)}</h4>
-                  <p class="text-[11px] text-slate-400 truncate mt-0.5">${escapeHTML(friendName)}@eclipse.internal</p>
-                </div>
-              </div>
-            `;
-          });
-        }
-      }
-
-      if (sidebarHtml !== lastSidebarSignature) {
-        lastSidebarSignature = sidebarHtml;
-        container.innerHTML = sidebarHtml;
+          card.innerHTML = `
+            <div class="shrink-0">${avatarHtml}</div>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-xs font-bold text-slate-100 truncate">${escapeHTML(getUserDisplayName(friendName))}</h4>
+              <p class="text-[11px] text-slate-400 truncate mt-0.5">@${escapeHTML(friendName)}</p>
+            </div>
+          `;
+          container.appendChild(card);
+        });
       }
     }
 
@@ -1930,15 +2098,16 @@
     function openDMChat(targetName) {
       activeChatId = targetName;
       activeChatType = 'dm';
+      lastSidebarSignature = '';
       lastDMSignature = '';
       renderDMSidebar();
 
       document.getElementById('dmActiveAvatar').innerHTML = getAvatarIconHtml(targetName, 'w-8 h-8 text-xs');
-      document.getElementById('dmActiveUser').innerText = targetName;
+      document.getElementById('dmActiveUser').innerText = getUserDisplayName(targetName);
       
       document.getElementById('dmInput').disabled = false;
       document.getElementById('dmSubmitBtn').disabled = false;
-      document.getElementById('dmPhotoBtn').disabled = false;
+      document.getElementById('dmImageBtn').disabled = false;
 
       const chatPanel = document.getElementById('dmChatPanel');
       chatPanel.classList.remove('hidden');
@@ -1950,6 +2119,7 @@
     function openGroupChat(groupId) {
       activeChatId = groupId;
       activeChatType = 'group';
+      lastSidebarSignature = '';
       lastDMSignature = '';
       renderDMSidebar();
 
@@ -1961,7 +2131,7 @@
       
       document.getElementById('dmInput').disabled = false;
       document.getElementById('dmSubmitBtn').disabled = false;
-      document.getElementById('dmPhotoBtn').disabled = false;
+      document.getElementById('dmImageBtn').disabled = false;
 
       const chatPanel = document.getElementById('dmChatPanel');
       chatPanel.classList.remove('hidden');
@@ -1975,12 +2145,13 @@
       chatPanel.classList.add('hidden');
       chatPanel.classList.remove('flex');
       activeChatId = null;
+      lastSidebarSignature = '';
       renderDMSidebar();
     }
 
     async function renderDMMessages() {
       if (!activeChatId || !supabaseClient) return;
-      
+
       let messages = [];
       if (activeChatType === 'dm') {
         const { data } = await supabaseClient.from('direct_messages')
@@ -1997,10 +2168,12 @@
       }
 
       const sig = JSON.stringify(messages);
-      if (sig === lastDMSignature) return; // Zero flashing
+      if (sig === lastDMSignature) return;
       lastDMSignature = sig;
 
       const feed = document.getElementById('dmMessageFeed');
+      const prevScrollTop = feed.scrollTop;
+      const prevScrollHeight = feed.scrollHeight;
       feed.innerHTML = '';
 
       if (messages.length === 0) {
@@ -2031,29 +2204,15 @@
         `;
         feed.appendChild(msgEl);
       });
+
+      if (Math.abs(prevScrollTop) <= 40) {
+        feed.scrollTop = 0;
+      } else {
+        const delta = feed.scrollHeight - prevScrollHeight;
+        feed.scrollTop = prevScrollTop - delta;
+      }
     }
 
-    async function sendGlobalMessage(e) {
-      e.preventDefault();
-      const input = document.getElementById('globalInput');
-      const text = input.value.trim();
-      if ((!text && !pendingGlobalImage) || !supabaseClient || !currentUser) return;
-
-      const payload = encodeMessagePayload(text, pendingGlobalImage);
-      clearChatImage('global');
-
-      await supabaseClient.from('global_messages').insert([{
-        sender_username: currentUser.username,
-        sender_role: currentUser.role,
-        content: payload
-      }]);
-
-      input.value = '';
-      lastGlobalSignature = '';
-      renderGlobalMessages();
-    }
-
-    /* PROFILE VIEW (TIKTOK-STYLE) & PUBLIC USER PROFILES */
     async function sendDirectMessage(e) {
       e.preventDefault();
       const input = document.getElementById('dmInput');
@@ -2071,7 +2230,9 @@
 
       input.value = '';
       lastDMSignature = '';
-      renderDMMessages();
+      await renderDMMessages();
+      const feed = document.getElementById('dmMessageFeed');
+      if (feed) feed.scrollTop = 0;
       renderDMSidebar();
     }
 
@@ -2083,8 +2244,7 @@
 
     async function renderFriendRequests() {
       const container = document.getElementById('friendRequestsList');
-      if (!container || !supabaseClient) return;
-
+      if (!supabaseClient) return;
       const { data: pendingRequests } = await supabaseClient.from('friendships')
         .select('*')
         .eq('user_b', currentUser.username_lower)
@@ -2105,13 +2265,13 @@
         const card = document.createElement('div');
         card.className = 'flex items-center justify-between bg-eclipse-950 p-2.5 rounded-xl border border-darkBorder hover:border-amber-500/30 transition-all';
         card.innerHTML = `
-          <div class="flex items-center gap-3">
+          <button type="button" onclick="openUserProfile('${escapeHTML(senderName)}')" class="flex items-center gap-3 text-left">
             ${avatarHtml}
             <div>
-              <h4 class="text-xs font-bold text-white">${escapeHTML(senderName)}</h4>
-              <p class="text-[10px] text-slate-400 font-mono">${escapeHTML(senderName)}@eclipse.internal</p>
+              <h4 class="text-xs font-bold text-white hover:underline">${escapeHTML(getUserDisplayName(senderName))}</h4>
+              <p class="text-[10px] text-slate-400 font-mono">@${escapeHTML(senderName)}</p>
             </div>
-          </div>
+          </button>
           <div class="flex items-center gap-2">
             <button onclick="respondFriendRequest('${req.id}', 'accepted')" title="Accept Request" class="w-8 h-8 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-xs transition-all active:scale-95">
               <i class="fa-solid fa-check"></i>
@@ -2127,8 +2287,7 @@
 
     async function renderMyFriendsList() {
       const container = document.getElementById('friendsHorizontalList');
-      if (!container || !supabaseClient) return;
-
+      if (!supabaseClient) return;
       const { data: friendsData } = await supabaseClient.from('friendships')
         .select('*')
         .or(`user_a.eq.${currentUser.username_lower},user_b.eq.${currentUser.username_lower}`)
@@ -2149,13 +2308,13 @@
         const bar = document.createElement('div');
         bar.className = 'flex items-center justify-between bg-eclipse-950 p-3 rounded-xl border border-darkBorder hover:border-eclipse-500/40 transition-all';
         bar.innerHTML = `
-          <div class="flex items-center gap-3">
+          <button type="button" onclick="openUserProfile('${escapeHTML(friendName)}')" class="flex items-center gap-3 text-left">
             ${avatarHtml}
             <div>
-              <h4 class="text-xs font-bold text-white leading-tight">${escapeHTML(friendName)}</h4>
-              <p class="text-[10px] text-slate-400 font-mono">${escapeHTML(friendName)}@eclipse.internal</p>
+              <h4 class="text-xs font-bold text-white leading-tight hover:underline">${escapeHTML(getUserDisplayName(friendName))}</h4>
+              <p class="text-[10px] text-slate-400 font-mono">@${escapeHTML(friendName)}</p>
             </div>
-          </div>
+          </button>
           <button onclick="startDMFromFriend('${friendName}')" class="px-3.5 py-1.5 bg-eclipse-600 hover:bg-eclipse-500 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5">
             <i class="fa-solid fa-paper-plane text-[10px]"></i> Message
           </button>
@@ -2168,7 +2327,7 @@
       let query = document.getElementById('friendSearchInput').value.trim().toLowerCase();
       if (!query || !supabaseClient) return;
 
-      const targetName = query.replace('@eclipse.internal', '');
+      const targetName = query.replace('@eclipse.internal', '').replace(/^@/, '');
 
       if (targetName === currentUser.username_lower) {
         showToast("You can't add yourself as a friend!", 'error');
@@ -2268,6 +2427,7 @@
       localStorage.setItem('eclipse_groups_cache', JSON.stringify(groupsCache));
       closeCreateGroupModal();
       showToast(`Group "${name}" created!`, 'success');
+      lastSidebarSignature = '';
       renderDMSidebar();
       openGroupChat(newGroup.id);
     }
@@ -2275,7 +2435,6 @@
     /* HELPERS */
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
-      if (!container) return;
       const toast = document.createElement('div');
       
       let bg = 'bg-darkCard border-darkBorder text-slate-200';
