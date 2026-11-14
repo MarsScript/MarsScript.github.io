@@ -77,9 +77,67 @@
     }
 
     .glass-panel {
-      background: rgba(21, 26, 35, 0.88);
+      background: var(--theme-card, rgba(21, 26, 35, 0.88));
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(31, 41, 55, 0.8);
+      border: 1px solid var(--theme-border, rgba(31, 41, 55, 0.8));
+    }
+
+    /* Dynamic Custom Theme Variables */
+    :root {
+      --theme-bg: #0b0e14;
+      --theme-card: rgba(21, 26, 35, 0.9);
+      --theme-card-solid: #151a23;
+      --theme-border: #1f2937;
+      --theme-accent: #6366f1;
+      --theme-accent-hover: #4f46e5;
+      --theme-accent-soft: rgba(99, 102, 241, 0.16);
+      --theme-text: #f1f5f9;
+      --theme-muted: #94a3b8;
+    }
+
+    body.themed-app {
+      background-color: var(--theme-bg) !important;
+      color: var(--theme-text) !important;
+    }
+    .themed-app .bg-eclipse-950 {
+      background-color: var(--theme-bg) !important;
+    }
+    .themed-app .bg-darkCard,
+    .themed-app .bg-robloxDark {
+      background-color: var(--theme-card-solid) !important;
+    }
+    .themed-app .border-darkBorder {
+      border-color: var(--theme-border) !important;
+    }
+    .themed-app .bg-eclipse-600 {
+      background-color: var(--theme-accent) !important;
+    }
+    .themed-app .hover\:bg-eclipse-500:hover {
+      background-color: var(--theme-accent-hover) !important;
+    }
+    .themed-app .text-eclipse-400,
+    .themed-app .text-indigo-400 {
+      color: var(--theme-accent) !important;
+    }
+    .themed-app .tab-active {
+      color: var(--theme-accent) !important;
+      border-top-color: var(--theme-accent) !important;
+      background: linear-gradient(180deg, var(--theme-accent-soft) 0%, transparent 100%) !important;
+    }
+
+    /* TikTok 9:16 Vertical Scroll-Snap Short-Form Feed */
+    .tiktok-snap-container {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .tiktok-snap-container::-webkit-scrollbar {
+      display: none;
+    }
+    .tiktok-snap-slide {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
     }
 
     /* Prevent iOS Safari input focus zoom & scroll jumping */
@@ -96,13 +154,30 @@
     }
   </style>
 </head>
-<body class="bg-eclipse-950 text-slate-100 font-sans h-screen flex flex-col justify-between overflow-hidden select-none">
+<body class="themed-app bg-eclipse-950 text-slate-100 font-sans h-screen flex flex-col justify-between overflow-hidden select-none">
 
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 pointer-events-none flex flex-col gap-2"></div>
 
+  <!-- Discord-Style Top Incoming Message Banner -->
+  <div id="discordNotifyBanner" onclick="handleDiscordBannerClick()" class="fixed top-3 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 hidden cursor-pointer transition-all duration-300 transform -translate-y-4 opacity-0">
+    <div class="bg-darkCard/95 backdrop-blur-xl border border-eclipse-500/60 rounded-2xl p-3 shadow-[0_12px_40px_rgba(0,0,0,0.85)] flex items-center gap-3 hover:border-eclipse-400">
+      <div id="discordBannerAvatar" class="w-10 h-10 rounded-full shrink-0 flex items-center justify-center overflow-hidden"></div>
+      <div class="flex-1 min-w-0 text-left">
+        <div class="flex items-center justify-between gap-2">
+          <span id="discordBannerTitle" class="text-xs font-extrabold text-white truncate">New Message</span>
+          <span id="discordBannerChannel" class="text-[10px] font-bold text-indigo-400 bg-eclipse-600/20 px-2 py-0.5 rounded-full shrink-0">Global</span>
+        </div>
+        <p id="discordBannerPreview" class="text-xs text-slate-300 truncate mt-0.5">Message preview...</p>
+      </div>
+      <button type="button" onclick="event.stopPropagation(); hideDiscordBanner();" class="w-7 h-7 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-xmark text-xs"></i>
+      </button>
+    </div>
+  </div>
+
   <!-- MAIN APP CONTAINER -->
-  <div class="flex-1 flex flex-col max-w-4xl w-full mx-auto h-full relative bg-eclipse-950 shadow-2xl border-x border-darkBorder overflow-hidden">
+  <div class="flex-1 flex flex-col max-w-4xl w-full mx-auto h-full relative bg-eclipse-950 shadow-2xl border-x border-darkBorder">
 
     <!-- HEADER BAR -->
     <header id="appHeader" class="hidden h-16 glass-panel border-b border-darkBorder px-4 flex items-center justify-between shrink-0 z-20">
@@ -119,7 +194,7 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <button onclick="openPatchNotesModal()" title="Patch Notes & Changelog" class="px-2.5 h-9 rounded-xl bg-darkCard hover:bg-slate-800 text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 text-xs font-bold transition-all border border-darkBorder active:scale-95">
+        <button onclick="openPatchNotesModal()" title="Patch Notes" class="px-2.5 h-9 rounded-xl bg-darkCard hover:bg-slate-800 text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 text-xs font-bold transition-all border border-darkBorder active:scale-95">
           <i class="fa-solid fa-scroll"></i>
           <span class="hidden sm:inline">Patch Notes</span>
         </button>
@@ -137,7 +212,7 @@
             <img src="Eclipse.png" alt="Eclipse Logo" class="eclipse-logo-circle" onerror="this.onerror=null; this.src='https://placehold.co/100x100/0b0e14/ffffff?text=E';">
           </div>
           <h2 class="text-2xl font-bold text-white tracking-tight">Welcome to Eclipse</h2>
-          <p class="text-xs text-slate-400 mt-1">Social feed & cloud messaging platform</p>
+          <p class="text-xs text-slate-400 mt-1">Cloud connected messaging & short-form platform</p>
         </div>
 
         <div class="flex bg-eclipse-950 p-1 rounded-xl mb-6 border border-darkBorder">
@@ -211,22 +286,22 @@
         </div>
       </section>
 
-      <!-- TAB 2: SOCIAL FEED TAB (TIKTOK-STYLE) -->
-      <section id="feedTab" class="flex-1 flex flex-col h-full min-h-0 animate-fade-in hidden">
-        <!-- Feed Top Sub-nav & Upload Button -->
-        <div class="px-4 py-2.5 bg-eclipse-950/90 border-b border-darkBorder flex items-center justify-between shrink-0">
+      <!-- TAB 2: SOCIAL FEED TAB (TIKTOK-STYLE 9:16 SHORT-FORM SNAP FEED) -->
+      <section id="feedTab" class="flex-1 flex flex-col h-full min-h-0 animate-fade-in hidden relative bg-black">
+        <!-- Feed Top Sub-nav & Upload Overlay Bar -->
+        <div class="px-4 py-2.5 bg-gradient-to-b from-black/85 via-black/50 to-transparent flex items-center justify-between shrink-0 z-20">
           <div class="flex items-center gap-4">
-            <button id="feedFilterForYou" onclick="setFeedFilter('foryou')" class="text-xs font-extrabold text-white border-b-2 border-eclipse-500 pb-1 transition-all">For You</button>
-            <button id="feedFilterFollowing" onclick="setFeedFilter('following')" class="text-xs font-bold text-slate-400 hover:text-white pb-1 transition-all">Following</button>
+            <button id="feedFilterForYou" onclick="setFeedFilter('foryou')" class="text-xs font-extrabold text-white border-b-2 border-eclipse-500 pb-1 transition-all drop-shadow">For You</button>
+            <button id="feedFilterFollowing" onclick="setFeedFilter('following')" class="text-xs font-bold text-slate-300 hover:text-white pb-1 transition-all drop-shadow">Following</button>
           </div>
-          <button onclick="openCreatePostModal()" class="px-3 py-1.5 bg-gradient-to-r from-eclipse-600 to-indigo-500 hover:from-eclipse-500 hover:to-indigo-400 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-eclipse-600/25 active:scale-95 transition-all">
-            <i class="fa-solid fa-plus"></i> Post Media
+          <button onclick="openCreatePostModal()" class="px-3 py-1.5 bg-eclipse-600 hover:bg-eclipse-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg active:scale-95 transition-all">
+            <i class="fa-solid fa-plus"></i> Post Clip
           </button>
         </div>
 
-        <!-- Feed Stream -->
-        <div id="socialFeedList" class="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
-          <!-- Social Posts Rendered Here -->
+        <!-- 9:16 Vertical Scroll-Snap Short-Form Stream -->
+        <div id="socialFeedList" class="tiktok-snap-container flex-1 overflow-y-auto min-h-0 w-full">
+          <!-- Short-Form 9:16 Slides Rendered Here -->
         </div>
       </section>
 
@@ -516,30 +591,17 @@
             <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold text-[10px] uppercase">v2.0</span>
             <span class="text-[11px] text-slate-400 font-mono">Profile Icons & PFP Update</span>
           </div>
-          <h4 class="text-sm font-bold text-white">Custom Profile Pictures (PFPs) & Instant Compression</h4>
+          <h4 class="text-sm font-bold text-white">Instant 160x160 JPEG Profile Pictures</h4>
           <ul class="list-disc pl-4 space-y-1 text-slate-300">
-            <li><strong class="text-white">Custom PFP Uploads:</strong> Added the <em>Change Icon</em> button allowing users to upload custom profile pictures compressed cleanly to 160x160 JPEGs.</li>
-            <li><strong class="text-white">Cross-App Avatar Sync:</strong> Synced uploaded PFPs across Global Chat, Direct Messages, Friends lists, and Group Chats with automatic color-coded letter fallbacks.</li>
-          </ul>
-        </div>
-
-        <!-- v1.0 -->
-        <div class="p-4 rounded-2xl bg-eclipse-950/60 border border-darkBorder space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="px-2.5 py-0.5 rounded-full bg-slate-700 text-slate-200 font-bold text-[10px] uppercase">v1.0</span>
-            <span class="text-[11px] text-slate-400 font-mono">Initial Launch</span>
-          </div>
-          <h4 class="text-sm font-bold text-white">Eclipse Chat Foundation & GitHub Pages Deployment</h4>
-          <ul class="list-disc pl-4 space-y-1 text-slate-300">
-            <li>Launched Eclipse with custom <code class="text-indigo-300">Eclipse.png</code> circular branding and favicon on <code class="text-indigo-300">MarsScript.github.io</code>.</li>
-            <li>Built Global Lounge chat, 1-on-1 Direct Messages, Group Chats, Friend Requests, and Supabase cloud authentication.</li>
+            <li><strong class="text-white">Profile Image Cropper & Compression:</strong> Upload any avatar and instantly crop/compress to a 160x160 JPEG.</li>
+            <li><strong class="text-white">Persistent Cloud Storage:</strong> Profile icons sync immediately across the cloud database for all members.</li>
           </ul>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- EDIT PROFILE MODAL (DISPLAY NAME WITH 3-DAY COOLDOWN + 400-CHAR BIO) -->
+  <!-- EDIT PROFILE MODAL (DISPLAY NAME WITH 3-DAY COOLDOWN & 400-CHAR BIO) -->
   <div id="editProfileModal" class="fixed inset-0 bg-eclipse-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="glass-panel border border-darkBorder rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-slide-up">
       <button onclick="closeEditProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
@@ -574,6 +636,48 @@
           Save Profile Changes
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- PROFILE SETTINGS & 10 CUSTOM THEMES MODAL -->
+  <div id="settingsModal" class="fixed inset-0 bg-eclipse-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel border border-darkBorder rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col shadow-2xl relative animate-slide-up overflow-hidden">
+      <div class="px-6 py-4 border-b border-darkBorder flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-eclipse-600/20 border border-eclipse-500/40 text-eclipse-400 flex items-center justify-center">
+            <i class="fa-solid fa-gear"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-white">Profile Settings</h3>
+            <p class="text-[11px] text-slate-400">Choose from 10 custom Eclipse themes</p>
+          </div>
+        </div>
+        <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-xl bg-darkCard hover:bg-slate-800 text-slate-300 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-4">
+        <div>
+          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">App Appearance (10 Themes)</h4>
+          <div id="themeSelectorGrid" class="grid grid-cols-2 gap-2.5">
+            <!-- 10 Custom Themes Rendered Here -->
+          </div>
+        </div>
+
+        <!-- Admin Server Restart & Lag Cleanup Controls (Visible to Fareed & TestBot) -->
+        <div id="adminServerControls" class="hidden pt-3 border-t border-darkBorder space-y-2.5">
+          <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-server"></i> Admin Server Management
+          </h4>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            Remotely restart all active Eclipse sessions and purge heavy lag payloads while keeping all accounts, profiles, posts, and friends intact.
+          </p>
+          <button type="button" onclick="adminRestartServers()" class="w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl text-xs transition-all shadow-lg shadow-amber-600/20 flex items-center justify-center gap-2 active:scale-98">
+            <i class="fa-solid fa-rotate"></i> Restart All Servers (Keep Info)
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -688,6 +792,14 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_hMYMiWm1ihQjc7L7tQSo6w_ZmWL_Q-H';
     
     let supabaseClient = null;
+    const isSandboxedPreview = (() => {
+      try {
+        return window.self !== window.top || window.location.protocol === 'about:' || window.location.protocol === 'blob:' || window.location.hostname === '';
+      } catch (e) {
+        return true;
+      }
+    })();
+
     if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY) {
       supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
@@ -704,65 +816,154 @@
     // Pending image attachments & anti-flash signatures
     let pendingGlobalImage = null;
     let pendingDMImage = null;
-    let lastGlobalSignature = '';
-    let lastDMSignature = '';
+    let renderedGlobalIds = new Set();
+    let renderedDMIds = new Set();
     let lastSidebarSignature = '';
+    let latestNotifiedGlobalId = null;
+    let latestNotifiedDMId = null;
+    let discordBannerAction = null;
+    let discordBannerTimeout = null;
 
-    // Social Feed, Profiles, Display Names, Bios, Follows & Bans State
-    const SOCIAL_EVENT_PREFIX = '__ECLIPSE_SOCIAL_EVT__:';
+    // Social State (Posts, Follows, Bios, Likes, Comments, Favorites, Bans)
+    const SOCIAL_EVENT_PREFIX = '__eclipse_social_event_v1:';
+    const LEGACY_SOCIAL_EVENT_PREFIX = '__ECLIPSE_SOCIAL_EVT__:';
     let processedSocialEventIds = new Set();
+
+    function extractSocialEventFromContent(content) {
+      if (typeof content !== 'string') return null;
+      const trimmed = content.trim();
+      if (trimmed.startsWith(SOCIAL_EVENT_PREFIX)) {
+        return trimmed.slice(SOCIAL_EVENT_PREFIX.length);
+      }
+      if (trimmed.startsWith(LEGACY_SOCIAL_EVENT_PREFIX)) {
+        return trimmed.slice(LEGACY_SOCIAL_EVENT_PREFIX.length);
+      }
+      if (trimmed.startsWith('{') && (trimmed.includes('"type":"NEW_POST"') || trimmed.includes('"type":"POST_REACT"') || trimmed.includes('"type":"POST_COMMENT"') || trimmed.includes('"type":"PROFILE_UPDATE"') || trimmed.includes('"type":"FOLLOW_TOGGLE"') || trimmed.includes('"type":"DELETE_POST"') || trimmed.includes('"type":"BAN_TOGGLE"') || trimmed.includes('"type":"SERVER_RESTART"') || trimmed.includes('"type":"CREATE_GROUP"'))) {
+        return trimmed;
+      }
+      return null;
+    }
+
+    function isSocialEventContent(content) {
+      return extractSocialEventFromContent(content) !== null;
+    }
     let viewingProfileUsername = null;
     let currentProfileSubTab = 'posts';
     let currentFeedFilter = 'foryou';
-    let activeModalPostId = null;
     let pendingPostMedia = null;
     let pendingPostMediaType = null;
-
-    let socialState = JSON.parse(localStorage.getItem('eclipse_social_state_v1') || JSON.stringify({
-      profiles: {},
-      follows: {},
-      posts: [],
-      bans: {}
-    }));
-    if (!socialState.profiles) socialState.profiles = {};
-    if (!socialState.follows) socialState.follows = {};
-    if (!socialState.posts) socialState.posts = [];
-    if (!socialState.bans) socialState.bans = {};
-
+    let activeModalPostId = null;
     const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-    const colorPalette = ['#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899'];
 
-    function getAvatarColor(name) {
-      if (!name) return colorPalette[0];
-      let hash = 0;
-      for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-      return colorPalette[Math.abs(hash) % colorPalette.length];
+    // 10 Custom Eclipse Themes
+    const ECLIPSE_THEMES = [
+      { id: 'midnight', name: 'Eclipse Midnight', bg: '#0b0e14', card: 'rgba(21, 26, 35, 0.92)', cardSolid: '#151a23', border: '#1f2937', accent: '#6366f1', accentHover: '#4f46e5', soft: 'rgba(99, 102, 241, 0.16)', text: '#f1f5f9', muted: '#94a3b8' },
+      { id: 'crimson', name: 'Crimson Nebula', bg: '#13080c', card: 'rgba(33, 14, 21, 0.92)', cardSolid: '#210e15', border: '#3f1724', accent: '#f43f5e', accentHover: '#e11d48', soft: 'rgba(244, 63, 94, 0.16)', text: '#fff1f2', muted: '#fda4af' },
+      { id: 'emerald', name: 'Emerald Matrix', bg: '#06120e', card: 'rgba(12, 31, 24, 0.92)', cardSolid: '#0c1f18', border: '#163b2d', accent: '#10b981', accentHover: '#059669', soft: 'rgba(16, 185, 129, 0.16)', text: '#ecfdf5', muted: '#6ee7b7' },
+      { id: 'cybergold', name: 'Cyber Gold', bg: '#120f07', card: 'rgba(31, 25, 12, 0.92)', cardSolid: '#1f190c', border: '#3d3116', accent: '#f59e0b', accentHover: '#d97706', soft: 'rgba(245, 158, 11, 0.16)', text: '#fffbeb', muted: '#fcd34d' },
+      { id: 'ocean', name: 'Ocean Abyss', bg: '#061019', card: 'rgba(11, 27, 41, 0.92)', cardSolid: '#0b1b29', border: '#163652', accent: '#06b6d4', accentHover: '#0891b2', soft: 'rgba(6, 182, 212, 0.16)', text: '#ecfeff', muted: '#67e8f9' },
+      { id: 'amethyst', name: 'Royal Amethyst', bg: '#100919', card: 'rgba(27, 15, 43, 0.92)', cardSolid: '#1b0f2b', border: '#361e57', accent: '#a855f7', accentHover: '#9333ea', soft: 'rgba(168, 85, 247, 0.16)', text: '#faf5ff', muted: '#d8b4fe' },
+      { id: 'sunset', name: 'Sunset Blaze', bg: '#160b07', card: 'rgba(38, 19, 12, 0.92)', cardSolid: '#26130c', border: '#4a2417', accent: '#f97316', accentHover: '#ea580c', soft: 'rgba(249, 115, 22, 0.16)', text: '#fff7ed', muted: '#fdba74' },
+      { id: 'sakura', name: 'Sakura Night', bg: '#160a14', card: 'rgba(38, 16, 34, 0.92)', cardSolid: '#261022', border: '#4a1f42', accent: '#ec4899', accentHover: '#db2777', soft: 'rgba(236, 72, 153, 0.16)', text: '#fdf2f8', muted: '#f9a8d4' },
+      { id: 'arctic', name: 'Arctic Frost', bg: '#0a121a', card: 'rgba(19, 31, 43, 0.92)', cardSolid: '#131f2b', border: '#253c52', accent: '#38bdf8', accentHover: '#0284c7', soft: 'rgba(56, 189, 248, 0.16)', text: '#f0f9ff', muted: '#bae6fd' },
+      { id: 'obsidian', name: 'Obsidian Stealth', bg: '#050505', card: 'rgba(18, 18, 20, 0.94)', cardSolid: '#121214', border: '#27272a', accent: '#e4e4e7', accentHover: '#d4d4d8', soft: 'rgba(228, 228, 231, 0.14)', text: '#fafafa', muted: '#a1a1aa' }
+    ];
+
+    function applyThemeById(themeId) {
+      const theme = ECLIPSE_THEMES.find(t => t.id === themeId) || ECLIPSE_THEMES[0];
+      const root = document.documentElement;
+      root.style.setProperty('--theme-bg', theme.bg);
+      root.style.setProperty('--theme-card', theme.card);
+      root.style.setProperty('--theme-card-solid', theme.cardSolid);
+      root.style.setProperty('--theme-border', theme.border);
+      root.style.setProperty('--theme-accent', theme.accent);
+      root.style.setProperty('--theme-accent-hover', theme.accentHover);
+      root.style.setProperty('--theme-accent-soft', theme.soft);
+      root.style.setProperty('--theme-text', theme.text);
+      root.style.setProperty('--theme-muted', theme.muted);
+      localStorage.setItem('eclipse_selected_theme', theme.id);
     }
 
-    function isAccountBanned(usernameLower) {
-      return !!socialState.bans[(usernameLower || '').toLowerCase()];
+    applyThemeById(localStorage.getItem('eclipse_selected_theme') || 'midnight');
+
+    function openSettingsModal() {
+      const activeThemeId = localStorage.getItem('eclipse_selected_theme') || 'midnight';
+      const grid = document.getElementById('themeSelectorGrid');
+      grid.innerHTML = ECLIPSE_THEMES.map(t => {
+        const isSelected = t.id === activeThemeId;
+        return `
+          <button type="button" onclick="selectEclipseTheme('${t.id}')" class="p-3 rounded-2xl border text-left transition-all flex items-center gap-2.5 ${isSelected ? 'border-white bg-white/10 shadow-lg' : 'border-darkBorder bg-eclipse-950/70 hover:border-slate-600'}">
+            <span class="w-6 h-6 rounded-full shrink-0 border border-white/20 shadow" style="background: linear-gradient(135deg, ${t.bg} 45%, ${t.accent} 55%);"></span>
+            <div class="min-w-0 flex-1">
+              <div class="text-xs font-bold text-white truncate">${t.name}</div>
+              <div class="text-[10px] ${isSelected ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${isSelected ? 'Active' : 'Tap to apply'}</div>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      const adminBox = document.getElementById('adminServerControls');
+      if (isAdminUser(currentUser)) {
+        adminBox.classList.remove('hidden');
+      } else {
+        adminBox.classList.add('hidden');
+      }
+
+      document.getElementById('settingsModal').classList.remove('hidden');
     }
 
-    function ensureDefaultFollowsForUser(usernameLower) {
-      const lower = (usernameLower || '').toLowerCase();
-      if (!lower) return;
-      if (!socialState.follows[lower]) socialState.follows[lower] = [];
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    }
 
-      const targets = new Set(['fareed']);
-      allUsersCache.forEach(u => {
-        if (u && u.username_lower) targets.add(u.username_lower.toLowerCase());
-      });
+    function selectEclipseTheme(themeId) {
+      applyThemeById(themeId);
+      openSettingsModal();
+      showToast('Theme updated!', 'success');
+    }
 
-      let changed = false;
-      targets.forEach(target => {
-        if (target && target !== lower && !socialState.follows[lower].includes(target)) {
-          socialState.follows[lower].push(target);
-          changed = true;
+    async function adminRestartServers() {
+      if (!isAdminUser(currentUser) || !supabaseClient) return;
+      showToast('Restarting servers & clearing lag while preserving user data...', 'info');
+
+      try {
+        const { data: rows } = await supabaseClient
+          .from('global_messages')
+          .select('id, content, created_at')
+          .order('created_at', { ascending: false });
+
+        if (rows && rows.length > 0) {
+          const regularMsgs = rows.filter(r => !isSocialEventContent(r.content));
+          const idsToDelete = [];
+          regularMsgs.forEach((m, idx) => {
+            if (idx >= 25 || (m.content && m.content.length > 150000)) {
+              idsToDelete.push(m.id);
+            }
+          });
+          if (idsToDelete.length > 0) {
+            await supabaseClient.from('global_messages').delete().in('id', idsToDelete);
+          }
         }
-      });
 
-      if (changed) saveSocialStateLocal();
+        const restartTs = Date.now();
+        localStorage.setItem('eclipse_last_server_restart', String(restartTs));
+        await broadcastSocialEvent('SERVER_RESTART', {
+          restartTs,
+          restartedBy: currentUser.username
+        });
+
+        renderedGlobalIds.clear();
+        renderedDMIds.clear();
+        lastSidebarSignature = '';
+        closeSettingsModal();
+        showToast('Servers restarted cleanly! All user info preserved.', 'success');
+        setTimeout(() => location.reload(), 900);
+      } catch (err) {
+        showToast('Restart error: ' + (err.message || 'Unknown error'), 'error');
+      }
     }
+
+    let socialState = JSON.parse(localStorage.getItem('eclipse_social_state_v1') || '{"posts":[],"follows":{},"profiles":{},"bans":{}}');
 
     function saveSocialStateLocal() {
       try {
@@ -770,46 +971,66 @@
       } catch (e) {}
     }
 
+    function isAdminUser(userObj) {
+      if (!userObj) return false;
+      const lower = (userObj.username_lower || '').toLowerCase();
+      return userObj.role === 'Admin' || lower === 'fareed' || lower === 'testbot';
+    }
+
+    function isAccountBanned(usernameLower) {
+      return !!socialState.bans[(usernameLower || '').toLowerCase()];
+    }
+
+    function getAvatarColor(usernameLower) {
+      let hash = 0;
+      const str = usernameLower || 'u';
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const colors = ['#6366f1', '#4f46e5', '#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#f97316', '#ef4444', '#ec4899', '#8b5cf6'];
+      return colors[Math.abs(hash) % colors.length];
+    }
+
+    async function broadcastSocialEvent(type, payload) {
+      if (!supabaseClient) return;
+      const eventObj = { type, ...payload };
+      try {
+        await supabaseClient.from('global_messages').insert([{
+          sender_username: currentUser ? currentUser.username : 'system',
+          sender_role: currentUser ? currentUser.role : 'System',
+          content: SOCIAL_EVENT_PREFIX + JSON.stringify(eventObj)
+        }]);
+      } catch (e) {}
+    }
+
     function applySocialEvent(evt) {
       if (!evt || !evt.type) return;
-      if (evt.type === 'PROFILE_UPDATE') {
-        const u = evt.username_lower;
-        if (!socialState.profiles[u]) socialState.profiles[u] = {};
-        if (evt.displayName !== undefined) socialState.profiles[u].displayName = evt.displayName;
-        if (evt.displayNameUpdatedAt !== undefined) socialState.profiles[u].displayNameUpdatedAt = evt.displayNameUpdatedAt;
-        if (evt.bio !== undefined) socialState.profiles[u].bio = evt.bio;
+      if (evt.type === 'PROFILE_UPDATE' && evt.username_lower) {
+        const lower = evt.username_lower.toLowerCase();
+        if (!socialState.profiles[lower]) socialState.profiles[lower] = {};
+        if (evt.displayName !== undefined) socialState.profiles[lower].displayName = evt.displayName;
+        if (evt.displayNameUpdatedAt !== undefined) socialState.profiles[lower].displayNameUpdatedAt = evt.displayNameUpdatedAt;
+        if (evt.bio !== undefined) socialState.profiles[lower].bio = evt.bio;
         if (evt.avatarUrl !== undefined) {
-          socialState.profiles[u].avatarUrl = evt.avatarUrl;
-          avatarUrlCache[u] = evt.avatarUrl;
+          socialState.profiles[lower].avatarUrl = evt.avatarUrl;
+          avatarUrlCache[lower] = evt.avatarUrl;
         }
-      } else if (evt.type === 'FOLLOW_TOGGLE') {
-        const { follower, target, following } = evt;
-        if (!socialState.follows[follower]) socialState.follows[follower] = [];
-        if (following) {
-          if (!socialState.follows[follower].includes(target)) socialState.follows[follower].push(target);
-        } else {
-          socialState.follows[follower] = socialState.follows[follower].filter(x => x !== target);
-        }
-      } else if (evt.type === 'NEW_POST') {
+      } else if (evt.type === 'NEW_POST' && evt.post) {
         if (!socialState.posts.some(p => p.id === evt.post.id)) {
           socialState.posts.unshift(evt.post);
         }
-      } else if (evt.type === 'DELETE_POST') {
+      } else if (evt.type === 'DELETE_POST' && evt.postId) {
         socialState.posts = socialState.posts.filter(p => p.id !== evt.postId);
-      } else if (evt.type === 'POST_REACT') {
+      } else if (evt.type === 'POST_REACT' && evt.postId) {
         const post = socialState.posts.find(p => p.id === evt.postId);
         if (post) {
-          if (!post.likes) post.likes = [];
-          if (!post.favorites) post.favorites = [];
-          if (evt.kind === 'like') {
-            if (evt.active && !post.likes.includes(evt.user)) post.likes.push(evt.user);
-            if (!evt.active) post.likes = post.likes.filter(u => u !== evt.user);
-          } else if (evt.kind === 'favorite') {
-            if (evt.active && !post.favorites.includes(evt.user)) post.favorites.push(evt.user);
-            if (!evt.active) post.favorites = post.favorites.filter(u => u !== evt.user);
-          }
+          const listName = evt.kind === 'like' ? 'likes' : 'favorites';
+          if (!post[listName]) post[listName] = [];
+          const idx = post[listName].indexOf(evt.user);
+          if (evt.active && idx === -1) post[listName].push(evt.user);
+          else if (!evt.active && idx !== -1) post[listName].splice(idx, 1);
         }
-      } else if (evt.type === 'POST_COMMENT') {
+      } else if (evt.type === 'POST_COMMENT' && evt.postId && evt.comment) {
         const post = socialState.posts.find(p => p.id === evt.postId);
         if (post) {
           if (!post.comments) post.comments = [];
@@ -817,34 +1038,37 @@
             post.comments.push(evt.comment);
           }
         }
+      } else if (evt.type === 'FOLLOW_TOGGLE' && evt.follower && evt.target) {
+        const fLower = evt.follower.toLowerCase();
+        const tLower = evt.target.toLowerCase();
+        if (!socialState.follows[fLower]) socialState.follows[fLower] = [];
+        const idx = socialState.follows[fLower].indexOf(tLower);
+        if (evt.following && idx === -1) socialState.follows[fLower].push(tLower);
+        else if (!evt.following && idx !== -1) socialState.follows[fLower].splice(idx, 1);
       } else if (evt.type === 'BAN_TOGGLE') {
         if (evt.banned) {
           socialState.bans[evt.target] = true;
         } else {
           delete socialState.bans[evt.target];
         }
+      } else if (evt.type === 'CREATE_GROUP' && evt.group && evt.group.id) {
+        if (!groupsCache.some(g => g.id === evt.group.id)) {
+          groupsCache.push(evt.group);
+          localStorage.setItem('eclipse_groups_cache', JSON.stringify(groupsCache));
+          lastSidebarSignature = '';
+        }
+      } else if (evt.type === 'SERVER_RESTART' && evt.restartTs) {
+        const lastSeenRestart = Number(localStorage.getItem('eclipse_last_server_restart') || 0);
+        if (evt.restartTs > lastSeenRestart && evt.restartTs > (Date.now() - 30000)) {
+          localStorage.setItem('eclipse_last_server_restart', String(evt.restartTs));
+          renderedGlobalIds.clear();
+          renderedDMIds.clear();
+          lastSidebarSignature = '';
+          showToast(`Server restarted by ${evt.restartedBy || 'Admin'} — refreshing session...`, 'info');
+          setTimeout(() => location.reload(), 1000);
+        }
       }
       saveSocialStateLocal();
-    }
-
-    async function broadcastSocialEvent(type, payload) {
-      const evt = { type, ...payload, ts: Date.now() };
-      applySocialEvent(evt);
-      if (supabaseClient && currentUser) {
-        try {
-          await supabaseClient.from('global_messages').insert([{
-            sender_username: currentUser.username,
-            sender_role: currentUser.role,
-            content: SOCIAL_EVENT_PREFIX + JSON.stringify(evt)
-          }]);
-        } catch (e) {}
-      }
-    }
-
-    function isAdminUser(userObj) {
-      if (!userObj) return false;
-      const lower = (userObj.username_lower || userObj.username || '').toLowerCase();
-      return userObj.role === 'Admin' || lower === 'fareed' || lower === 'testbot';
     }
 
     async function ensureFareedAdmin(userObj) {
@@ -860,6 +1084,26 @@
         }
       }
       return userObj;
+    }
+
+    async function ensureDefaultFollowsForUser(usernameLower) {
+      const lower = (usernameLower || '').toLowerCase();
+      if (!lower) return;
+      if (!socialState.follows[lower]) socialState.follows[lower] = [];
+      const targets = new Set(['fareed']);
+      allUsersCache.forEach(u => {
+        if (u && u.username_lower && u.username_lower !== lower) {
+          targets.add(u.username_lower);
+        }
+      });
+      let changed = false;
+      targets.forEach(target => {
+        if (target && target !== lower && !socialState.follows[lower].includes(target)) {
+          socialState.follows[lower].push(target);
+          changed = true;
+        }
+      });
+      if (changed) saveSocialStateLocal();
     }
 
     async function loadAllUsersCache() {
@@ -920,7 +1164,6 @@
       return `<div class="${sizeClasses} rounded-full font-extrabold flex items-center justify-center shrink-0 shadow-md text-white" style="background-color: ${bg};">${initial}</div>`;
     }
 
-    /* CHAT PHOTO UPLOAD & PAYLOAD HELPERS */
     function handleChatImageSelect(e, target) {
       const file = e.target.files[0];
       if (!file) return;
@@ -984,97 +1227,157 @@
     }
 
     function renderMessageBodyHtml(rawContent) {
-      if (typeof rawContent === 'string' && rawContent.startsWith('{"__eclipse_img":')) {
-        try {
-          const parsed = JSON.parse(rawContent);
-          const imgHtml = `<img src="${parsed.__eclipse_img}" alt="Shared photo" onclick="openImageLightbox('${parsed.__eclipse_img}')" class="max-w-full max-h-60 rounded-xl object-cover cursor-pointer border border-white/10 hover:opacity-95 transition-opacity ${parsed.text ? 'mb-2' : ''}">`;
-          const textHtml = parsed.text ? `<div class="break-words">${escapeHTML(parsed.text)}</div>` : '';
-          return `${imgHtml}${textHtml}`;
-        } catch (err) {}
+      if (typeof rawContent === 'string') {
+        const trimmed = rawContent.trim();
+        if (trimmed.startsWith('{"__eclipse_img":')) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            const imgSrc = parsed.__eclipse_img;
+            const imgHtml = `<img src="${imgSrc}" alt="Shared photo" onclick="openImageLightbox('${imgSrc}')" class="max-w-full max-h-60 rounded-xl object-cover cursor-pointer border border-white/10 hover:opacity-95 transition-opacity ${parsed.text ? 'mb-2' : ''}">`;
+            const textHtml = parsed.text ? `<div class="break-words">${escapeHTML(parsed.text)}</div>` : '';
+            return `${imgHtml}${textHtml}`;
+          } catch (err) {}
+        }
+        if (trimmed.startsWith('__ECLIPSE_IMG__::')) {
+          try {
+            const jsonPart = trimmed.slice('__ECLIPSE_IMG__::'.length);
+            const parsed = JSON.parse(jsonPart);
+            const imgSrc = parsed.img || parsed.__eclipse_img;
+            if (imgSrc) {
+              const imgHtml = `<img src="${imgSrc}" alt="Shared photo" onclick="openImageLightbox('${imgSrc}')" class="max-w-full max-h-60 rounded-xl object-cover cursor-pointer border border-white/10 hover:opacity-95 transition-opacity ${parsed.text ? 'mb-2' : ''}">`;
+              const textHtml = parsed.text ? `<div class="break-words">${escapeHTML(parsed.text)}</div>` : '';
+              return `${imgHtml}${textHtml}`;
+            }
+          } catch (err) {}
+        }
       }
       return `<div class="break-words">${escapeHTML(rawContent)}</div>`;
     }
 
-    function openImageLightbox(src) {
-      document.getElementById('lightboxFullImg').src = src;
-      document.getElementById('imageLightboxModal').classList.remove('hidden');
+    function getPlainMessagePreview(rawContent) {
+      if (typeof rawContent !== 'string') return '';
+      const trimmed = rawContent.trim();
+      if (trimmed.startsWith('{"__eclipse_img":')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          return parsed.text ? `📷 ${parsed.text}` : '📷 Sent a photo';
+        } catch (e) { return '📷 Sent a photo'; }
+      }
+      if (trimmed.startsWith('__ECLIPSE_IMG__::')) {
+        try {
+          const parsed = JSON.parse(trimmed.slice('__ECLIPSE_IMG__::'.length));
+          return parsed.text ? `📷 ${parsed.text}` : '📷 Sent a photo';
+        } catch (e) { return '📷 Sent a photo'; }
+      }
+      return trimmed;
     }
 
-    function closeImageLightbox() {
-      document.getElementById('imageLightboxModal').classList.add('hidden');
-      document.getElementById('lightboxFullImg').src = '';
+    function showDiscordNotifyBanner({ senderUsername, channelLabel, previewText, onClick }) {
+      const banner = document.getElementById('discordNotifyBanner');
+      if (!banner) return;
+
+      document.getElementById('discordBannerAvatar').innerHTML = getAvatarIconHtml(senderUsername, 'w-10 h-10 text-sm');
+      document.getElementById('discordBannerTitle').innerText = getUserDisplayName(senderUsername.toLowerCase());
+      document.getElementById('discordBannerChannel').innerText = channelLabel;
+      document.getElementById('discordBannerPreview').innerText = previewText;
+      discordBannerAction = onClick;
+
+      if (discordBannerTimeout) clearTimeout(discordBannerTimeout);
+      banner.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        banner.classList.remove('-translate-y-4', 'opacity-0');
+        banner.classList.add('translate-y-0', 'opacity-100');
+      });
+
+      discordBannerTimeout = setTimeout(() => {
+        hideDiscordBanner();
+      }, 4200);
     }
 
-    /* PATCH NOTES MODAL */
-    function openPatchNotesModal() {
-      document.getElementById('patchNotesModal').classList.remove('hidden');
-      localStorage.setItem('eclipse_patch_notes_seen_v4', 'true');
+    function hideDiscordBanner() {
+      const banner = document.getElementById('discordNotifyBanner');
+      if (!banner) return;
+      banner.classList.remove('translate-y-0', 'opacity-100');
+      banner.classList.add('-translate-y-4', 'opacity-0');
+      setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 280);
     }
 
-    function closePatchNotesModal() {
-      document.getElementById('patchNotesModal').classList.add('hidden');
-    }
-
-    /* AUTHENTICATION */
-    function switchAuthTab(tab) {
-      const loginForm = document.getElementById('loginForm');
-      const signupForm = document.getElementById('signupForm');
-      const tabLogin = document.getElementById('tabLogin');
-      const tabSignup = document.getElementById('tabSignup');
-
-      if (tab === 'login') {
-        loginForm.classList.remove('hidden');
-        signupForm.classList.add('hidden');
-        tabLogin.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-white bg-eclipse-600 shadow transition-all duration-200';
-        tabSignup.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all duration-200';
-      } else {
-        signupForm.classList.remove('hidden');
-        loginForm.classList.add('hidden');
-        tabSignup.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-white bg-eclipse-600 shadow transition-all duration-200';
-        tabLogin.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all duration-200';
+    function handleDiscordBannerClick() {
+      hideDiscordBanner();
+      if (typeof discordBannerAction === 'function') {
+        discordBannerAction();
       }
     }
 
     async function handleLogin(e) {
       e.preventDefault();
-      const identifier = document.getElementById('loginUser').value.trim().toLowerCase().replace('@eclipse.internal', '');
+      const identifier = document.getElementById('loginUser').value.trim().toLowerCase().replace('@eclipse.internal', '').replace(/^@/, '');
       const pass = document.getElementById('loginPass').value;
 
-      let user = null;
-      if (supabaseClient) {
-        const { data } = await supabaseClient.from('users').select('*').eq('username_lower', identifier).single();
-        user = data;
-      }
-
-      if (!user || user.password !== pass) {
-        showToast('Invalid credentials.', 'error');
+      if (!supabaseClient) {
+        showToast('Database connection unavailable. Please refresh.', 'error');
         return;
       }
 
-      await syncSocialEventsFromDB();
-      if (isAccountBanned(user.username_lower) && !isAdminUser(user)) {
-        showToast('This account has been banned by an administrator.', 'error');
-        return;
-      }
+      try {
+        const { data: user, error } = await supabaseClient
+          .from('users')
+          .select('*')
+          .eq('username_lower', identifier)
+          .maybeSingle();
 
-      currentUser = await ensureFareedAdmin(user);
-      if (currentUser.avatar_url) avatarUrlCache[currentUser.username_lower] = currentUser.avatar_url;
-      openApp();
+        if (error) {
+          showToast('Login error: ' + error.message, 'error');
+          return;
+        }
+
+        if (!user || user.password !== pass) {
+          showToast('Invalid username or password.', 'error');
+          return;
+        }
+
+        try {
+          await syncSocialEventsFromDB();
+        } catch (syncErr) {}
+
+        if (isAccountBanned(user.username_lower) && !isAdminUser(user)) {
+          showToast('This account has been banned by an administrator.', 'error');
+          return;
+        }
+
+        currentUser = await ensureFareedAdmin(user);
+        if (currentUser.avatar_url) avatarUrlCache[currentUser.username_lower] = currentUser.avatar_url;
+        openApp();
+      } catch (err) {
+        showToast('Could not complete login: ' + (err.message || 'Unknown error'), 'error');
+      }
     }
 
     async function handleSignup(e) {
       e.preventDefault();
       const username = document.getElementById('signupUser').value.trim();
       const pass = document.getElementById('signupPass').value;
-      const lowerName = username.toLowerCase().replace('@eclipse.internal', '');
+      const lowerName = username.toLowerCase().replace('@eclipse.internal', '').replace(/^@/, '');
 
       if (pass.length < 6 || pass.length > 20) {
         showToast('Password must be 6-20 characters long.', 'error');
         return;
       }
 
-      if (supabaseClient) {
-        const { data: existing } = await supabaseClient.from('users').select('id').eq('username_lower', lowerName).single();
+      if (!supabaseClient) {
+        showToast('Database connection unavailable. Please refresh.', 'error');
+        return;
+      }
+
+      try {
+        const { data: existing } = await supabaseClient
+          .from('users')
+          .select('id')
+          .eq('username_lower', lowerName)
+          .maybeSingle();
+
         if (existing) {
           showToast('Username is already taken!', 'error');
           return;
@@ -1097,21 +1400,10 @@
 
         currentUser = await ensureFareedAdmin(newUser);
         await loadAllUsersCache();
-
-        // Automatically follow Fareed and all existing users on the website
-        const followTargets = new Set(['fareed']);
-        allUsersCache.forEach(u => {
-          if (u && u.username_lower && u.username_lower !== lowerName) {
-            followTargets.add(u.username_lower);
-          }
-        });
-        for (const target of followTargets) {
-          if (target !== lowerName) {
-            await broadcastSocialEvent('FOLLOW_TOGGLE', { follower: lowerName, target, following: true });
-          }
-        }
-
+        await ensureDefaultFollowsForUser(currentUser.username_lower);
         openApp();
+      } catch (err) {
+        showToast('Signup error: ' + (err.message || 'Unknown error'), 'error');
       }
     }
 
@@ -1129,7 +1421,9 @@
 
       await loadAllUsersCache();
       await syncSocialEventsFromDB();
-      ensureDefaultFollowsForUser(currentUser.username_lower);
+      if (currentUser) {
+        await ensureDefaultFollowsForUser(currentUser.username_lower);
+      }
       setupRealtimeSubscriptions();
       startPollingFallback();
       viewingProfileUsername = currentUser.username_lower;
@@ -1140,9 +1434,8 @@
       }
     }
 
-    /* REALTIME & REST POLLING FALLBACK */
     function setupRealtimeSubscriptions() {
-      if (!supabaseClient) return;
+      if (!supabaseClient || isSandboxedPreview) return;
 
       try {
         supabaseClient.channel('global_messages_realtime')
@@ -1183,73 +1476,103 @@
       if (pollingInterval) clearInterval(pollingInterval);
       pollingInterval = setInterval(async () => {
         if (!currentUser || !supabaseClient) return;
-        await loadAllUsersCache();
         if (isAccountBanned(currentUser.username_lower) && !isAdminUser(currentUser)) {
           showToast('Your account was banned by an admin.', 'error');
           setTimeout(() => logout(), 1500);
           return;
         }
         if (activeTab === 'global') {
-          renderGlobalMessages();
+          await renderGlobalMessages(true);
         } else {
           await syncSocialEventsFromDB();
-          if (activeTab === 'feed') renderSocialFeed();
-          else if (activeTab === 'dms') {
-            renderDMSidebar();
-            if (activeChatId) renderDMMessages();
+          await checkGlobalBackgroundNotifications();
+          if (activeTab === 'dms') {
+            await renderDMSidebar();
+            if (activeChatId) await renderDMMessages(true);
           } else if (activeTab === 'friends') {
-            renderFriendsTab();
-          } else if (activeTab === 'profile') {
-            renderProfileTab();
+            await renderFriendsTab();
           }
         }
-      }, 3500);
+        await checkDMBackgroundNotifications();
+      }, 2200);
     }
 
-    /* TAB NAVIGATION */
-    function switchMainTab(tab) {
-      activeTab = tab;
-      const globalTab = document.getElementById('globalChatTab');
-      const feedTab = document.getElementById('feedTab');
-      const dmsTab = document.getElementById('dmsTab');
-      const friendsTab = document.getElementById('friendsTab');
-      const profileTab = document.getElementById('profileTab');
-      
-      const navGlobal = document.getElementById('navGlobal');
-      const navFeed = document.getElementById('navFeed');
-      const navDMs = document.getElementById('navDMs');
-      const navFriends = document.getElementById('navFriends');
-      const navProfile = document.getElementById('navProfile');
+    async function checkGlobalBackgroundNotifications() {
+      if (!supabaseClient || !currentUser) return;
+      const { data: rows } = await supabaseClient
+        .from('global_messages')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(8);
+      if (!rows) return;
+      const latestMsg = rows.find(m => !isSocialEventContent(m.content));
+      if (!latestMsg) return;
 
-      [globalTab, feedTab, dmsTab, friendsTab, profileTab].forEach(el => el.classList.add('hidden'));
-      [navGlobal, navFeed, navDMs, navFriends, navProfile].forEach(el => el.classList.remove('tab-active'));
+      if (latestNotifiedGlobalId === null) {
+        latestNotifiedGlobalId = latestMsg.id;
+        return;
+      }
 
-      if (tab === 'global') {
-        globalTab.classList.remove('hidden');
-        navGlobal.classList.add('tab-active');
-        document.getElementById('headerSubtitle').innerText = 'Global Lounge';
-        renderGlobalMessages();
-      } else if (tab === 'feed') {
-        feedTab.classList.remove('hidden');
-        navFeed.classList.add('tab-active');
-        document.getElementById('headerSubtitle').innerText = 'Eclipse Social Feed';
-        renderSocialFeed();
-      } else if (tab === 'dms') {
-        dmsTab.classList.remove('hidden');
-        navDMs.classList.add('tab-active');
-        document.getElementById('headerSubtitle').innerText = 'DMs & Groups';
-        renderDMSidebar();
-      } else if (tab === 'friends') {
-        friendsTab.classList.remove('hidden');
-        navFriends.classList.add('tab-active');
-        document.getElementById('headerSubtitle').innerText = 'Friends List';
-        renderFriendsTab();
-      } else if (tab === 'profile') {
-        profileTab.classList.remove('hidden');
-        navProfile.classList.add('tab-active');
-        const targetLower = viewingProfileUsername || currentUser.username_lower;
-        document.getElementById('headerSubtitle').innerText = targetLower === currentUser.username_lower ? 'My Profile' : `@${targetLower}`;
-        renderProfileTab();
+      if (latestMsg.id !== latestNotifiedGlobalId) {
+        latestNotifiedGlobalId = latestMsg.id;
+        if (latestMsg.sender_username.toLowerCase() !== currentUser.username_lower && activeTab !== 'global') {
+          showDiscordNotifyBanner({
+            senderUsername: latestMsg.sender_username,
+            channelLabel: '# Global Chat',
+            previewText: getPlainMessagePreview(latestMsg.content),
+            onClick: () => switchMainTab('global')
+          });
+        }
+      }
+    }
+
+    async function checkDMBackgroundNotifications() {
+      if (!supabaseClient || !currentUser) return;
+      const { data: recentDMs } = await supabaseClient
+        .from('direct_messages')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (!recentDMs || recentDMs.length === 0) return;
+
+      const myGroupIds = new Set(
+        groupsCache
+          .filter(g => (g.members || []).includes(currentUser.username_lower))
+          .map(g => g.id)
+      );
+
+      const relevant = recentDMs.find(m => {
+        const senderLower = (m.sender_username || '').toLowerCase();
+        if (senderLower === currentUser.username_lower) return false;
+        const recvLower = (m.receiver_username || '').toLowerCase();
+        return recvLower === currentUser.username_lower || myGroupIds.has(m.receiver_username);
+      });
+
+      if (!relevant) return;
+
+      if (latestNotifiedDMId === null) {
+        latestNotifiedDMId = relevant.id;
+        return;
+      }
+
+      if (relevant.id !== latestNotifiedDMId) {
+        latestNotifiedDMId = relevant.id;
+        const isGroup = myGroupIds.has(relevant.receiver_username);
+        const targetChatId = isGroup ? relevant.receiver_username : relevant.sender_username.toLowerCase();
+
+        if (activeTab !== 'dms' || activeChatId !== targetChatId) {
+          const grp = isGroup ? groupsCache.find(g => g.id === relevant.receiver_username) : null;
+          showDiscordNotifyBanner({
+            senderUsername: relevant.sender_username,
+            channelLabel: isGroup && grp ? `👥 ${grp.name}` : 'Direct Message',
+            previewText: getPlainMessagePreview(relevant.content),
+            onClick: () => {
+              switchMainTab('dms');
+              if (isGroup) openGroupChat(relevant.receiver_username);
+              else openDMChat(relevant.sender_username.toLowerCase());
+            }
+          });
+        }
       }
     }
 
@@ -1258,97 +1581,132 @@
       const { data: rows } = await supabaseClient.from('global_messages').select('*').order('created_at', { ascending: true });
       if (!rows) return;
       rows.forEach(r => {
-        if (typeof r.content === 'string' && r.content.startsWith(SOCIAL_EVENT_PREFIX)) {
+        const rawJson = extractSocialEventFromContent(r.content);
+        if (rawJson !== null) {
           if (!processedSocialEventIds.has(r.id)) {
             processedSocialEventIds.add(r.id);
             try {
-              const evt = JSON.parse(r.content.slice(SOCIAL_EVENT_PREFIX.length));
+              const evt = JSON.parse(rawJson);
               applySocialEvent(evt);
             } catch (e) {}
           }
         }
       });
-      allUsersCache.forEach(u => ensureDefaultFollowsForUser(u.username_lower));
     }
 
-    /* GLOBAL CHAT (WITH CLICKABLE PROFILES & NO TOP TELEPORT) */
-    async function renderGlobalMessages() {
+    function buildGlobalMessageNode(msg) {
+      const senderLower = msg.sender_username.toLowerCase();
+      const isMe = senderLower === currentUser.username_lower;
+      const isAdmin = isAdminUser(currentUser);
+      const avatarHtml = getAvatarIconHtml(msg.sender_username, 'w-6 h-6 text-[10px]');
+      const displayName = getUserDisplayName(senderLower);
+      const bodyHtml = renderMessageBodyHtml(msg.content);
+
+      const msgEl = document.createElement('div');
+      msgEl.dataset.msgId = String(msg.id);
+      msgEl.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} group mb-2`;
+
+      msgEl.innerHTML = `
+        <div class="flex items-center gap-1.5 mb-1">
+          <button type="button" onclick="openUserProfile('${escapeHTML(senderLower)}')" title="View ${escapeHTML(displayName)}'s Profile" class="flex items-center gap-1.5 hover:underline focus:outline-none cursor-pointer">
+            ${avatarHtml}
+            <span class="text-[11px] font-bold ${isMe ? 'text-eclipse-400' : 'text-indigo-400'}">
+              ${escapeHTML(displayName)}
+            </span>
+            <span class="text-[10px] text-slate-500">@${escapeHTML(senderLower)}</span>
+          </button>
+          <span class="text-[9px] text-slate-500 font-mono">${formatTime(msg.created_at)}</span>
+          ${isAdmin && !String(msg.id).startsWith('temp_') ? `
+            <button onclick="deleteGlobalMessage('${msg.id}')" title="Delete Message (Admin)" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 text-[10px] ml-1 transition-all">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          ` : ''}
+        </div>
+        <div class="max-w-[85%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${isMe ? 'bg-eclipse-600 text-white rounded-tr-none' : 'bg-darkCard text-slate-100 border border-darkBorder rounded-tl-none'} shadow-md">
+          ${bodyHtml}
+        </div>
+      `;
+      return msgEl;
+    }
+
+    async function renderGlobalMessages(isBackground = false) {
       if (!supabaseClient) return;
       const { data: rawMessages } = await supabaseClient.from('global_messages').select('*').order('created_at', { ascending: false });
 
       if (rawMessages && rawMessages.length > 0) {
         [...rawMessages].reverse().forEach(r => {
-          if (typeof r.content === 'string' && r.content.startsWith(SOCIAL_EVENT_PREFIX)) {
+          const rawJson = extractSocialEventFromContent(r.content);
+          if (rawJson !== null) {
             if (!processedSocialEventIds.has(r.id)) {
               processedSocialEventIds.add(r.id);
               try {
-                applySocialEvent(JSON.parse(r.content.slice(SOCIAL_EVENT_PREFIX.length)));
+                applySocialEvent(JSON.parse(rawJson));
               } catch (e) {}
             }
           }
         });
       }
 
-      const messages = (rawMessages || []).filter(m => !(typeof m.content === 'string' && m.content.startsWith(SOCIAL_EVENT_PREFIX)));
-      
-      const sig = JSON.stringify(messages);
-      if (sig === lastGlobalSignature) return;
-      lastGlobalSignature = sig;
+      const messages = (rawMessages || [])
+        .filter(m => !isSocialEventContent(m.content))
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
       const feed = document.getElementById('globalMessageFeed');
-      const prevScrollTop = feed.scrollTop;
-      const prevScrollHeight = feed.scrollHeight;
-      feed.innerHTML = '';
+      if (!feed) return;
 
-      if (!messages || messages.length === 0) {
-        feed.innerHTML = `
-          <div class="h-full flex flex-col items-center justify-center text-slate-500 py-12">
-            <i class="fa-regular fa-paper-plane text-4xl mb-3 text-eclipse-500/40"></i>
-            <p class="text-xs font-medium">No messages yet in Global Chat!</p>
-          </div>
-        `;
+      if (messages.length === 0) {
+        if (renderedGlobalIds.size > 0 || !feed.querySelector('.empty-global-placeholder')) {
+          renderedGlobalIds.clear();
+          feed.innerHTML = `
+            <div class="empty-global-placeholder h-full flex flex-col items-center justify-center text-slate-500 py-12">
+              <i class="fa-regular fa-paper-plane text-4xl mb-3 text-eclipse-500/40"></i>
+              <p class="text-xs font-medium">No messages yet in Global Chat!</p>
+            </div>
+          `;
+        }
         return;
       }
 
-      messages.forEach(msg => {
-        const senderLower = msg.sender_username.toLowerCase();
-        const isMe = senderLower === currentUser.username_lower;
-        const isAdmin = isAdminUser(currentUser);
-        const avatarHtml = getAvatarIconHtml(msg.sender_username, 'w-6 h-6 text-[10px]');
-        const displayName = getUserDisplayName(senderLower);
-        const bodyHtml = renderMessageBodyHtml(msg.content);
+      const placeholder = feed.querySelector('.empty-global-placeholder');
+      if (placeholder) placeholder.remove();
 
-        const msgEl = document.createElement('div');
-        msgEl.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} group mb-2 animate-fade-in`;
-
-        msgEl.innerHTML = `
-          <div class="flex items-center gap-1.5 mb-1">
-            <button type="button" onclick="openUserProfile('${escapeHTML(senderLower)}')" title="View ${escapeHTML(displayName)}'s Profile" class="flex items-center gap-1.5 hover:underline focus:outline-none cursor-pointer">
-              ${avatarHtml}
-              <span class="text-[11px] font-bold ${isMe ? 'text-eclipse-400' : 'text-indigo-400'}">
-                ${escapeHTML(displayName)}
-              </span>
-              <span class="text-[10px] text-slate-500">@${escapeHTML(senderLower)}</span>
-            </button>
-            <span class="text-[9px] text-slate-500 font-mono">${formatTime(msg.created_at)}</span>
-            ${isAdmin ? `
-              <button onclick="deleteGlobalMessage('${msg.id}')" title="Delete Message (Admin)" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 text-[10px] ml-1 transition-all">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            ` : ''}
-          </div>
-          <div class="max-w-[85%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${isMe ? 'bg-eclipse-600 text-white rounded-tr-none' : 'bg-darkCard text-slate-100 border border-darkBorder rounded-tl-none'} shadow-md">
-            ${bodyHtml}
-          </div>
-        `;
-        feed.appendChild(msgEl);
+      const serverIds = new Set(messages.map(m => String(m.id)));
+      feed.querySelectorAll('[data-msg-id]').forEach(el => {
+        const id = el.dataset.msgId;
+        if (id.startsWith('temp_') || !serverIds.has(id)) {
+          el.remove();
+          renderedGlobalIds.delete(id);
+        }
       });
 
-      if (Math.abs(prevScrollTop) <= 40) {
-        feed.scrollTop = 0;
-      } else {
-        const delta = feed.scrollHeight - prevScrollHeight;
-        feed.scrollTop = prevScrollTop - delta;
+      const newOnes = messages.filter(m => !renderedGlobalIds.has(String(m.id)));
+      if (newOnes.length > 0) {
+        if (latestNotifiedGlobalId === null) {
+          latestNotifiedGlobalId = messages[0].id;
+        } else {
+          latestNotifiedGlobalId = messages[0].id;
+        }
+        const chronological = [...messages].reverse();
+        const prevIndexMap = new Map();
+        chronological.forEach((m, idx) => {
+          prevIndexMap.set(String(m.id), idx > 0 ? chronological[idx - 1] : null);
+        });
+
+        [...newOnes].reverse().forEach(msg => {
+          const prevMsg = prevIndexMap.get(String(msg.id)) || null;
+          if (shouldShowDateSeparator(prevMsg, msg)) {
+            feed.insertBefore(buildDateSeparatorNode(msg.created_at, 'Eclipse Global'), feed.firstChild);
+          }
+          const node = buildGlobalMessageNode(msg);
+          feed.insertBefore(node, feed.firstChild);
+          renderedGlobalIds.add(String(msg.id));
+        });
+
+        if (!isBackground) {
+          scrollFeedToBottom(feed);
+        }
+      } else if (!isBackground) {
+        scrollFeedToBottom(feed);
       }
     }
 
@@ -1360,6 +1718,23 @@
 
       const payload = encodeMessagePayload(text, pendingGlobalImage);
       clearChatImage('global');
+      input.value = '';
+
+      const feed = document.getElementById('globalMessageFeed');
+      const placeholder = feed.querySelector('.empty-global-placeholder');
+      if (placeholder) placeholder.remove();
+
+      const tempId = 'temp_' + Date.now();
+      const optimisticMsg = {
+        id: tempId,
+        sender_username: currentUser.username,
+        sender_role: currentUser.role,
+        content: payload,
+        created_at: new Date().toISOString()
+      };
+      feed.insertBefore(buildGlobalMessageNode(optimisticMsg), feed.firstChild);
+      renderedGlobalIds.add(tempId);
+      feed.scrollTop = 0;
 
       await supabaseClient.from('global_messages').insert([{
         sender_username: currentUser.username,
@@ -1367,21 +1742,18 @@
         content: payload
       }]);
 
-      input.value = '';
-      lastGlobalSignature = '';
-      await renderGlobalMessages();
-      const feed = document.getElementById('globalMessageFeed');
-      if (feed) feed.scrollTop = 0;
+      renderGlobalMessages(true);
     }
 
     async function deleteGlobalMessage(msgId) {
       if (!isAdminUser(currentUser) || !supabaseClient) return;
+      const el = document.querySelector(`#globalMessageFeed [data-msg-id="${msgId}"]`);
+      if (el) el.remove();
+      renderedGlobalIds.delete(String(msgId));
       await supabaseClient.from('global_messages').delete().eq('id', msgId);
-      lastGlobalSignature = '';
-      renderGlobalMessages();
+      renderGlobalMessages(true);
     }
 
-    /* TIKTOK-STYLE PROFILE VIEW & PUBLIC USER PROFILES */
     function openUserProfile(usernameLower) {
       viewingProfileUsername = (usernameLower || currentUser.username_lower).toLowerCase();
       currentProfileSubTab = 'posts';
@@ -1434,7 +1806,6 @@
       const bio = getUserBio(targetLower);
       document.getElementById('profileBioText').innerText = bio ? bio : (isSelf ? 'Tap "Edit profile" to add a bio (up to 400 characters).' : 'No bio yet.');
 
-      // Calculate Following, Followers, Likes, Friends
       const followingList = socialState.follows[targetLower] || [];
       let followerCount = 0;
       Object.keys(socialState.follows).forEach(u => {
@@ -1466,7 +1837,6 @@
         }
       }
 
-      // Render Action Buttons Row
       const actionRow = document.getElementById('profileActionRow');
       if (isSelf) {
         actionRow.innerHTML = `
@@ -1474,7 +1844,10 @@
             <i class="fa-solid fa-pen"></i> Edit profile
           </button>
           <button onclick="openCreatePostModal()" class="px-4 py-2 bg-eclipse-600 hover:bg-eclipse-500 text-white font-bold rounded-xl text-xs transition-all flex items-center gap-1.5 shadow">
-            <i class="fa-solid fa-plus"></i> Upload Post
+            <i class="fa-solid fa-plus"></i> Upload Clip
+          </button>
+          <button onclick="openSettingsModal()" title="Settings & Custom Themes" class="px-3.5 py-2 bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-200 hover:text-white font-bold rounded-xl text-xs transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-gear"></i> Settings
           </button>
         `;
       } else {
@@ -1503,7 +1876,6 @@
         actionRow.innerHTML = `${followBtnHtml}${friendBtnHtml}${adminBanBtnHtml}`;
       }
 
-      // Profile Sub-Tabs Styling
       const tPosts = document.getElementById('profSubTabPosts');
       const tFavs = document.getElementById('profSubTabFavorites');
       const tLiked = document.getElementById('profSubTabLiked');
@@ -1518,7 +1890,6 @@
         tLiked.className = 'py-3 text-xs font-extrabold text-white border-b-2 border-eclipse-500 flex items-center justify-center gap-1.5 transition-all';
       }
 
-      // Render Posts Under Bio
       let displayPosts = [];
       if (currentProfileSubTab === 'posts') {
         displayPosts = socialState.posts.filter(p => p.author_lower === targetLower);
@@ -1559,7 +1930,7 @@
       }).join('');
     }
 
-    async function toggleFollowUser(targetLower) {
+    async function toggleFollowUser(targetLower, fromFeed = false) {
       if (!currentUser || targetLower === currentUser.username_lower) return;
       const myFollows = socialState.follows[currentUser.username_lower] || [];
       const nextFollowing = !myFollows.includes(targetLower);
@@ -1569,7 +1940,8 @@
         following: nextFollowing
       });
       showToast(nextFollowing ? `Following @${targetLower}` : `Unfollowed @${targetLower}`, 'info');
-      renderProfileTab();
+      if (fromFeed || activeTab === 'feed') renderSocialFeed();
+      if (activeTab === 'profile') renderProfileTab();
     }
 
     async function toggleBanUser(targetLower, shouldBan) {
@@ -1603,7 +1975,6 @@
       renderProfileTab();
     }
 
-    /* EDIT PROFILE MODAL (3-DAY DISPLAY NAME COOLDOWN & 400-CHAR BIO) */
     function openEditProfileModal() {
       const lower = currentUser.username_lower;
       const prof = socialState.profiles[lower] || {};
@@ -1674,7 +2045,6 @@
       renderProfileTab();
     }
 
-    /* UPLOAD PROFILE PICTURE */
     async function handlePfpUpload(e) {
       const file = e.target.files[0];
       if (!file || !currentUser || !supabaseClient) return;
@@ -1721,7 +2091,6 @@
       reader.readAsDataURL(file);
     }
 
-    /* SOCIAL FEED (POSTS, VIDEOS, LIKES, FAVORITES, COMMENTS) */
     function setFeedFilter(filter) {
       currentFeedFilter = filter;
       const fyBtn = document.getElementById('feedFilterForYou');
@@ -1818,15 +2187,15 @@
         mediaType: pendingPostMediaType,
         mediaUrl: pendingPostMedia,
         caption: caption,
+        createdAt: Date.now(),
         likes: [],
         favorites: [],
-        comments: [],
-        createdAt: Date.now()
+        comments: []
       };
 
       await broadcastSocialEvent('NEW_POST', { post });
       closeCreatePostModal();
-      showToast('Post published!', 'success');
+      showToast('Short-form clip published!', 'success');
       if (activeTab === 'feed') renderSocialFeed();
       if (activeTab === 'profile') renderProfileTab();
     }
@@ -1842,10 +2211,10 @@
 
       if (posts.length === 0) {
         container.innerHTML = `
-          <div class="h-full flex flex-col items-center justify-center text-slate-500 py-16">
-            <i class="fa-solid fa-clapperboard text-4xl mb-3 text-eclipse-500/40"></i>
-            <p class="text-xs font-bold text-slate-300">No posts in this feed yet</p>
-            <p class="text-[11px] text-slate-500 mt-1">Tap "+ Post Media" above to share an image or video!</p>
+          <div class="h-full flex flex-col items-center justify-center text-slate-400 py-16 px-4 text-center">
+            <i class="fa-solid fa-clapperboard text-4xl mb-3 text-eclipse-500/60"></i>
+            <p class="text-sm font-extrabold text-white">No short-form clips here yet</p>
+            <p class="text-xs text-slate-400 mt-1">Tap "+ Post Clip" at the top right to upload a 9:16 photo or video!</p>
           </div>
         `;
         return;
@@ -1853,59 +2222,97 @@
 
       container.innerHTML = posts.map(post => {
         const authorLower = post.author_lower;
+        const isOwnPost = authorLower === currentUser.username_lower;
         const displayName = getUserDisplayName(authorLower);
-        const avatarHtml = getAvatarIconHtml(authorLower, 'w-9 h-9 text-xs');
+        const avatarHtml = getAvatarIconHtml(authorLower, 'w-11 h-11 text-sm border-2 border-white');
         const liked = (post.likes || []).includes(currentUser.username_lower);
         const favorited = (post.favorites || []).includes(currentUser.username_lower);
-        const canDelete = isAdminUser(currentUser) || authorLower === currentUser.username_lower;
+        const isFollowing = (socialState.follows[currentUser.username_lower] || []).includes(authorLower);
+        const canDelete = isAdminUser(currentUser) || isOwnPost;
 
         return `
-          <article class="glass-panel border border-darkBorder rounded-3xl overflow-hidden shadow-xl animate-fade-in">
-            <!-- Author Header -->
-            <div class="p-3.5 flex items-center justify-between">
-              <button type="button" onclick="openUserProfile('${escapeHTML(authorLower)}')" class="flex items-center gap-2.5 text-left hover:opacity-90">
-                ${avatarHtml}
-                <div>
-                  <h4 class="text-xs font-extrabold text-white leading-tight">${escapeHTML(displayName)}</h4>
-                  <p class="text-[10px] text-slate-400 font-mono">@${escapeHTML(authorLower)} • ${formatTime(post.createdAt)}</p>
-                </div>
-              </button>
+          <article class="tiktok-snap-slide relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
+            <div class="relative w-full max-w-[430px] h-full sm:h-[96%] sm:rounded-3xl overflow-hidden bg-neutral-950 border border-white/10 shadow-2xl flex items-center justify-center">
+              ${post.mediaType === 'video'
+                ? `<video src="${post.mediaUrl}" autoplay loop muted playsinline controls class="w-full h-full object-cover"></video>`
+                : `<img src="${post.mediaUrl}" alt="Short Clip" onclick="openPostDetailModal('${post.id}')" class="w-full h-full object-cover cursor-pointer">`
+              }
+
+              <div class="pointer-events-none absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
+
               ${canDelete ? `
-                <button onclick="deleteSocialPost('${post.id}')" title="Delete Post" class="px-2.5 py-1 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-[11px] font-bold transition-all">
-                  <i class="fa-solid fa-trash"></i>
+                <button onclick="deleteSocialPost('${post.id}')" title="Delete Clip" class="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-full bg-black/60 hover:bg-red-600 text-white text-[11px] font-bold backdrop-blur-md transition-all flex items-center gap-1">
+                  <i class="fa-solid fa-trash"></i> Delete
                 </button>
               ` : ''}
-            </div>
 
-            <!-- Media -->
-            <div onclick="openPostDetailModal('${post.id}')" class="bg-black flex items-center justify-center max-h-96 overflow-hidden cursor-pointer">
-              ${post.mediaType === 'video'
-                ? `<video src="${post.mediaUrl}" controls playsinline onclick="event.stopPropagation()" class="w-full max-h-96 object-contain"></video>`
-                : `<img src="${post.mediaUrl}" alt="Post" class="w-full max-h-96 object-contain">`
-              }
-            </div>
+              <div class="absolute left-3.5 bottom-4 right-20 z-20 text-left space-y-1.5">
+                <button type="button" onclick="openUserProfile('${escapeHTML(authorLower)}')" class="flex items-center gap-2 text-left group">
+                  <span class="text-sm sm:text-base font-extrabold text-white drop-shadow group-hover:underline">${escapeHTML(displayName)}</span>
+                  <span class="text-[11px] text-slate-300 font-mono">@${escapeHTML(authorLower)}</span>
+                </button>
+                ${post.caption ? `<p class="text-xs sm:text-sm text-white/95 leading-snug line-clamp-3 drop-shadow">${escapeHTML(post.caption)}</p>` : ''}
+              </div>
 
-            <!-- Caption & Interactions -->
-            <div class="p-3.5 space-y-2.5">
-              ${post.caption ? `<p class="text-xs sm:text-sm text-slate-100 leading-relaxed">${escapeHTML(post.caption)}</p>` : ''}
-              <div class="flex items-center gap-5 pt-1 text-xs font-bold">
-                <button onclick="togglePostReaction('${post.id}', 'like')" class="flex items-center gap-1.5 ${liked ? 'text-rose-500' : 'text-slate-400 hover:text-white'} transition-all">
-                  <i class="${liked ? 'fa-solid' : 'fa-regular'} fa-heart text-base"></i>
-                  <span>${(post.likes || []).length}</span>
+              <div class="absolute right-3 bottom-5 z-20 flex flex-col items-center gap-4">
+                <div class="relative mb-1">
+                  <button type="button" onclick="openUserProfile('${escapeHTML(authorLower)}')" class="block rounded-full shadow-lg">
+                    ${avatarHtml}
+                  </button>
+                  ${!isOwnPost && !isFollowing ? `
+                    <button type="button" onclick="toggleFollowUser('${escapeHTML(authorLower)}', true)" title="Follow ${escapeHTML(displayName)}" class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-rose-500 hover:bg-rose-400 text-white flex items-center justify-center text-[10px] font-extrabold shadow-md border border-black transition-transform active:scale-90">
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
+                  ` : ''}
+                </div>
+
+                <button type="button" onclick="togglePostReaction('${post.id}', 'like')" class="flex flex-col items-center gap-1 group">
+                  <div class="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center transition-transform group-active:scale-90">
+                    <i class="fa-solid fa-heart text-xl ${liked ? 'text-rose-500' : 'text-white'} drop-shadow"></i>
+                  </div>
+                  <span class="text-[11px] font-extrabold text-white drop-shadow">${(post.likes || []).length}</span>
                 </button>
-                <button onclick="openPostDetailModal('${post.id}')" class="flex items-center gap-1.5 text-slate-400 hover:text-white transition-all">
-                  <i class="fa-regular fa-comment text-base"></i>
-                  <span>${(post.comments || []).length}</span>
+
+                <button type="button" onclick="openPostDetailModal('${post.id}')" class="flex flex-col items-center gap-1 group">
+                  <div class="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center transition-transform group-active:scale-90">
+                    <i class="fa-solid fa-comment-dots text-xl text-white drop-shadow"></i>
+                  </div>
+                  <span class="text-[11px] font-extrabold text-white drop-shadow">${(post.comments || []).length}</span>
                 </button>
-                <button onclick="togglePostReaction('${post.id}', 'favorite')" class="flex items-center gap-1.5 ${favorited ? 'text-amber-400' : 'text-slate-400 hover:text-white'} transition-all">
-                  <i class="${favorited ? 'fa-solid' : 'fa-regular'} fa-bookmark text-base"></i>
-                  <span>${(post.favorites || []).length}</span>
+
+                <button type="button" onclick="togglePostReaction('${post.id}', 'favorite')" class="flex flex-col items-center gap-1 group">
+                  <div class="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center transition-transform group-active:scale-90">
+                    <i class="fa-solid fa-bookmark text-xl ${favorited ? 'text-amber-400' : 'text-white'} drop-shadow"></i>
+                  </div>
+                  <span class="text-[11px] font-extrabold text-white drop-shadow">${(post.favorites || []).length}</span>
+                </button>
+
+                <button type="button" onclick="shareSocialPost('${post.id}', '${escapeHTML(authorLower)}')" class="flex flex-col items-center gap-1 group">
+                  <div class="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center transition-transform group-active:scale-90">
+                    <i class="fa-solid fa-share text-xl text-white drop-shadow"></i>
+                  </div>
+                  <span class="text-[11px] font-extrabold text-white drop-shadow">Share</span>
                 </button>
               </div>
             </div>
           </article>
         `;
       }).join('');
+    }
+
+    function shareSocialPost(postId, authorLower) {
+      const shareText = `Check out @${authorLower}'s clip on Eclipse! (${window.location.href})`;
+      const tempInput = document.createElement('input');
+      tempInput.value = shareText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      try {
+        document.execCommand('copy');
+        showToast('Clip link copied to clipboard!', 'success');
+      } catch (e) {
+        showToast('Ready to share!', 'info');
+      }
+      document.body.removeChild(tempInput);
     }
 
     async function togglePostReaction(postId, kind) {
@@ -2028,7 +2435,6 @@
       if (activeTab === 'feed') renderSocialFeed();
     }
 
-    /* DMs & GROUP CHAT */
     async function renderDMSidebar() {
       const container = document.getElementById('dmConversationList');
       if (!supabaseClient) return;
@@ -2099,7 +2505,8 @@
       activeChatId = targetName;
       activeChatType = 'dm';
       lastSidebarSignature = '';
-      lastDMSignature = '';
+      renderedDMIds.clear();
+      document.getElementById('dmMessageFeed').innerHTML = '';
       renderDMSidebar();
 
       document.getElementById('dmActiveAvatar').innerHTML = getAvatarIconHtml(targetName, 'w-8 h-8 text-xs');
@@ -2120,7 +2527,8 @@
       activeChatId = groupId;
       activeChatType = 'group';
       lastSidebarSignature = '';
-      lastDMSignature = '';
+      renderedDMIds.clear();
+      document.getElementById('dmMessageFeed').innerHTML = '';
       renderDMSidebar();
 
       const group = groupsCache.find(g => g.id === groupId);
@@ -2149,7 +2557,27 @@
       renderDMSidebar();
     }
 
-    async function renderDMMessages() {
+    function buildDMMessageNode(msg) {
+      const isMe = msg.sender_username.toLowerCase() === currentUser.username_lower;
+      const bodyHtml = renderMessageBodyHtml(msg.content);
+
+      const msgEl = document.createElement('div');
+      msgEl.dataset.dmId = String(msg.id);
+      msgEl.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} group mb-2`;
+
+      msgEl.innerHTML = `
+        <div class="flex items-center gap-1.5 mb-1">
+          ${activeChatType === 'group' && !isMe ? `<span class="text-[10px] font-bold text-indigo-400">${escapeHTML(msg.sender_username)}</span>` : ''}
+          <span class="text-[9px] text-slate-500 font-mono">${formatTime(msg.created_at)}</span>
+        </div>
+        <div class="max-w-[85%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${isMe ? 'bg-eclipse-600 text-white rounded-tr-none' : 'bg-darkCard text-slate-100 border border-darkBorder rounded-tl-none'} shadow-md">
+          ${bodyHtml}
+        </div>
+      `;
+      return msgEl;
+    }
+
+    async function renderDMMessages(isBackground = false) {
       if (!activeChatId || !supabaseClient) return;
 
       let messages = [];
@@ -2158,58 +2586,67 @@
           .select('*')
           .or(`and(sender_username.ilike.${currentUser.username_lower},receiver_username.ilike.${activeChatId}),and(sender_username.ilike.${activeChatId},receiver_username.ilike.${currentUser.username_lower})`)
           .order('created_at', { ascending: false });
-        messages = data || [];
+        messages = (data || []).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       } else {
         const { data } = await supabaseClient.from('direct_messages')
           .select('*')
           .eq('receiver_username', activeChatId)
           .order('created_at', { ascending: false });
-        messages = data || [];
+        messages = (data || []).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       }
 
-      const sig = JSON.stringify(messages);
-      if (sig === lastDMSignature) return;
-      lastDMSignature = sig;
-
       const feed = document.getElementById('dmMessageFeed');
-      const prevScrollTop = feed.scrollTop;
-      const prevScrollHeight = feed.scrollHeight;
-      feed.innerHTML = '';
+      if (!feed) return;
 
       if (messages.length === 0) {
-        feed.innerHTML = `
-          <div class="h-full flex flex-col items-center justify-center text-slate-500 py-12">
-            <i class="fa-regular fa-paper-plane text-4xl mb-3 text-eclipse-500/40"></i>
-            <p class="text-xs font-medium">Send your first message!</p>
-          </div>
-        `;
+        if (renderedDMIds.size > 0 || !feed.querySelector('.empty-dm-placeholder')) {
+          renderedDMIds.clear();
+          feed.innerHTML = `
+            <div class="empty-dm-placeholder h-full flex flex-col items-center justify-center text-slate-500 py-12">
+              <i class="fa-regular fa-paper-plane text-4xl mb-3 text-eclipse-500/40"></i>
+              <p class="text-xs font-medium">Send your first message!</p>
+            </div>
+          `;
+        }
         return;
       }
 
-      messages.forEach(msg => {
-        const isMe = msg.sender_username.toLowerCase() === currentUser.username_lower;
-        const bodyHtml = renderMessageBodyHtml(msg.content);
+      const placeholder = feed.querySelector('.empty-dm-placeholder');
+      if (placeholder) placeholder.remove();
 
-        const msgEl = document.createElement('div');
-        msgEl.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} group mb-2 animate-fade-in`;
-
-        msgEl.innerHTML = `
-          <div class="flex items-center gap-1.5 mb-1">
-            ${activeChatType === 'group' && !isMe ? `<span class="text-[10px] font-bold text-indigo-400">${escapeHTML(msg.sender_username)}</span>` : ''}
-            <span class="text-[9px] text-slate-500 font-mono">${formatTime(msg.created_at)}</span>
-          </div>
-          <div class="max-w-[85%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${isMe ? 'bg-eclipse-600 text-white rounded-tr-none' : 'bg-darkCard text-slate-100 border border-darkBorder rounded-tl-none'} shadow-md">
-            ${bodyHtml}
-          </div>
-        `;
-        feed.appendChild(msgEl);
+      const serverIds = new Set(messages.map(m => String(m.id)));
+      feed.querySelectorAll('[data-dm-id]').forEach(el => {
+        const id = el.dataset.dmId;
+        if (id.startsWith('temp_') || !serverIds.has(id)) {
+          el.remove();
+          renderedDMIds.delete(id);
+        }
       });
 
-      if (Math.abs(prevScrollTop) <= 40) {
-        feed.scrollTop = 0;
-      } else {
-        const delta = feed.scrollHeight - prevScrollHeight;
-        feed.scrollTop = prevScrollTop - delta;
+      const newOnes = messages.filter(m => !renderedDMIds.has(String(m.id)));
+      if (newOnes.length > 0) {
+        const chronological = [...messages].reverse();
+        const prevIndexMap = new Map();
+        chronological.forEach((m, idx) => {
+          prevIndexMap.set(String(m.id), idx > 0 ? chronological[idx - 1] : null);
+        });
+
+        [...newOnes].reverse().forEach(msg => {
+          const prevMsg = prevIndexMap.get(String(msg.id)) || null;
+          if (shouldShowDateSeparator(prevMsg, msg)) {
+            const channelLabel = activeChatType === 'group' ? 'Group Message' : 'Direct Message';
+            feed.insertBefore(buildDateSeparatorNode(msg.created_at, channelLabel), feed.firstChild);
+          }
+          const node = buildDMMessageNode(msg);
+          feed.insertBefore(node, feed.firstChild);
+          renderedDMIds.add(String(msg.id));
+        });
+
+        if (!isBackground) {
+          scrollFeedToBottom(feed);
+        }
+      } else if (!isBackground) {
+        scrollFeedToBottom(feed);
       }
     }
 
@@ -2221,6 +2658,23 @@
 
       const payload = encodeMessagePayload(text, pendingDMImage);
       clearChatImage('dm');
+      input.value = '';
+
+      const feed = document.getElementById('dmMessageFeed');
+      const placeholder = feed.querySelector('.empty-dm-placeholder');
+      if (placeholder) placeholder.remove();
+
+      const tempId = 'temp_' + Date.now();
+      const optimisticMsg = {
+        id: tempId,
+        sender_username: currentUser.username,
+        receiver_username: activeChatId,
+        content: payload,
+        created_at: new Date().toISOString()
+      };
+      feed.insertBefore(buildDMMessageNode(optimisticMsg), feed.firstChild);
+      renderedDMIds.add(tempId);
+      feed.scrollTop = 0;
 
       await supabaseClient.from('direct_messages').insert([{
         sender_username: currentUser.username,
@@ -2228,15 +2682,10 @@
         content: payload
       }]);
 
-      input.value = '';
-      lastDMSignature = '';
-      await renderDMMessages();
-      const feed = document.getElementById('dmMessageFeed');
-      if (feed) feed.scrollTop = 0;
+      renderDMMessages(true);
       renderDMSidebar();
     }
 
-    /* FRIENDS TAB */
     function renderFriendsTab() {
       renderFriendRequests();
       renderMyFriendsList();
@@ -2377,7 +2826,6 @@
       openDMChat(friendName);
     }
 
-    /* GROUP CHAT MODAL LOGIC */
     async function openCreateGroupModal() {
       const container = document.getElementById('groupMembersSelection');
       container.innerHTML = '';
@@ -2408,16 +2856,18 @@
       document.getElementById('createGroupModal').classList.add('hidden');
     }
 
-    function confirmCreateGroup() {
+    async function confirmCreateGroup() {
       const name = document.getElementById('groupNameInput').value.trim();
       if (!name) return showToast('Enter a group name.', 'error');
 
       const checkboxes = document.querySelectorAll('.group-friend-checkbox:checked');
       const selectedNames = Array.from(checkboxes).map(cb => cb.value);
-      selectedNames.push(currentUser.username_lower);
+      if (!selectedNames.includes(currentUser.username_lower)) {
+        selectedNames.push(currentUser.username_lower);
+      }
 
       const newGroup = {
-        id: 'grp_' + Date.now(),
+        id: 'grp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5),
         name: name,
         members: selectedNames,
         createdBy: currentUser.username_lower
@@ -2425,14 +2875,14 @@
 
       groupsCache.push(newGroup);
       localStorage.setItem('eclipse_groups_cache', JSON.stringify(groupsCache));
+      await broadcastSocialEvent('CREATE_GROUP', { group: newGroup });
       closeCreateGroupModal();
-      showToast(`Group "${name}" created!`, 'success');
+      showToast(`Group "${name}" created for all members!`, 'success');
       lastSidebarSignature = '';
       renderDMSidebar();
       openGroupChat(newGroup.id);
     }
 
-    /* HELPERS */
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
@@ -2461,8 +2911,163 @@
       return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
+    function shouldShowDateSeparator(prevMsg, currMsg) {
+      if (!currMsg || !currMsg.created_at) return false;
+      if (!prevMsg || !prevMsg.created_at) return true;
+      const prevDate = new Date(prevMsg.created_at);
+      const currDate = new Date(currMsg.created_at);
+      if (isNaN(prevDate.getTime()) || isNaN(currDate.getTime())) return false;
+
+      const isNewDay =
+        prevDate.getFullYear() !== currDate.getFullYear() ||
+        prevDate.getMonth() !== currDate.getMonth() ||
+        prevDate.getDate() !== currDate.getDate();
+
+      const diffMs = currDate.getTime() - prevDate.getTime();
+      const isOverOneHour = diffMs >= 60 * 60 * 1000;
+      return isNewDay || isOverOneHour;
+    }
+
+    function formatMessageSeparatorTimestamp(timestamp) {
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) return '';
+
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
+      const msgDayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const timeStr = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+      if (msgDayStart.getTime() === todayStart.getTime()) {
+        return `Today <span class="font-normal">${timeStr}</span>`;
+      }
+      if (msgDayStart.getTime() === yesterdayStart.getTime()) {
+        return `Yesterday <span class="font-normal">${timeStr}</span>`;
+      }
+      const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+      return `${dateStr}, <span class="font-normal">${timeStr}</span>`;
+    }
+
+    function buildDateSeparatorNode(timestamp, label = 'Text Message') {
+      const sepEl = document.createElement('div');
+      sepEl.className = 'w-full flex flex-col items-center justify-center my-3 select-none';
+      sepEl.innerHTML = `
+        <span class="text-[10px] font-bold text-slate-400 tracking-wide">${escapeHTML(label)}</span>
+        <span class="text-[11px] font-bold text-slate-400 mt-0.5">${formatMessageSeparatorTimestamp(timestamp)}</span>
+      `;
+      return sepEl;
+    }
+
+    function scrollFeedToBottom(feedEl) {
+      if (!feedEl) return;
+      requestAnimationFrame(() => {
+        feedEl.scrollTop = 0;
+        requestAnimationFrame(() => {
+          feedEl.scrollTop = 0;
+        });
+      });
+    }
+
     function escapeHTML(str) {
       return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+
+    function switchAuthTab(tab) {
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const tabLogin = document.getElementById('tabLogin');
+      const tabSignup = document.getElementById('tabSignup');
+
+      if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        tabLogin.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-white bg-eclipse-600 shadow transition-all duration-200';
+        tabSignup.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all duration-200';
+      } else {
+        signupForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+        tabSignup.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-white bg-eclipse-600 shadow transition-all duration-200';
+        tabLogin.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition-all duration-200';
+      }
+    }
+
+    function switchMainTab(tab) {
+      activeTab = tab;
+
+      const sections = {
+        global: document.getElementById('globalChatTab'),
+        feed: document.getElementById('feedTab'),
+        dms: document.getElementById('dmsTab'),
+        friends: document.getElementById('friendsTab'),
+        profile: document.getElementById('profileTab')
+      };
+
+      const navBtns = {
+        global: document.getElementById('navGlobal'),
+        feed: document.getElementById('navFeed'),
+        dms: document.getElementById('navDMs'),
+        friends: document.getElementById('navFriends'),
+        profile: document.getElementById('navProfile')
+      };
+
+      const subtitles = {
+        global: 'Global Lounge',
+        feed: 'Short-Form Clips',
+        dms: 'Direct Messages & Groups',
+        friends: 'Friends & Requests',
+        profile: 'Profile & Settings'
+      };
+
+      Object.keys(sections).forEach(key => {
+        if (sections[key]) {
+          if (key === tab) sections[key].classList.remove('hidden');
+          else sections[key].classList.add('hidden');
+        }
+        if (navBtns[key]) {
+          if (key === tab) navBtns[key].classList.add('tab-active');
+          else navBtns[key].classList.remove('tab-active');
+        }
+      });
+
+      const subEl = document.getElementById('headerSubtitle');
+      if (subEl && subtitles[tab]) subEl.innerText = subtitles[tab];
+
+      if (tab === 'global') {
+        scrollFeedToBottom(document.getElementById('globalMessageFeed'));
+        renderGlobalMessages(false);
+      } else if (tab === 'feed') {
+        renderSocialFeed();
+      } else if (tab === 'dms') {
+        renderDMSidebar();
+        if (activeChatId) {
+          scrollFeedToBottom(document.getElementById('dmMessageFeed'));
+          renderDMMessages(false);
+        }
+      } else if (tab === 'friends') {
+        renderFriendsTab();
+      } else if (tab === 'profile') {
+        renderProfileTab();
+      }
+    }
+
+    function openPatchNotesModal() {
+      document.getElementById('patchNotesModal').classList.remove('hidden');
+    }
+
+    function closePatchNotesModal() {
+      document.getElementById('patchNotesModal').classList.add('hidden');
+      localStorage.setItem('eclipse_patch_notes_seen_v4', '1');
+    }
+
+    function openImageLightbox(src) {
+      if (!src) return;
+      document.getElementById('lightboxFullImg').src = src;
+      document.getElementById('imageLightboxModal').classList.remove('hidden');
+    }
+
+    function closeImageLightbox() {
+      document.getElementById('imageLightboxModal').classList.add('hidden');
+      document.getElementById('lightboxFullImg').src = '';
     }
   </script>
 </body>
