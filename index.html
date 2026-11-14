@@ -125,7 +125,7 @@
       background: linear-gradient(180deg, var(--theme-accent-soft) 0%, transparent 100%) !important;
     }
 
-    /* TikTok 9:16 Vertical Scroll-Snap Short-Form Feed */
+    /* TikTok Vertical Scroll-Snap Short-Form Feed */
     .tiktok-snap-container {
       scroll-snap-type: y mandatory;
       scroll-behavior: smooth;
@@ -286,7 +286,7 @@
         </div>
       </section>
 
-      <!-- TAB 2: SOCIAL FEED TAB (TIKTOK-STYLE 9:16 SHORT-FORM SNAP FEED) -->
+      <!-- TAB 2: SOCIAL FEED TAB (ASPECT-RATIO ADAPTIVE VERTICAL SNAP FEED) -->
       <section id="feedTab" class="flex-1 flex flex-col h-full min-h-0 animate-fade-in hidden relative bg-black">
         <!-- Feed Top Sub-nav & Upload Overlay Bar -->
         <div class="px-4 py-2.5 bg-gradient-to-b from-black/85 via-black/50 to-transparent flex items-center justify-between shrink-0 z-20">
@@ -299,9 +299,9 @@
           </button>
         </div>
 
-        <!-- 9:16 Vertical Scroll-Snap Short-Form Stream -->
+        <!-- Vertical Scroll-Snap Stream -->
         <div id="socialFeedList" class="tiktok-snap-container flex-1 overflow-y-auto min-h-0 w-full">
-          <!-- Short-Form 9:16 Slides Rendered Here -->
+          <!-- Adaptive Slides Rendered Here -->
         </div>
       </section>
 
@@ -554,10 +554,23 @@
 
       <!-- Scrollable Patch Notes Content -->
       <div class="p-6 overflow-y-auto space-y-5 text-xs leading-relaxed text-slate-300">
-        <!-- v4.0 Latest -->
+        <!-- v4.1 Latest -->
         <div class="p-4 rounded-2xl bg-eclipse-950/90 border border-eclipse-500/40 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="px-2.5 py-0.5 rounded-full bg-eclipse-600 text-white font-bold text-[10px] uppercase">Latest • v4.0</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-eclipse-600 text-white font-bold text-[10px] uppercase">Latest • v4.1</span>
+            <span class="text-[11px] text-slate-400 font-mono">Smart Aspect-Ratio Player</span>
+          </div>
+          <h4 class="text-sm font-bold text-white">Adaptive Widescreen (16:9) & Vertical (9:16) Clips</h4>
+          <ul class="list-disc pl-4 space-y-1 text-slate-300">
+            <li><strong class="text-white">No More Cropped Videos:</strong> Widescreen YouTube-style videos and photos now automatically open in a wide 16:9 theater card with an ambient blurred backdrop so nothing gets cut off on the sides.</li>
+            <li><strong class="text-white">Full Vertical Support:</strong> Tall 9:16 clips and square posts continue to fit their exact proportions automatically.</li>
+          </ul>
+        </div>
+
+        <!-- v4.0 -->
+        <div class="p-4 rounded-2xl bg-eclipse-950/60 border border-darkBorder space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-bold text-[10px] uppercase">v4.0</span>
             <span class="text-[11px] text-slate-400 font-mono">Social & TikTok Profile Update</span>
           </div>
           <h4 class="text-sm font-bold text-white">TikTok-Style Profiles, Social Feed & Admin Controls</h4>
@@ -565,9 +578,9 @@
             <li><strong class="text-white">TikTok-Inspired Profiles:</strong> Added Following, Followers, Likes, and Friends counters alongside a <strong class="text-indigo-300">400-character max Bio</strong> and Posts/Favorites/Liked tabs right under your bio.</li>
             <li><strong class="text-white">Display Names (3-Day Cooldown):</strong> Customize your display name while keeping your permanent <code class="text-indigo-300">@username</code> handle locked. Display names can be updated once every 3 days.</li>
             <li><strong class="text-white">New Feed Tab (Images & Videos):</strong> Upload photos and videos with captions, browse <em>For You</em> & <em>Following</em> feeds, and leave Likes, Comments, and Favorites.</li>
-            <li><strong class="text-white">Clickable Global Chat Profiles & Auto-Follow:</strong> Tap any user in Global Chat to open their profile, follow them, or press <strong>Friend</strong> to send a request. New accounts automatically follow Fareed and existing members!</li>
-            <li><strong class="text-white">Smooth Non-Jumping Chat:</strong> Fixed chat feeds teleporting to the top when sending or receiving messages.</li>
-            <li><strong class="text-white">Admin Moderation (Fareed & TestBot):</strong> Admins can delete videos/posts and ban or unban accounts directly from user profiles.</li>
+            <li><strong class="text-white">Clickable Global Chat Profiles & Shared Groups:</strong> Tap any user in Global Chat to open their profile, follow them, or press <strong>Friend</strong> to send a request. Group chats sync across all members!</li>
+            <li><strong class="text-white">Smooth Bottom-Anchored Chat & iMessage Dividers:</strong> Fixed chat feeds teleporting to the top and added centered Today/Yesterday timestamp dividers.</li>
+            <li><strong class="text-white">Admin Moderation & 10 Themes:</strong> Admins can delete clips, ban accounts, and restart servers cleanly; everyone gets 10 custom themes in Profile Settings.</li>
           </ul>
         </div>
 
@@ -688,7 +701,7 @@
         <i class="fa-solid fa-xmark text-base"></i>
       </button>
       <h3 class="text-base font-extrabold text-white mb-1">Create Post</h3>
-      <p class="text-[11px] text-slate-400 mb-4">Share an image or short video to your profile & feed</p>
+      <p class="text-[11px] text-slate-400 mb-4">Share a vertical short or widescreen clip to your profile & feed</p>
 
       <form onsubmit="submitSocialPost(event)" class="space-y-4">
         <div>
@@ -697,12 +710,13 @@
             <div id="postMediaPlaceholder">
               <i class="fa-solid fa-cloud-arrow-up text-2xl text-indigo-400 mb-2"></i>
               <p class="text-xs font-bold text-white">Tap to select Image or Video</p>
-              <p class="text-[10px] text-slate-400 mt-0.5">Supports JPG, PNG, GIF, MP4, WebM</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">Auto-fits 9:16 vertical shorts & 16:9 widescreen videos</p>
             </div>
             <div id="postMediaPreviewWrapper" class="hidden">
               <img id="postImagePreview" src="" alt="Preview" class="hidden max-h-48 mx-auto rounded-xl object-contain">
               <video id="postVideoPreview" src="" controls class="hidden max-h-48 mx-auto rounded-xl"></video>
-              <p class="text-[10px] text-indigo-400 font-semibold mt-2">Tap to change media</p>
+              <p id="postAspectBadge" class="text-[10px] text-emerald-400 font-bold mt-2"></p>
+              <p class="text-[10px] text-indigo-400 font-semibold mt-0.5">Tap to change media</p>
             </div>
           </div>
         </div>
@@ -852,6 +866,7 @@
     let currentFeedFilter = 'foryou';
     let pendingPostMedia = null;
     let pendingPostMediaType = null;
+    let pendingPostAspectRatio = null;
     let activeModalPostId = null;
     const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
@@ -1429,7 +1444,7 @@
       viewingProfileUsername = currentUser.username_lower;
       switchMainTab('global');
 
-      if (!localStorage.getItem('eclipse_patch_notes_seen_v4')) {
+      if (!localStorage.getItem('eclipse_patch_notes_seen_v4_1')) {
         openPatchNotesModal();
       }
     }
@@ -1681,11 +1696,7 @@
 
       const newOnes = messages.filter(m => !renderedGlobalIds.has(String(m.id)));
       if (newOnes.length > 0) {
-        if (latestNotifiedGlobalId === null) {
-          latestNotifiedGlobalId = messages[0].id;
-        } else {
-          latestNotifiedGlobalId = messages[0].id;
-        }
+        latestNotifiedGlobalId = messages[0].id;
         const chronological = [...messages].reverse();
         const prevIndexMap = new Map();
         chronological.forEach((m, idx) => {
@@ -1913,11 +1924,12 @@
       grid.innerHTML = displayPosts.map(post => {
         const likesCount = (post.likes || []).length;
         const isVideo = post.mediaType === 'video';
+        const isWide = (post.aspectRatio || 0.5625) > 1.1;
         return `
-          <div onclick="openPostDetailModal('${post.id}')" class="group relative aspect-[3/4] rounded-2xl bg-eclipse-950 border border-darkBorder overflow-hidden cursor-pointer shadow-md hover:border-eclipse-500/60 transition-all">
+          <div onclick="openPostDetailModal('${post.id}')" class="group relative ${isWide ? 'col-span-2 aspect-video' : 'aspect-[3/4]'} rounded-2xl bg-eclipse-950 border border-darkBorder overflow-hidden cursor-pointer shadow-md hover:border-eclipse-500/60 transition-all">
             ${isVideo
-              ? `<video src="${post.mediaUrl}" muted playsinline class="w-full h-full object-cover"></video><span class="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-black/70 text-white text-[10px]"><i class="fa-solid fa-play"></i></span>`
-              : `<img src="${post.mediaUrl}" alt="Post" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+              ? `<video src="${post.mediaUrl}" muted playsinline class="w-full h-full ${isWide ? 'object-contain bg-black' : 'object-cover'}"></video><span class="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-black/70 text-white text-[10px]"><i class="fa-solid fa-play"></i></span>`
+              : `<img src="${post.mediaUrl}" alt="Post" class="w-full h-full ${isWide ? 'object-contain bg-black' : 'object-cover group-hover:scale-105'} transition-transform duration-300">`
             }
             <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-2.5 flex items-end justify-between">
               <p class="text-[11px] text-white font-semibold line-clamp-1 pr-2">${escapeHTML(post.caption || '')}</p>
@@ -2108,16 +2120,30 @@
     function openCreatePostModal() {
       pendingPostMedia = null;
       pendingPostMediaType = null;
+      pendingPostAspectRatio = null;
       document.getElementById('postMediaPlaceholder').classList.remove('hidden');
       document.getElementById('postMediaPreviewWrapper').classList.add('hidden');
       document.getElementById('postImagePreview').classList.add('hidden');
       document.getElementById('postVideoPreview').classList.add('hidden');
+      document.getElementById('postAspectBadge').innerText = '';
       document.getElementById('postCaptionInput').value = '';
       document.getElementById('createPostModal').classList.remove('hidden');
     }
 
     function closeCreatePostModal() {
       document.getElementById('createPostModal').classList.add('hidden');
+    }
+
+    function updateAspectBadgeUI(ratio) {
+      const badge = document.getElementById('postAspectBadge');
+      if (!badge) return;
+      if (ratio > 1.15) {
+        badge.innerText = 'Detected: Widescreen (16:9 Theater Layout)';
+      } else if (ratio < 0.85) {
+        badge.innerText = 'Detected: Vertical Short (9:16 Fullscreen Layout)';
+      } else {
+        badge.innerText = 'Detected: Square / Standard (1:1 Layout)';
+      }
     }
 
     function handlePostMediaSelect(e) {
@@ -2137,6 +2163,11 @@
           document.getElementById('postMediaPreviewWrapper').classList.remove('hidden');
           document.getElementById('postImagePreview').classList.add('hidden');
           const vid = document.getElementById('postVideoPreview');
+          vid.onloadedmetadata = function() {
+            const ratio = (vid.videoWidth && vid.videoHeight) ? (vid.videoWidth / vid.videoHeight) : 0.5625;
+            pendingPostAspectRatio = Number(ratio.toFixed(3));
+            updateAspectBadgeUI(pendingPostAspectRatio);
+          };
           vid.src = pendingPostMedia;
           vid.classList.remove('hidden');
         };
@@ -2146,6 +2177,10 @@
         reader.onload = function(ev) {
           const img = new Image();
           img.onload = function() {
+            const ratio = (img.width && img.height) ? (img.width / img.height) : 0.5625;
+            pendingPostAspectRatio = Number(ratio.toFixed(3));
+            updateAspectBadgeUI(pendingPostAspectRatio);
+
             const canvas = document.createElement('canvas');
             const maxDim = 720;
             let w = img.width;
@@ -2186,6 +2221,7 @@
         author_lower: currentUser.username_lower,
         mediaType: pendingPostMediaType,
         mediaUrl: pendingPostMedia,
+        aspectRatio: pendingPostAspectRatio || 0.5625,
         caption: caption,
         createdAt: Date.now(),
         likes: [],
@@ -2195,9 +2231,44 @@
 
       await broadcastSocialEvent('NEW_POST', { post });
       closeCreatePostModal();
-      showToast('Short-form clip published!', 'success');
+      showToast('Clip published!', 'success');
       if (activeTab === 'feed') renderSocialFeed();
       if (activeTab === 'profile') renderProfileTab();
+    }
+
+    function applyAdaptiveMediaLayout(mediaEl) {
+      if (!mediaEl) return;
+      const slideCard = mediaEl.closest('[data-clip-card]');
+      const backdropEl = slideCard ? slideCard.querySelector('[data-ambient-backdrop]') : null;
+      let ratio = 0;
+
+      if (mediaEl.tagName === 'VIDEO' && mediaEl.videoWidth && mediaEl.videoHeight) {
+        ratio = mediaEl.videoWidth / mediaEl.videoHeight;
+      } else if (mediaEl.tagName === 'IMG' && mediaEl.naturalWidth && mediaEl.naturalHeight) {
+        ratio = mediaEl.naturalWidth / mediaEl.naturalHeight;
+      }
+      if (!ratio) return;
+
+      const isWidescreenOrSquare = ratio >= 0.88;
+      if (slideCard) {
+        if (isWidescreenOrSquare) {
+          slideCard.classList.remove('max-w-[430px]');
+          slideCard.classList.add('max-w-[740px]', 'w-[96%]');
+        } else {
+          slideCard.classList.remove('max-w-[740px]', 'w-[96%]');
+          slideCard.classList.add('max-w-[430px]', 'w-full');
+        }
+      }
+
+      if (isWidescreenOrSquare) {
+        mediaEl.classList.remove('w-full', 'h-full', 'object-cover');
+        mediaEl.classList.add('w-full', 'max-h-[72%]', 'object-contain', 'rounded-xl', 'shadow-2xl', 'z-10');
+        if (backdropEl) backdropEl.classList.remove('hidden');
+      } else {
+        mediaEl.classList.remove('max-h-[72%]', 'object-contain', 'rounded-xl', 'shadow-2xl', 'z-10');
+        mediaEl.classList.add('w-full', 'h-full', 'object-cover');
+        if (backdropEl) backdropEl.classList.add('hidden');
+      }
     }
 
     function renderSocialFeed() {
@@ -2213,8 +2284,8 @@
         container.innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-slate-400 py-16 px-4 text-center">
             <i class="fa-solid fa-clapperboard text-4xl mb-3 text-eclipse-500/60"></i>
-            <p class="text-sm font-extrabold text-white">No short-form clips here yet</p>
-            <p class="text-xs text-slate-400 mt-1">Tap "+ Post Clip" at the top right to upload a 9:16 photo or video!</p>
+            <p class="text-sm font-extrabold text-white">No clips here yet</p>
+            <p class="text-xs text-slate-400 mt-1">Tap "+ Post Clip" at the top right to upload a vertical short or widescreen video!</p>
           </div>
         `;
         return;
@@ -2230,15 +2301,29 @@
         const isFollowing = (socialState.follows[currentUser.username_lower] || []).includes(authorLower);
         const canDelete = isAdminUser(currentUser) || isOwnPost;
 
+        const knownRatio = post.aspectRatio || 0.5625;
+        const startsWide = knownRatio >= 0.88;
+        const cardWidthClasses = startsWide ? 'w-[96%] max-w-[740px]' : 'w-full max-w-[430px]';
+        const mediaFitClasses = startsWide
+          ? 'w-full max-h-[72%] object-contain rounded-xl shadow-2xl z-10'
+          : 'w-full h-full object-cover';
+
         return `
           <article class="tiktok-snap-slide relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
-            <div class="relative w-full max-w-[430px] h-full sm:h-[96%] sm:rounded-3xl overflow-hidden bg-neutral-950 border border-white/10 shadow-2xl flex items-center justify-center">
-              ${post.mediaType === 'video'
-                ? `<video src="${post.mediaUrl}" autoplay loop muted playsinline controls class="w-full h-full object-cover"></video>`
-                : `<img src="${post.mediaUrl}" alt="Short Clip" onclick="openPostDetailModal('${post.id}')" class="w-full h-full object-cover cursor-pointer">`
+            <div data-clip-card class="relative ${cardWidthClasses} h-full sm:h-[96%] sm:rounded-3xl overflow-hidden bg-neutral-950 border border-white/10 shadow-2xl flex items-center justify-center transition-all duration-200">
+              
+              <!-- Subtle Ambient Backdrop for Widescreen Videos/Photos -->
+              ${post.mediaType === 'image'
+                ? `<img data-ambient-backdrop src="${post.mediaUrl}" alt="" class="${startsWide ? '' : 'hidden'} pointer-events-none absolute inset-0 w-full h-full object-cover blur-2xl opacity-30 scale-110">`
+                : `<div data-ambient-backdrop class="${startsWide ? '' : 'hidden'} pointer-events-none absolute inset-0 bg-gradient-to-b from-eclipse-900/30 via-neutral-900/40 to-black"></div>`
               }
 
-              <div class="pointer-events-none absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/90 via-black/45 to-transparent"></div>
+              ${post.mediaType === 'video'
+                ? `<video src="${post.mediaUrl}" onloadedmetadata="applyAdaptiveMediaLayout(this)" autoplay loop muted playsinline controls class="${mediaFitClasses}"></video>`
+                : `<img src="${post.mediaUrl}" onload="applyAdaptiveMediaLayout(this)" alt="Clip" onclick="openPostDetailModal('${post.id}')" class="${mediaFitClasses} cursor-pointer">`
+              }
+
+              <div class="pointer-events-none absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/90 via-black/45 to-transparent z-10"></div>
 
               ${canDelete ? `
                 <button onclick="deleteSocialPost('${post.id}')" title="Delete Clip" class="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-full bg-black/60 hover:bg-red-600 text-white text-[11px] font-bold backdrop-blur-md transition-all flex items-center gap-1">
@@ -3056,7 +3141,7 @@
 
     function closePatchNotesModal() {
       document.getElementById('patchNotesModal').classList.add('hidden');
-      localStorage.setItem('eclipse_patch_notes_seen_v4', '1');
+      localStorage.setItem('eclipse_patch_notes_seen_v4_1', '1');
     }
 
     function openImageLightbox(src) {
