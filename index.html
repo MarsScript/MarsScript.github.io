@@ -67,6 +67,10 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
+    @keyframes discordBannerProgress {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
     .animate-slide-up { animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-fade-in { animation: fadeIn 0.25s ease-out forwards; }
 
@@ -159,20 +163,25 @@
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 pointer-events-none flex flex-col gap-2"></div>
 
-  <!-- Discord-Style Top Incoming Message Banner -->
-  <div id="discordNotifyBanner" onclick="handleDiscordBannerClick()" class="fixed top-3 left-1/2 -translate-x-1/2 w-[92%] max-w-md z-50 hidden cursor-pointer transition-all duration-300 transform -translate-y-4 opacity-0">
-    <div class="bg-darkCard/95 backdrop-blur-xl border border-eclipse-500/60 rounded-2xl p-3 shadow-[0_12px_40px_rgba(0,0,0,0.85)] flex items-center gap-3 hover:border-eclipse-400">
-      <div id="discordBannerAvatar" class="w-10 h-10 rounded-full shrink-0 flex items-center justify-center overflow-hidden"></div>
+  <!-- Discord-Style Top Incoming Message Banner with Timed Countdown Bar -->
+  <div id="discordNotifyBanner" onclick="handleDiscordBannerClick()" class="fixed top-3 left-1/2 -translate-x-1/2 w-[93%] max-w-md z-50 hidden cursor-pointer transition-all duration-300 transform -translate-y-4 opacity-0">
+    <div class="relative overflow-hidden bg-[#18191c]/95 backdrop-blur-xl border border-white/15 rounded-2xl p-3 shadow-[0_14px_44px_rgba(0,0,0,0.9)] flex items-center gap-3 hover:border-eclipse-400">
+      <div id="discordBannerAvatar" class="w-11 h-11 rounded-full shrink-0 flex items-center justify-center overflow-hidden"></div>
       <div class="flex-1 min-w-0 text-left">
-        <div class="flex items-center justify-between gap-2">
-          <span id="discordBannerTitle" class="text-xs font-extrabold text-white truncate">New Message</span>
-          <span id="discordBannerChannel" class="text-[10px] font-bold text-indigo-400 bg-eclipse-600/20 px-2 py-0.5 rounded-full shrink-0">Global</span>
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span id="discordBannerTitle" class="text-[13px] font-extrabold text-rose-400 truncate">User</span>
+          <span class="text-slate-500 text-xs">•</span>
+          <span id="discordBannerChannel" class="text-[12px] font-semibold text-slate-400 truncate"># global-chat</span>
         </div>
-        <p id="discordBannerPreview" class="text-xs text-slate-300 truncate mt-0.5">Message preview...</p>
+        <p id="discordBannerPreview" class="text-[13px] text-white font-medium truncate mt-0.5">Message preview...</p>
       </div>
-      <button type="button" onclick="event.stopPropagation(); hideDiscordBanner();" class="w-7 h-7 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center shrink-0">
+      <button type="button" onclick="event.stopPropagation(); hideDiscordBanner();" class="w-7 h-7 rounded-full bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white flex items-center justify-center shrink-0">
         <i class="fa-solid fa-xmark text-xs"></i>
       </button>
+      <!-- Timed Progress Bar along the bottom edge -->
+      <div class="absolute bottom-0 left-0 right-0 h-[3px] bg-white/10">
+        <div id="discordBannerProgressBar" class="h-full bg-indigo-500 rounded-full" style="width: 100%;"></div>
+      </div>
     </div>
   </div>
 
@@ -305,7 +314,7 @@
         </div>
       </section>
 
-      <!-- TAB 3: DMs & GROUP CHATS VIEW -->
+      <!-- TAB 3: DMs & GROUP CHATS VIEW (APPLE MESSAGES STYLE SORTED BY NEWEST) -->
       <section id="dmsTab" class="flex-1 flex h-full min-h-0 animate-fade-in hidden">
         <div id="dmSidebar" class="w-full sm:w-80 bg-robloxDark border-r border-darkBorder flex flex-col h-full shrink-0">
           <div class="p-3.5 border-b border-darkBorder flex items-center justify-between">
@@ -325,7 +334,7 @@
           </div>
 
           <div id="dmConversationList" class="flex-1 overflow-y-auto divide-y divide-darkBorder/40">
-            <!-- Conversations Rendered Here -->
+            <!-- Conversations Rendered Here (Newest at Top) -->
           </div>
         </div>
 
@@ -554,16 +563,31 @@
 
       <!-- Scrollable Patch Notes Content -->
       <div class="p-6 overflow-y-auto space-y-5 text-xs leading-relaxed text-slate-300">
-        <!-- v4.1 Latest -->
+        <!-- v4.2 Latest -->
         <div class="p-4 rounded-2xl bg-eclipse-950/90 border border-eclipse-500/40 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="px-2.5 py-0.5 rounded-full bg-eclipse-600 text-white font-bold text-[10px] uppercase">Latest • v4.1</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-eclipse-600 text-white font-bold text-[10px] uppercase">Latest • v4.2</span>
+            <span class="text-[11px] text-slate-400 font-mono">Friends, Newest Chats & Timed Alerts</span>
+          </div>
+          <h4 class="text-sm font-bold text-white">No Auto-Following, Auto-Friend Fareed & Apple Messages Order</h4>
+          <ul class="list-disc pl-4 space-y-1 text-slate-300">
+            <li><strong class="text-white">Manual Following Only:</strong> Removed automatic follow-everyone so accounts start at 0 Following until you choose to follow someone.</li>
+            <li><strong class="text-white">Auto-Friended with Fareed:</strong> Every user is automatically connected as friends with <code class="text-indigo-300">@fareed</code> so you can message right away.</li>
+            <li><strong class="text-white">Apple Messages-Style DM Sorting:</strong> Conversations in DMs & Groups automatically sort with the newest chat and latest message preview at the top.</li>
+            <li><strong class="text-white">Timed Discord Top Banner:</strong> Incoming messages pop up at the top with a live countdown bar—tap to jump straight into the chat.</li>
+          </ul>
+        </div>
+
+        <!-- v4.1 -->
+        <div class="p-4 rounded-2xl bg-eclipse-950/60 border border-darkBorder space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-bold text-[10px] uppercase">v4.1</span>
             <span class="text-[11px] text-slate-400 font-mono">Smart Aspect-Ratio Player</span>
           </div>
           <h4 class="text-sm font-bold text-white">Adaptive Widescreen (16:9) & Vertical (9:16) Clips</h4>
           <ul class="list-disc pl-4 space-y-1 text-slate-300">
-            <li><strong class="text-white">No More Cropped Videos:</strong> Widescreen YouTube-style videos and photos now automatically open in a wide 16:9 theater card with an ambient blurred backdrop so nothing gets cut off on the sides.</li>
-            <li><strong class="text-white">Full Vertical Support:</strong> Tall 9:16 clips and square posts continue to fit their exact proportions automatically.</li>
+            <li><strong class="text-white">No More Cropped Videos:</strong> Widescreen YouTube-style videos and photos open in a wide 16:9 theater card with an ambient blurred backdrop.</li>
+            <li><strong class="text-white">Full Vertical Support:</strong> Tall 9:16 clips fit their exact portrait proportions automatically.</li>
           </ul>
         </div>
 
@@ -575,11 +599,8 @@
           </div>
           <h4 class="text-sm font-bold text-white">TikTok-Style Profiles, Social Feed & Admin Controls</h4>
           <ul class="list-disc pl-4 space-y-1 text-slate-300">
-            <li><strong class="text-white">TikTok-Inspired Profiles:</strong> Added Following, Followers, Likes, and Friends counters alongside a <strong class="text-indigo-300">400-character max Bio</strong> and Posts/Favorites/Liked tabs right under your bio.</li>
-            <li><strong class="text-white">Display Names (3-Day Cooldown):</strong> Customize your display name while keeping your permanent <code class="text-indigo-300">@username</code> handle locked. Display names can be updated once every 3 days.</li>
-            <li><strong class="text-white">New Feed Tab (Images & Videos):</strong> Upload photos and videos with captions, browse <em>For You</em> & <em>Following</em> feeds, and leave Likes, Comments, and Favorites.</li>
-            <li><strong class="text-white">Clickable Global Chat Profiles & Shared Groups:</strong> Tap any user in Global Chat to open their profile, follow them, or press <strong>Friend</strong> to send a request. Group chats sync across all members!</li>
-            <li><strong class="text-white">Smooth Bottom-Anchored Chat & iMessage Dividers:</strong> Fixed chat feeds teleporting to the top and added centered Today/Yesterday timestamp dividers.</li>
+            <li><strong class="text-white">TikTok-Inspired Profiles:</strong> Added Following, Followers, Likes, and Friends counters alongside a <strong class="text-indigo-300">400-character max Bio</strong> and Posts/Favorites/Liked tabs.</li>
+            <li><strong class="text-white">Display Names (3-Day Cooldown):</strong> Customize your display name while keeping your permanent <code class="text-indigo-300">@username</code> handle locked.</li>
             <li><strong class="text-white">Admin Moderation & 10 Themes:</strong> Admins can delete clips, ban accounts, and restart servers cleanly; everyone gets 10 custom themes in Profile Settings.</li>
           </ul>
         </div>
@@ -593,21 +614,7 @@
           <h4 class="text-sm font-bold text-white">Chat Photo Sharing, Fareed Admin & Zero-Flash Polling</h4>
           <ul class="list-disc pl-4 space-y-1 text-slate-300">
             <li><strong class="text-white">Photo Uploads in Chat:</strong> Added image attachments with instant previews and full-screen lightbox viewing in Global Chat and DMs.</li>
-            <li><strong class="text-white">Zero-Flash Sync:</strong> Replaced full DOM re-renders with smart message signature diffing so chat feeds never flicker or flash.</li>
-            <li><strong class="text-white">Fareed Admin Privileges:</strong> Granted full Admin badge and message moderation controls to the Fareed account.</li>
-          </ul>
-        </div>
-
-        <!-- v2.0 -->
-        <div class="p-4 rounded-2xl bg-eclipse-950/60 border border-darkBorder space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold text-[10px] uppercase">v2.0</span>
-            <span class="text-[11px] text-slate-400 font-mono">Profile Icons & PFP Update</span>
-          </div>
-          <h4 class="text-sm font-bold text-white">Instant 160x160 JPEG Profile Pictures</h4>
-          <ul class="list-disc pl-4 space-y-1 text-slate-300">
-            <li><strong class="text-white">Profile Image Cropper & Compression:</strong> Upload any avatar and instantly crop/compress to a 160x160 JPEG.</li>
-            <li><strong class="text-white">Persistent Cloud Storage:</strong> Profile icons sync immediately across the cloud database for all members.</li>
+            <li><strong class="text-white">Zero-Flash Sync:</strong> Smart message diffing so chat feeds never flicker or flash.</li>
           </ul>
         </div>
       </div>
@@ -861,6 +868,7 @@
     function isSocialEventContent(content) {
       return extractSocialEventFromContent(content) !== null;
     }
+
     let viewingProfileUsername = null;
     let currentProfileSubTab = 'posts';
     let currentFeedFilter = 'foryou';
@@ -978,11 +986,11 @@
       }
     }
 
-    let socialState = JSON.parse(localStorage.getItem('eclipse_social_state_v1') || '{"posts":[],"follows":{},"profiles":{},"bans":{}}');
+    let socialState = JSON.parse(localStorage.getItem('eclipse_social_state_v2') || '{"posts":[],"follows":{},"profiles":{},"bans":{}}');
 
     function saveSocialStateLocal() {
       try {
-        localStorage.setItem('eclipse_social_state_v1', JSON.stringify(socialState));
+        localStorage.setItem('eclipse_social_state_v2', JSON.stringify(socialState));
       } catch (e) {}
     }
 
@@ -1101,24 +1109,71 @@
       return userObj;
     }
 
-    async function ensureDefaultFollowsForUser(usernameLower) {
+    // Automatically ensure every user is friended with Fareed (without auto-following anyone)
+    async function ensureAutoFriendedWithFareed(usernameLower) {
       const lower = (usernameLower || '').toLowerCase();
-      if (!lower) return;
-      if (!socialState.follows[lower]) socialState.follows[lower] = [];
-      const targets = new Set(['fareed']);
-      allUsersCache.forEach(u => {
-        if (u && u.username_lower && u.username_lower !== lower) {
-          targets.add(u.username_lower);
+      if (!supabaseClient || !lower || lower === 'fareed') return;
+      try {
+        const { data: fareedUser } = await supabaseClient
+          .from('users')
+          .select('username_lower')
+          .eq('username_lower', 'fareed')
+          .maybeSingle();
+        if (!fareedUser) return;
+
+        const { data: existing } = await supabaseClient
+          .from('friendships')
+          .select('*')
+          .or(`and(user_a.eq.${lower},user_b.eq.fareed),and(user_a.eq.fareed,user_b.eq.${lower})`);
+
+        if (!existing || existing.length === 0) {
+          await supabaseClient.from('friendships').insert([{
+            user_a: 'fareed',
+            user_b: lower,
+            status: 'accepted'
+          }]);
+          lastSidebarSignature = '';
+        } else {
+          const pendingRow = existing.find(f => f.status !== 'accepted');
+          if (pendingRow) {
+            await supabaseClient.from('friendships').update({ status: 'accepted' }).eq('id', pendingRow.id);
+            lastSidebarSignature = '';
+          }
         }
-      });
-      let changed = false;
-      targets.forEach(target => {
-        if (target && target !== lower && !socialState.follows[lower].includes(target)) {
-          socialState.follows[lower].push(target);
-          changed = true;
+      } catch (e) {}
+    }
+
+    // If Fareed logs in, also ensure all existing users are friended with Fareed
+    async function ensureAllUsersFriendedWithFareed() {
+      if (!supabaseClient || !currentUser || currentUser.username_lower !== 'fareed') return;
+      try {
+        const { data: existing } = await supabaseClient
+          .from('friendships')
+          .select('*')
+          .or('user_a.eq.fareed,user_b.eq.fareed');
+
+        const connectedSet = new Set();
+        (existing || []).forEach(f => {
+          const other = f.user_a === 'fareed' ? f.user_b : f.user_a;
+          connectedSet.add(other);
+          if (f.status !== 'accepted') {
+            supabaseClient.from('friendships').update({ status: 'accepted' }).eq('id', f.id);
+          }
+        });
+
+        const toInsert = [];
+        allUsersCache.forEach(u => {
+          const uLower = (u.username_lower || '').toLowerCase();
+          if (uLower && uLower !== 'fareed' && !connectedSet.has(uLower)) {
+            toInsert.push({ user_a: 'fareed', user_b: uLower, status: 'accepted' });
+          }
+        });
+
+        if (toInsert.length > 0) {
+          await supabaseClient.from('friendships').insert(toInsert);
+          lastSidebarSignature = '';
         }
-      });
-      if (changed) saveSocialStateLocal();
+      } catch (e) {}
     }
 
     async function loadAllUsersCache() {
@@ -1130,7 +1185,6 @@
             if (u.avatar_url) {
               avatarUrlCache[u.username_lower] = u.avatar_url;
             }
-            ensureDefaultFollowsForUser(u.username_lower);
           });
         }
       }
@@ -1287,11 +1341,13 @@
       return trimmed;
     }
 
-    function showDiscordNotifyBanner({ senderUsername, channelLabel, previewText, onClick }) {
+    // Discord-Style Top Timed Notification Banner
+    function showDiscordNotifyBanner({ senderUsername, channelLabel, previewText, onClick, durationMs = 4500 }) {
       const banner = document.getElementById('discordNotifyBanner');
+      const progressBar = document.getElementById('discordBannerProgressBar');
       if (!banner) return;
 
-      document.getElementById('discordBannerAvatar').innerHTML = getAvatarIconHtml(senderUsername, 'w-10 h-10 text-sm');
+      document.getElementById('discordBannerAvatar').innerHTML = getAvatarIconHtml(senderUsername, 'w-11 h-11 text-sm');
       document.getElementById('discordBannerTitle').innerText = getUserDisplayName(senderUsername.toLowerCase());
       document.getElementById('discordBannerChannel').innerText = channelLabel;
       document.getElementById('discordBannerPreview').innerText = previewText;
@@ -1299,6 +1355,13 @@
 
       if (discordBannerTimeout) clearTimeout(discordBannerTimeout);
       banner.classList.remove('hidden');
+
+      if (progressBar) {
+        progressBar.style.animation = 'none';
+        progressBar.offsetHeight; // Force reflow
+        progressBar.style.animation = `discordBannerProgress ${durationMs}ms linear forwards`;
+      }
+
       requestAnimationFrame(() => {
         banner.classList.remove('-translate-y-4', 'opacity-0');
         banner.classList.add('translate-y-0', 'opacity-100');
@@ -1306,7 +1369,7 @@
 
       discordBannerTimeout = setTimeout(() => {
         hideDiscordBanner();
-      }, 4200);
+      }, durationMs);
     }
 
     function hideDiscordBanner() {
@@ -1415,7 +1478,7 @@
 
         currentUser = await ensureFareedAdmin(newUser);
         await loadAllUsersCache();
-        await ensureDefaultFollowsForUser(currentUser.username_lower);
+        await ensureAutoFriendedWithFareed(currentUser.username_lower);
         openApp();
       } catch (err) {
         showToast('Signup error: ' + (err.message || 'Unknown error'), 'error');
@@ -1437,14 +1500,17 @@
       await loadAllUsersCache();
       await syncSocialEventsFromDB();
       if (currentUser) {
-        await ensureDefaultFollowsForUser(currentUser.username_lower);
+        await ensureAutoFriendedWithFareed(currentUser.username_lower);
+        if (currentUser.username_lower === 'fareed') {
+          await ensureAllUsersFriendedWithFareed();
+        }
       }
       setupRealtimeSubscriptions();
       startPollingFallback();
       viewingProfileUsername = currentUser.username_lower;
       switchMainTab('global');
 
-      if (!localStorage.getItem('eclipse_patch_notes_seen_v4_1')) {
+      if (!localStorage.getItem('eclipse_patch_notes_seen_v4_2')) {
         openPatchNotesModal();
       }
     }
@@ -1471,6 +1537,8 @@
 
         supabaseClient.channel('friendships_realtime')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, () => {
+            lastSidebarSignature = '';
+            if (activeTab === 'dms') renderDMSidebar();
             if (activeTab === 'friends') renderFriendsTab();
             if (activeTab === 'profile') renderProfileTab();
           })
@@ -1533,7 +1601,7 @@
         if (latestMsg.sender_username.toLowerCase() !== currentUser.username_lower && activeTab !== 'global') {
           showDiscordNotifyBanner({
             senderUsername: latestMsg.sender_username,
-            channelLabel: '# Global Chat',
+            channelLabel: '# global-chat, Eclipse',
             previewText: getPlainMessagePreview(latestMsg.content),
             onClick: () => switchMainTab('global')
           });
@@ -1572,6 +1640,7 @@
 
       if (relevant.id !== latestNotifiedDMId) {
         latestNotifiedDMId = relevant.id;
+        lastSidebarSignature = '';
         const isGroup = myGroupIds.has(relevant.receiver_username);
         const targetChatId = isGroup ? relevant.receiver_username : relevant.sender_username.toLowerCase();
 
@@ -1579,7 +1648,7 @@
           const grp = isGroup ? groupsCache.find(g => g.id === relevant.receiver_username) : null;
           showDiscordNotifyBanner({
             senderUsername: relevant.sender_username,
-            channelLabel: isGroup && grp ? `👥 ${grp.name}` : 'Direct Message',
+            channelLabel: isGroup && grp ? `# ${grp.name}, Group` : 'Direct Message',
             previewText: getPlainMessagePreview(relevant.content),
             onClick: () => {
               switchMainTab('dms');
@@ -2520,6 +2589,7 @@
       if (activeTab === 'feed') renderSocialFeed();
     }
 
+    // APPLE MESSAGES STYLE DM SIDEBAR: NEWEST CHATS AT THE TOP WITH LATEST PREVIEW & TIME
     async function renderDMSidebar() {
       const container = document.getElementById('dmConversationList');
       if (!supabaseClient) return;
@@ -2529,59 +2599,129 @@
         .or(`user_a.eq.${currentUser.username_lower},user_b.eq.${currentUser.username_lower}`)
         .eq('status', 'accepted');
 
-      const sidebarSig = JSON.stringify({ groupsCache, friendships, activeChatId, activeChatType, avatarUrlCache });
-      if (sidebarSig === lastSidebarSignature) return;
-      lastSidebarSignature = sidebarSig;
+      const { data: recentDMs } = await supabaseClient.from('direct_messages')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(120);
 
-      container.innerHTML = '';
+      const latestByChat = {};
+      (recentDMs || []).forEach(m => {
+        const sender = (m.sender_username || '').toLowerCase();
+        const recv = (m.receiver_username || '').toLowerCase();
+        const ts = new Date(m.created_at).getTime() || 0;
+
+        if (recv.startsWith('grp_')) {
+          if (!latestByChat[recv] || ts > latestByChat[recv].ts) {
+            latestByChat[recv] = {
+              ts,
+              created_at: m.created_at,
+              preview: `${getUserDisplayName(sender)}: ${getPlainMessagePreview(m.content)}`
+            };
+          }
+        } else if (sender === currentUser.username_lower || recv === currentUser.username_lower) {
+          const partner = sender === currentUser.username_lower ? recv : sender;
+          if (!latestByChat[partner] || ts > latestByChat[partner].ts) {
+            latestByChat[partner] = {
+              ts,
+              created_at: m.created_at,
+              preview: (sender === currentUser.username_lower ? 'You: ' : '') + getPlainMessagePreview(m.content)
+            };
+          }
+        }
+      });
+
+      const items = [];
 
       groupsCache.forEach(group => {
         if (!group.members.includes(currentUser.username_lower)) return;
-        const isActive = activeChatId === group.id && activeChatType === 'group';
-
-        const card = document.createElement('div');
-        card.className = `p-3 flex items-center gap-3 cursor-pointer transition-all ${isActive ? 'bg-darkCard border-l-4 border-eclipse-500' : 'hover:bg-darkCard/50'}`;
-        card.onclick = () => openGroupChat(group.id);
-
-        card.innerHTML = `
-          <div class="w-10 h-10 rounded-full bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-bold flex items-center justify-center text-sm shrink-0">
-            <i class="fa-solid fa-users text-xs"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <h4 class="text-xs font-bold text-slate-100 truncate">${escapeHTML(group.name)}</h4>
-            <p class="text-[11px] text-slate-400 truncate mt-0.5">Group Channel</p>
-          </div>
-        `;
-        container.appendChild(card);
+        const gIdLower = group.id.toLowerCase();
+        const meta = latestByChat[gIdLower] || { ts: 0, created_at: null, preview: 'Group Channel' };
+        items.push({
+          type: 'group',
+          id: group.id,
+          name: group.name,
+          subtitle: meta.preview,
+          ts: meta.ts,
+          created_at: meta.created_at
+        });
       });
 
       if (friendships) {
         friendships.forEach(f => {
           const friendName = f.user_a === currentUser.username_lower ? f.user_b : f.user_a;
-          const isActive = activeChatId === friendName && activeChatType === 'dm';
-          const avatarHtml = getAvatarIconHtml(friendName, 'w-10 h-10 text-sm');
-
-          const card = document.createElement('div');
-          card.className = `p-3 flex items-center gap-3 cursor-pointer transition-all ${isActive ? 'bg-darkCard border-l-4 border-eclipse-500' : 'hover:bg-darkCard/50'}`;
-          card.onclick = () => openDMChat(friendName);
-
-          card.innerHTML = `
-            <div class="shrink-0">${avatarHtml}</div>
-            <div class="flex-1 min-w-0">
-              <h4 class="text-xs font-bold text-slate-100 truncate">${escapeHTML(getUserDisplayName(friendName))}</h4>
-              <p class="text-[11px] text-slate-400 truncate mt-0.5">@${escapeHTML(friendName)}</p>
-            </div>
-          `;
-          container.appendChild(card);
+          const meta = latestByChat[friendName] || { ts: 0, created_at: null, preview: `@${friendName}` };
+          items.push({
+            type: 'dm',
+            id: friendName,
+            name: getUserDisplayName(friendName),
+            subtitle: meta.preview,
+            ts: meta.ts,
+            created_at: meta.created_at
+          });
         });
       }
+
+      // Sort newest conversations to the very top (Apple Messages behavior)
+      items.sort((a, b) => b.ts - a.ts);
+
+      const sidebarSig = JSON.stringify({ items, activeChatId, activeChatType, avatarUrlCache });
+      if (sidebarSig === lastSidebarSignature) return;
+      lastSidebarSignature = sidebarSig;
+
+      container.innerHTML = '';
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-xs text-slate-500">
+            No conversations yet. Go to Friends to start chatting!
+          </div>
+        `;
+        return;
+      }
+
+      items.forEach(item => {
+        const isActive = activeChatId === item.id && activeChatType === item.type;
+        const timeLabel = item.created_at ? formatSidebarTime(item.created_at) : '';
+        const card = document.createElement('div');
+        card.className = `p-3 flex items-center gap-3 cursor-pointer transition-all ${isActive ? 'bg-eclipse-600/20 border-l-4 border-eclipse-500' : 'hover:bg-darkCard/50'}`;
+        card.onclick = () => item.type === 'group' ? openGroupChat(item.id) : openDMChat(item.id);
+
+        const avatarHtml = item.type === 'group'
+          ? `<div class="w-10 h-10 rounded-full bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-bold flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-users text-xs"></i></div>`
+          : `<div class="shrink-0">${getAvatarIconHtml(item.id, 'w-10 h-10 text-sm')}</div>`;
+
+        card.innerHTML = `
+          ${avatarHtml}
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <h4 class="text-xs font-bold text-slate-100 truncate">${escapeHTML(item.name)}</h4>
+              ${timeLabel ? `<span class="text-[10px] text-slate-400 font-mono shrink-0">${timeLabel}</span>` : ''}
+            </div>
+            <p class="text-[11px] text-slate-400 truncate mt-0.5">${escapeHTML(item.subtitle)}</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function formatSidebarTime(timestamp) {
+      const d = new Date(timestamp);
+      if (isNaN(d.getTime())) return '';
+      const now = new Date();
+      const isToday = d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+      if (isToday) {
+        return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      }
+      return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
     }
 
     function filterDMSidebar() {
       const query = document.getElementById('dmSearchInput').value.toLowerCase();
       const cards = document.querySelectorAll('#dmConversationList > div');
       cards.forEach(card => {
-        const name = card.querySelector('h4').innerText.toLowerCase();
+        const h4 = card.querySelector('h4');
+        if (!h4) return;
+        const name = h4.innerText.toLowerCase();
         card.style.display = name.includes(query) ? 'flex' : 'none';
       });
     }
@@ -2767,6 +2907,7 @@
         content: payload
       }]);
 
+      lastSidebarSignature = '';
       renderDMMessages(true);
       renderDMSidebar();
     }
@@ -2898,6 +3039,7 @@
       if (!supabaseClient) return;
       if (status === 'accepted') {
         await supabaseClient.from('friendships').update({ status: 'accepted' }).eq('id', requestId);
+        lastSidebarSignature = '';
         showToast('Friend request accepted!', 'success');
       } else {
         await supabaseClient.from('friendships').delete().eq('id', requestId);
@@ -3123,6 +3265,7 @@
       } else if (tab === 'feed') {
         renderSocialFeed();
       } else if (tab === 'dms') {
+        lastSidebarSignature = '';
         renderDMSidebar();
         if (activeChatId) {
           scrollFeedToBottom(document.getElementById('dmMessageFeed'));
@@ -3141,7 +3284,7 @@
 
     function closePatchNotesModal() {
       document.getElementById('patchNotesModal').classList.add('hidden');
-      localStorage.setItem('eclipse_patch_notes_seen_v4_1', '1');
+      localStorage.setItem('eclipse_patch_notes_seen_v4_2', '1');
     }
 
     function openImageLightbox(src) {
