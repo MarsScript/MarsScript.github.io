@@ -8,19 +8,21 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     /* =========================================================
-       DESIGN TOKENS & DARK GLASS THEME (v1.6.3)
+       CLASSIC ECLIPSE MIDNIGHT THEME + 10 CUSTOM THEMES
        ========================================================= */
     :root {
-      --bg: #090b12;
-      --panel: rgba(18, 22, 36, 0.78);
-      --panel-2: rgba(27, 33, 54, 0.72);
-      --border: rgba(255, 255, 255, 0.09);
-      --border-glow: rgba(110, 123, 255, 0.45);
+      --bg: #06080f;
+      --bg-900: #0d101b;
+      --panel: rgba(13, 16, 27, 0.90);
+      --panel-2: #111524;
+      --border: #1e253c;
+      --border-glow: rgba(99, 102, 241, 0.45);
+      --accent-400: #818cf8;
       --accent: #6366f1;
-      --accent-2: #8b5cf6;
+      --accent-2: #4f46e5;
       --accent-glow: rgba(99, 102, 241, 0.35);
-      --text: #f3f5ff;
-      --muted: #949ec0;
+      --text: #f8fafc;
+      --muted: #94a3b8;
       --danger: #ef4444;
       --success: #10b981;
       --warning: #f59e0b;
@@ -38,21 +40,19 @@
 
     body {
       background:
-        radial-gradient(circle at 15% 10%, rgba(99, 102, 241, 0.16), transparent 38%),
-        radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.14), transparent 42%),
+        radial-gradient(circle at top right, color-mix(in srgb, var(--accent) 18%, transparent), transparent 45%),
+        radial-gradient(circle at bottom left, color-mix(in srgb, var(--accent-400) 12%, transparent), transparent 42%),
         var(--bg);
       color: var(--text);
       height: 100dvh;
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      transition: background 0.3s ease;
     }
 
-    /* =========================================================
-       SPRING & TRANSITION KEYFRAMES
-       ========================================================= */
     @keyframes popIn {
-      0% { opacity: 0; transform: scale(0.92) translateY(10px); }
+      0% { opacity: 0; transform: scale(0.94) translateY(8px); }
       100% { opacity: 1; transform: scale(1) translateY(0); }
     }
     @keyframes slideUpSheet {
@@ -79,10 +79,11 @@
     }
 
     .glass {
-      background: var(--panel);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--panel-2) 94%, white 3%) 0%, color-mix(in srgb, var(--bg-900) 96%, black 4%) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border);
+      box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.7);
     }
 
     button {
@@ -91,12 +92,10 @@
       outline: none;
       transition: transform 0.18s var(--spring), background 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
     }
-    button:active {
-      transform: scale(0.94);
-    }
+    button:active { transform: scale(0.95); }
 
     input, textarea, select {
-      background: rgba(11, 14, 24, 0.85);
+      background: var(--bg);
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: 12px;
@@ -107,7 +106,7 @@
     }
     input:focus, textarea:focus, select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
     }
 
     /* =========================================================
@@ -120,7 +119,7 @@
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--border);
-      background: rgba(11, 14, 23, 0.82);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
       backdrop-filter: blur(18px);
       z-index: 30;
       flex-shrink: 0;
@@ -139,16 +138,17 @@
       place-items: center;
       font-weight: 800;
       font-size: 16px;
+      color: #fff;
       box-shadow: 0 4px 16px var(--accent-glow);
     }
     .ver-pill {
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 10px;
+      font-weight: 800;
       padding: 3px 8px;
       border-radius: 999px;
-      background: rgba(99, 102, 241, 0.18);
-      border: 1px solid rgba(99, 102, 241, 0.45);
-      color: #c7d2fe;
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent-400) 40%, transparent);
+      color: var(--accent-400);
       letter-spacing: 0.4px;
     }
     .status-pill {
@@ -159,7 +159,7 @@
       color: var(--muted);
       padding: 4px 10px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.04);
+      background: var(--panel-2);
       border: 1px solid var(--border);
     }
     .status-dot {
@@ -169,29 +169,27 @@
       background: var(--success);
       animation: pulseDot 2s infinite;
     }
-    .status-dot.offline {
-      background: var(--warning);
-    }
+    .status-dot.offline { background: var(--warning); }
     .top-actions {
       display: flex;
       align-items: center;
       gap: 8px;
     }
     .icon-btn {
-      background: rgba(255, 255, 255, 0.06);
+      background: var(--panel-2);
       color: var(--text);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 7px 11px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       display: inline-flex;
       align-items: center;
       gap: 6px;
     }
     .icon-btn:hover {
-      background: rgba(255, 255, 255, 0.11);
-      border-color: var(--border-glow);
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--panel-2) 85%, white 8%);
     }
 
     /* =========================================================
@@ -203,28 +201,24 @@
       left: 50%;
       transform: translateX(-50%);
       width: min(92vw, 410px);
-      background: rgba(20, 23, 34, 0.96);
+      background: var(--bg-900);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      border: 1px solid var(--border-glow);
       border-radius: 16px;
       padding: 11px 14px 14px;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75);
       z-index: 999;
       display: none;
       overflow: hidden;
       cursor: pointer;
       animation: bannerDrop 0.32s var(--spring);
     }
-    .banner-row {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
+    .banner-row { display: flex; align-items: center; gap: 11px; }
     .banner-avatar {
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #5865f2, #8b5cf6);
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
       display: grid;
       place-items: center;
       font-weight: 700;
@@ -244,14 +238,10 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .banner-channel {
-      color: var(--muted);
-      font-weight: 500;
-      font-size: 12px;
-    }
+    .banner-channel { color: var(--muted); font-weight: 500; font-size: 12px; }
     .banner-body {
       font-size: 13px;
-      color: #dbe1f8;
+      color: #e2e8f0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -262,8 +252,7 @@
       bottom: 0;
       left: 0;
       height: 3.5px;
-      background: linear-gradient(90deg, #5865f2, #a855f7);
-      border-radius: 0 4px 4px 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent-400));
     }
 
     /* =========================================================
@@ -280,14 +269,14 @@
       pointer-events: none;
     }
     .toast {
-      background: rgba(20, 24, 38, 0.94);
+      background: var(--panel-2);
       border: 1px solid var(--border-glow);
       color: #fff;
       padding: 10px 14px;
       border-radius: 12px;
       font-size: 13px;
       font-weight: 600;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.55);
       animation: popIn 0.25s var(--spring);
     }
 
@@ -303,13 +292,12 @@
       max-width: 400px;
       border-radius: 24px;
       padding: 28px 24px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
-      animation: popIn 0.38s var(--spring);
+      animation: popIn 0.35s var(--spring);
     }
     .auth-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      background: rgba(9, 11, 18, 0.75);
+      background: var(--bg);
       padding: 4px;
       border-radius: 14px;
       margin: 18px 0;
@@ -324,7 +312,7 @@
       font-size: 13px;
     }
     .auth-tab.active {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      background: var(--accent);
       color: #fff;
       box-shadow: 0 4px 14px var(--accent-glow);
     }
@@ -343,19 +331,14 @@
       width: 100%;
       padding: 12px;
       border-radius: 13px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      background: var(--accent);
       color: #fff;
       font-weight: 700;
       font-size: 14px;
       box-shadow: 0 8px 22px var(--accent-glow);
     }
-    .primary-btn:hover {
-      filter: brightness(1.08);
-    }
-    .primary-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+    .primary-btn:hover { background: var(--accent-2); }
+    .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     /* =========================================================
        MAIN APP WORKSPACE & VIEWS
@@ -371,7 +354,7 @@
       overflow-y: auto;
       padding: 14px;
       display: none;
-      animation: popIn 0.24s var(--smooth);
+      animation: popIn 0.22s var(--smooth);
     }
     .view-container.active {
       display: flex;
@@ -390,20 +373,19 @@
       display: flex;
       gap: 10px;
       align-items: flex-start;
-      animation: popIn 0.22s var(--spring);
+      animation: popIn 0.2s var(--spring);
     }
-    .msg-row.mine {
-      flex-direction: row-reverse;
-    }
+    .msg-row.mine { flex-direction: row-reverse; }
     .avatar {
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #3b426e, #6366f1);
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
       display: grid;
       place-items: center;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 14px;
+      color: #fff;
       flex-shrink: 0;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.14);
@@ -415,9 +397,7 @@
       flex-direction: column;
       gap: 3px;
     }
-    .msg-row.mine .msg-bubble-wrap {
-      align-items: flex-end;
-    }
+    .msg-row.mine .msg-bubble-wrap { align-items: flex-end; }
     .msg-sender {
       font-size: 11px;
       color: var(--muted);
@@ -429,7 +409,7 @@
       background: rgba(239, 68, 68, 0.18);
       border: 1px solid rgba(239, 68, 68, 0.45);
       color: #fca5a5;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 800;
       padding: 1px 6px;
       border-radius: 6px;
@@ -445,7 +425,7 @@
       word-break: break-word;
     }
     .msg-row.mine .msg-bubble {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      background: var(--accent);
       border-color: transparent;
       border-top-left-radius: 16px;
       border-top-right-radius: 4px;
@@ -479,9 +459,7 @@
       border-top: 1px solid var(--border);
       align-items: center;
     }
-    .composer input[type="text"] {
-      flex: 1;
-    }
+    .composer input[type="text"] { flex: 1; }
 
     /* =========================================================
        FOR YOU FEED & TIKTOK COMMENT SHEET
@@ -498,14 +476,14 @@
       margin-bottom: 14px;
       position: relative;
       overflow: hidden;
-      animation: popIn 0.28s var(--spring);
+      animation: popIn 0.25s var(--spring);
     }
     .clip-media {
       width: 100%;
-      max-height: 360px;
+      max-height: 380px;
       border-radius: 14px;
       background: #05070c;
-      object-fit: cover;
+      object-fit: contain;
       margin: 10px 0;
       display: block;
     }
@@ -515,7 +493,7 @@
       margin-top: 8px;
     }
     .action-chip {
-      background: rgba(255, 255, 255, 0.06);
+      background: var(--bg);
       border: 1px solid var(--border);
       color: var(--text);
       padding: 7px 12px;
@@ -544,7 +522,7 @@
     #commentSheetBackdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.62);
+      background: rgba(0, 0, 0, 0.65);
       z-index: 80;
       display: none;
       align-items: flex-end;
@@ -554,7 +532,7 @@
       width: 100%;
       max-width: 540px;
       height: 72dvh;
-      background: #121625;
+      background: var(--bg-900);
       border-top: 1px solid var(--border-glow);
       border-radius: 24px 24px 0 0;
       padding: 16px;
@@ -564,13 +542,13 @@
     }
     .comment-item {
       padding: 10px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid var(--border);
     }
     .reply-list {
       margin-left: 34px;
       margin-top: 8px;
       padding-left: 10px;
-      border-left: 2px solid rgba(99, 102, 241, 0.35);
+      border-left: 2px solid var(--accent);
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -581,7 +559,7 @@
        ========================================================= */
     .dm-layout {
       display: grid;
-      grid-template-columns: 260px 1fr;
+      grid-template-columns: 270px 1fr;
       gap: 12px;
       flex: 1;
       overflow: hidden;
@@ -610,8 +588,64 @@
     }
     .dm-item:hover { background: rgba(255, 255, 255, 0.05); }
     .dm-item.active {
-      background: rgba(99, 102, 241, 0.22);
-      border-color: rgba(99, 102, 241, 0.45);
+      background: color-mix(in srgb, var(--accent) 22%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+    }
+
+    /* =========================================================
+       PROFILE POSTS GRID & THEME SWITCHER
+       ========================================================= */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .theme-chip {
+      padding: 9px 10px;
+      border-radius: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+    }
+    .theme-chip.active {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 16%, var(--bg));
+    }
+    .profile-posts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .profile-post-tile {
+      aspect-ratio: 1 / 1;
+      border-radius: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .profile-post-tile img, .profile-post-tile video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     /* =========================================================
@@ -640,17 +674,8 @@
       gap: 6px;
       margin: 10px 0;
     }
-    input[type="range"] {
-      padding: 0;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
+    input[type="range"] { padding: 0; accent-color: var(--accent); cursor: pointer; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .danger-btn {
       background: rgba(239, 68, 68, 0.2);
       border: 1px solid rgba(239, 68, 68, 0.5);
@@ -672,7 +697,7 @@
     .log-box {
       max-height: 210px;
       overflow-y: auto;
-      background: rgba(7, 9, 16, 0.85);
+      background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 10px;
@@ -684,35 +709,44 @@
     }
 
     /* =========================================================
-       BOTTOM 6-TAB NAVIGATION BAR
+       BOTTOM 6-TAB NAVIGATION BAR (CLASSIC ECLIPSE BAR)
        ========================================================= */
     .bottom-nav {
-      height: 64px;
+      height: 62px;
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       border-top: 1px solid var(--border);
-      background: rgba(11, 14, 23, 0.92);
+      background: color-mix(in srgb, var(--bg) 95%, transparent);
       backdrop-filter: blur(18px);
-      padding: 4px 6px;
-      gap: 4px;
+      padding: 0 4px;
       flex-shrink: 0;
     }
     .nav-btn {
       background: transparent;
       color: var(--muted);
-      border-radius: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 3px;
-      font-size: 11px;
-      font-weight: 600;
+      font-size: 10.5px;
+      font-weight: 700;
+      position: relative;
     }
     .nav-btn.active {
-      background: rgba(99, 102, 241, 0.2);
-      color: #fff;
-      box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.45);
+      color: var(--accent-400);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 16%, transparent) 0%, transparent 100%);
+    }
+    .nav-btn.active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 22%;
+      right: 22%;
+      height: 2.5px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
     }
     .nav-icon { font-size: 16px; }
   </style>
@@ -755,12 +789,13 @@
         <span class="status-dot" id="connDot"></span>
         <span id="connLabel">Supabase Live</span>
       </div>
+      <button class="icon-btn" onclick="switchTab('profile')" title="Themes">🎨 Themes</button>
       <button class="icon-btn" id="soundToggleBtn" onclick="toggleSound()">🔊 SFX On</button>
       <button class="icon-btn" id="logoutBtn" style="display:none;" onclick="logoutUser()">Sign Out</button>
     </div>
   </header>
 
-  <!-- AUTH SCREEN (Live Supabase Login & Signup — Zero Email Verification) -->
+  <!-- AUTH SCREEN -->
   <main id="authScreen">
     <div class="auth-card glass">
       <div style="text-align:center;">
@@ -800,7 +835,7 @@
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <div>
           <h2 style="font-size:17px;"># global-lounge</h2>
-          <span style="font-size:12px;color:var(--muted);" id="lockdownNotice">Live Supabase chat • Auto-moderation active</span>
+          <span style="font-size:12px;color:var(--muted);" id="lockdownNotice">Live Supabase chat • Full history loaded</span>
         </div>
         <button class="icon-btn" onclick="openUploadModal()">+ Post Clip</button>
       </div>
@@ -819,7 +854,7 @@
       <div class="feed-header">
         <div>
           <h2 style="font-size:17px;">For You</h2>
-          <span style="font-size:12px;color:var(--muted);">Randomized discovery mix</span>
+          <span style="font-size:12px;color:var(--muted);" id="feedSubtitle">All synced clips & posts</span>
         </div>
         <div style="display:flex;gap:8px;">
           <button class="icon-btn" onclick="shuffleFeed()">🎲 Shuffle</button>
@@ -860,29 +895,30 @@
     <!-- 4. FRIENDS & DISCOVER -->
     <section class="view-container" id="view-friends">
       <h2 style="font-size:17px;margin-bottom:4px;">People & Friends</h2>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Everyone is automatically friended with @fareed. Tap any user to message or follow.</p>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Tap any member to message or follow.</p>
       <div id="friendsList" style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;"></div>
     </section>
 
-    <!-- 5. PROFILE & SETTINGS (No Email Verification) -->
-    <section class="view-container" id="view-profile">
-      <div class="card-box glass" style="margin-bottom:14px;">
+    <!-- 5. FULL PROFILE, 10 THEMES & YOUR POSTS GRID -->
+    <section class="view-container" id="view-profile" style="gap:14px;">
+      <div class="card-box glass">
         <div style="display:flex;align-items:center;gap:14px;">
-          <div class="avatar" id="profileAvatar" style="width:64px;height:64px;font-size:24px;">U</div>
+          <div class="avatar" id="profileAvatar" style="width:68px;height:68px;font-size:26px;">U</div>
           <div style="flex:1;">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <h2 id="profileDisplayName" style="font-size:19px;">Username</h2>
+              <h2 id="profileDisplayName" style="font-size:20px;">Username</h2>
               <span id="profileAdminBadge" class="admin-tag" style="display:none;">ADMIN</span>
             </div>
             <div id="profileHandle" style="font-size:13px;color:var(--muted);">@username</div>
-            <div style="display:flex;gap:14px;margin-top:8px;font-size:12px;">
+            <div style="display:flex;gap:14px;margin-top:8px;font-size:12px;flex-wrap:wrap;">
               <span><strong id="statFollowing">0</strong> Following</span>
               <span><strong id="statFollowers">0</strong> Followers</span>
               <span><strong id="statFriends">1</strong> Friends</span>
+              <span><strong id="statLikes">0</strong> Likes</span>
             </div>
           </div>
         </div>
-        <p id="profileBioText" style="font-size:13px;color:#d6dcf5;margin-top:12px;">No bio yet.</p>
+        <p id="profileBioText" style="font-size:13px;color:#cbd5e1;margin-top:12px;white-space:pre-line;">No bio yet.</p>
 
         <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
           <label class="icon-btn" style="cursor:pointer;">
@@ -892,11 +928,22 @@
         </div>
       </div>
 
+      <!-- 10 CUSTOM THEMES SELECTOR -->
+      <div class="card-box glass">
+        <h3>🎨 App Theme (10 Custom Presets)</h3>
+        <div class="theme-grid" id="profileThemeGrid"></div>
+      </div>
+
+      <!-- PROFILE & ACCOUNT SETTINGS -->
       <div class="card-box glass">
         <h3>Profile & Account Settings</h3>
         <div class="field-group">
-          <label>Bio</label>
-          <input type="text" id="settingsBioInput" placeholder="Update your bio..." />
+          <label>Display Name</label>
+          <input type="text" id="settingsDisplayNameInput" maxlength="24" placeholder="Your display name..." />
+        </div>
+        <div class="field-group">
+          <label>Bio (Max 400 characters)</label>
+          <textarea id="settingsBioInput" rows="2" maxlength="400" placeholder="Update your bio..."></textarea>
         </div>
         <div class="field-group">
           <label>New Password (leave blank to keep current)</label>
@@ -904,11 +951,16 @@
         </div>
         <button class="primary-btn" onclick="saveProfileSettings()">Save Changes to Supabase</button>
       </div>
+
+      <!-- YOUR POSTS GRID -->
+      <div class="card-box glass">
+        <h3>🎬 Your Clips & Posts <span class="ver-pill" id="myPostsCountPill">0</span></h3>
+        <div class="profile-posts-grid" id="myProfilePostsGrid"></div>
+      </div>
     </section>
 
     <!-- 6. DYNAMIC 6TH TAB: SUPPORT (Members) / ADMIN COMMAND CENTER (Admins) -->
     <section class="view-container" id="view-sixth">
-      <!-- Member Support View -->
       <div id="memberSupportView" style="display:none;">
         <div class="card-box glass" style="margin-bottom:14px;">
           <h3>🛠️ Eclipse Support & Report Center</h3>
@@ -937,7 +989,6 @@
         </div>
       </div>
 
-      <!-- Admin Control Panel -->
       <div id="adminPanelView" class="admin-grid" style="display:none;">
         <div class="card-box glass">
           <h3>📥 Support & Reports Inbox <span class="ver-pill" id="ticketCountPill">0 Open</span></h3>
@@ -950,7 +1001,6 @@
             <label>Target Username</label>
             <input type="text" id="adminTargetUser" placeholder="Enter exact username..." />
           </div>
-
           <div class="slider-row">
             <div style="display:flex;justify-content:space-between;font-size:12px;">
               <span>Duration Amount</span>
@@ -958,7 +1008,6 @@
             </div>
             <input type="range" id="banAmountSlider" min="1" max="100" value="10" oninput="updateBanPreview()" />
           </div>
-
           <div class="slider-row">
             <div style="display:flex;justify-content:space-between;font-size:12px;">
               <span>Time Unit</span>
@@ -966,9 +1015,7 @@
             </div>
             <input type="range" id="banUnitSlider" min="0" max="6" value="1" oninput="updateBanPreview()" />
           </div>
-
           <div style="font-size:12px;color:#c7d2fe;margin:6px 0;" id="banSummaryText">Ban Duration: 10 Minutes</div>
-
           <div class="btn-row">
             <button class="warn-btn" onclick="applyTempBan()">⏱️ Issue Temp Ban</button>
             <button class="danger-btn" onclick="applyPermaBan()">⛔ Quick Perma Ban</button>
@@ -1022,7 +1069,7 @@
   </div>
 
   <!-- Upload Clip Modal -->
-  <div id="uploadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:90;align-items:center;justify-content:center;padding:16px;">
+  <div id="uploadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:90;align-items:center;justify-content:center;padding:16px;">
     <div class="auth-card glass" style="max-width:420px;">
       <h3 style="margin-bottom:10px;">Upload Clip to Feed</h3>
       <div class="field-group">
@@ -1052,7 +1099,7 @@
         <strong id="commentSheetTitle">Comments</strong>
         <button class="icon-btn" onclick="closeCommentSheet()">✕</button>
       </div>
-      <div id="replyingBanner" style="display:none;font-size:12px;color:#a5b4fc;margin-bottom:6px;justify-content:space-between;">
+      <div id="replyingBanner" style="display:none;font-size:12px;color:var(--accent-400);margin-bottom:6px;justify-content:space-between;">
         <span id="replyingToText">Replying to @user</span>
         <span style="cursor:pointer;" onclick="cancelReply()">Cancel</span>
       </div>
@@ -1066,11 +1113,41 @@
 
   <script>
     // =========================================================
-    // 1. LIVE SUPABASE CLIENT & LOW-EGRESS CURSOR CONFIG
+    // 1. LIVE SUPABASE CLIENT & 10 CLASSIC THEMES
     // =========================================================
     const SUPABASE_URL = "https://qpqnmbhqjxtgoaekvqsa.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_hMYMiWm1ihQjc7L7tQSo6w_ZmWL_Q-H";
     const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    const ECLIPSE_THEMES = [
+      { id: "midnight", name: "Eclipse Midnight", bg: "#06080f", bg900: "#0d101b", card: "#111524", border: "#1e253c", a400: "#818cf8", a500: "#6366f1", a600: "#4f46e5" },
+      { id: "crimson", name: "Crimson Nebula", bg: "#0f0609", bg900: "#190b10", card: "#221017", border: "#381a25", a400: "#fb7185", a500: "#f43f5e", a600: "#e11d48" },
+      { id: "emerald", name: "Emerald Matrix", bg: "#050e0a", bg900: "#0a1912", card: "#0f241a", border: "#1a3a2b", a400: "#34d399", a500: "#10b981", a600: "#059669" },
+      { id: "cybergold", name: "Cyber Gold", bg: "#0d0b05", bg900: "#171309", card: "#211b0d", border: "#382e16", a400: "#fbbf24", a500: "#f59e0b", a600: "#d97706" },
+      { id: "ocean", name: "Ocean Abyss", bg: "#050b12", bg900: "#091421", card: "#0e1d30", border: "#19304d", a400: "#38bdf8", a500: "#0ea5e9", a600: "#0284c7" },
+      { id: "amethyst", name: "Royal Amethyst", bg: "#0b0612", bg900: "#140b21", card: "#1d1030", border: "#311b4f", a400: "#c084fc", a500: "#a855f7", a600: "#9333ea" },
+      { id: "sunset", name: "Sunset Blaze", bg: "#100805", bg900: "#1c0e09", card: "#26140d", border: "#3f2216", a400: "#fb923c", a500: "#f97316", a600: "#ea580c" },
+      { id: "sakura", name: "Sakura Night", bg: "#10070d", bg900: "#1c0c17", card: "#261120", border: "#3f1c35", a400: "#f472b6", a500: "#ec4899", a600: "#db2777" },
+      { id: "arctic", name: "Arctic Frost", bg: "#070d12", bg900: "#0d1720", card: "#13212e", border: "#21374b", a400: "#22d3ee", a500: "#06b6d4", a600: "#0891b2" },
+      { id: "obsidian", name: "Obsidian Stealth", bg: "#070708", bg900: "#101012", card: "#17171a", border: "#27272c", a400: "#a1a1aa", a500: "#71717a", a600: "#52525b" }
+    ];
+
+    let activeThemeId = localStorage.getItem("eclipse_theme_id") || "midnight";
+
+    function applyTheme(themeId, persist = true) {
+      const t = ECLIPSE_THEMES.find(x => x.id === themeId) || ECLIPSE_THEMES[0];
+      activeThemeId = t.id;
+      const r = document.documentElement;
+      r.style.setProperty("--bg", t.bg);
+      r.style.setProperty("--bg-900", t.bg900);
+      r.style.setProperty("--panel-2", t.card);
+      r.style.setProperty("--border", t.border);
+      r.style.setProperty("--accent-400", t.a400);
+      r.style.setProperty("--accent", t.a500);
+      r.style.setProperty("--accent-2", t.a600);
+      if (persist) localStorage.setItem("eclipse_theme_id", t.id);
+      renderThemeGrid();
+    }
 
     const SOCIAL_PREFIXES = [
       "__ECLIPSE_SOCIAL_EVT__:",
@@ -1095,7 +1172,7 @@
       "grabify", "iplogger", "pornhub", "xvideos", "nsfw", "chink", "spic"
     ];
 
-    const CACHE_KEY = "eclipse_v163_live_cache_v2";
+    const CACHE_KEY = "eclipse_v163_full_history_v3";
     let state = loadCache();
     let currentUser = null;
     let activeTab = "global";
@@ -1107,7 +1184,6 @@
     let bannerTimeout = null;
     let bannerTargetUser = null;
 
-    // Cursor timestamps to prevent re-downloading old Supabase rows
     let lastGlobalCursor = null;
     let lastSocialCursor = null;
     let pollTimer = null;
@@ -1136,9 +1212,9 @@
       try {
         localStorage.setItem(CACHE_KEY, JSON.stringify(state));
       } catch {
-        // Strip heavy base64 strings from localStorage cache if quota is tight
-        state.globalMessages = state.globalMessages.slice(-40);
-        state.clips = state.clips.slice(0, 15).map(c =>
+        // Keep text history intact while trimming only huge inline base64 strings from localStorage
+        state.globalMessages = state.globalMessages.slice(-250);
+        state.clips = state.clips.map(c =>
           c.mediaUrl && c.mediaUrl.startsWith("data:") && c.mediaUrl.length > 180000
             ? { ...c, mediaUrl: "" }
             : c
@@ -1161,7 +1237,7 @@
     }
 
     // =========================================================
-    // 2. ZERO-EGRESS WEB AUDIO API SOUND EFFECTS ENGINE
+    // 2. WEB AUDIO API SOUND EFFECTS ENGINE
     // =========================================================
     const EclipseSFX = (() => {
       let ctx = null;
@@ -1210,9 +1286,7 @@
           tone(587.33, "triangle", 0.08, 0.08, 880);
           setTimeout(() => tone(1174.66, "sine", 0.12, 0.07), 55);
         },
-        error: () => {
-          tone(210, "sawtooth", 0.14, 0.06, 150);
-        }
+        error: () => tone(210, "sawtooth", 0.14, 0.06, 150)
       };
     })();
 
@@ -1223,14 +1297,14 @@
     }
 
     // =========================================================
-    // 3. HELPERS, MODERATION & DISCORD BANNER
+    // 3. HELPERS, LEGACY EVENT REPLAY & MEDIA STORAGE
     // =========================================================
     function cleanUsername(raw) {
       return String(raw || "").trim().replace(/^@+/, "").replace(/@eclipse\.internal$/i, "");
     }
 
     function resolveRowSender(row) {
-      if (!row || typeof row !== "object") return "User";
+      if (!row || typeof row !== "object") return "Member";
       const candidate =
         row.sender_username ||
         row.username ||
@@ -1299,8 +1373,10 @@
 
       if (evt.type === "NEW_POST" && evt.post) {
         const hydrated = hydrateLegacyPost(evt.post);
-        if (hydrated && !state.clips.some(c => String(c.id) === String(hydrated.id))) {
-          state.clips.unshift(hydrated);
+        if (hydrated) {
+          const idx = state.clips.findIndex(c => String(c.id) === String(hydrated.id));
+          if (idx === -1) state.clips.unshift(hydrated);
+          else if (!state.clips[idx].mediaUrl && hydrated.mediaUrl) state.clips[idx] = hydrated;
         }
       } else if (evt.type === "POST_REACT" && evt.postId && evt.user) {
         const clip = state.clips.find(c => String(c.id) === String(evt.postId));
@@ -1324,9 +1400,17 @@
           });
         }
       } else if (evt.type === "PROFILE_UPDATE" && evt.username_lower) {
-        const u = ensureUserRecord({ username: evt.displayName || evt.username_lower, username_lower: evt.username_lower });
+        const u = ensureUserRecord({
+          username: evt.username_lower,
+          username_lower: evt.username_lower,
+          displayName: evt.displayName
+        });
+        if (evt.displayName !== undefined) u.displayName = evt.displayName;
         if (evt.bio !== undefined) u.bio = evt.bio;
         if (evt.avatarUrl !== undefined) u.avatar = evt.avatarUrl || "";
+        if (evt.theme && currentUser && currentUser.username_lower === evt.username_lower.toLowerCase()) {
+          applyTheme(evt.theme, true);
+        }
       } else if (evt.type === "DELETE_POST" && evt.postId) {
         state.clips = state.clips.filter(c => String(c.id) !== String(evt.postId));
       } else if (evt.type === "BAN_TOGGLE" && evt.target) {
@@ -1367,9 +1451,6 @@
       return { text: trimmed, imageUrl: "", attachment: null };
     }
 
-    // =========================================================
-    // LOW-STORAGE MEDIA UPLOADER (SUPABASE STORAGE + WEBP COMPRESSION)
-    // =========================================================
     async function compressImageToBlob(file, maxDim = 720, quality = 0.72) {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -1457,7 +1538,7 @@
       const progress = document.getElementById("bannerProgress");
       const u = state.users[cleanUsername(senderName).toLowerCase()];
 
-      document.getElementById("bannerUser").textContent = senderName;
+      document.getElementById("bannerUser").textContent = (u && u.displayName) || senderName;
       document.getElementById("bannerChannel").textContent = `• ${channelLabel}`;
       document.getElementById("bannerText").textContent = text;
       const av = document.getElementById("bannerAvatar");
@@ -1495,6 +1576,7 @@
         id: rawRow.id || existing.id || null,
         username: display,
         username_lower: key,
+        displayName: rawRow.displayName || rawRow.display_name || existing.displayName || display,
         password: rawRow.password !== undefined ? rawRow.password : (existing.password || ""),
         bio: rawRow.bio !== undefined ? rawRow.bio : (existing.bio || "Eclipse Member"),
         avatar: rawRow.avatar_url || rawRow.avatar || rawRow.pfp || existing.avatar || "",
@@ -1514,7 +1596,7 @@
     }
 
     // =========================================================
-    // 4. SUPABASE LIVE AUTHENTICATION (REAL ACCOUNTS, NO EMAIL OTP)
+    // 4. SUPABASE LIVE AUTHENTICATION
     // =========================================================
     function switchAuthMode(mode) {
       EclipseSFX.tap();
@@ -1666,35 +1748,36 @@
     }
 
     // =========================================================
-    // 5. CURSOR-BASED LOW-EGRESS SUPABASE SYNC
+    // 5. FULL HISTORY + CURSOR-BASED LOW-EGRESS SUPABASE SYNC
     // =========================================================
     async function initialSupabaseSync() {
       if (!sb) return;
       try {
+        // 1. Load all users
         const { data: userRows, error: uErr } = await sb
           .from("users")
           .select("*")
-          .limit(300);
+          .limit(500);
 
         if (!uErr && userRows) {
           userRows.forEach(r => ensureUserRecord(r));
           setConnectionStatus(true);
         }
 
+        // 2. Load ALL historical global_messages (up to 1,000 rows in chronological order)
         const { data: msgRows, error: mErr } = await sb
           .from("global_messages")
           .select("*")
-          .order("created_at", { ascending: false })
-          .limit(120);
+          .order("created_at", { ascending: true })
+          .limit(1000);
 
         if (!mErr && msgRows) {
-          const ordered = msgRows.reverse();
           const map = new Map();
           state.globalMessages
             .filter(m => !parseRawSocialEvent(m.text))
             .forEach(m => map.set(String(m.id), m));
 
-          ordered.forEach(r => {
+          msgRows.forEach(r => {
             const rawContent = r.content || r.text || "";
             const evt = parseRawSocialEvent(rawContent);
             if (evt) {
@@ -1714,25 +1797,28 @@
             });
           });
 
-          state.globalMessages = Array.from(map.values()).slice(-80);
-          if (ordered.length > 0) {
-            lastGlobalCursor = ordered[ordered.length - 1].created_at;
+          state.globalMessages = Array.from(map.values());
+          if (msgRows.length > 0) {
+            lastGlobalCursor = msgRows[msgRows.length - 1].created_at;
           }
         }
 
+        // 3. Load ALL historical direct_messages (up to 1,000 rows)
         if (currentUser) {
           const { data: dmRows, error: dmErr } = await sb
             .from("direct_messages")
             .select("*")
-            .order("created_at", { ascending: false })
-            .limit(100);
+            .order("created_at", { ascending: true })
+            .limit(1000);
 
           if (!dmErr && dmRows) {
-            dmRows.reverse().forEach(r => {
-              const from = cleanUsername(r.sender_username || r.sender || r.from || "");
-              const to = cleanUsername(r.receiver_username || r.receiver || r.to || "");
+            dmRows.forEach(r => {
+              const from = cleanUsername(r.sender_username || r.sender || r.from || r.from_user || "");
+              const to = cleanUsername(r.receiver_username || r.receiver || r.to || r.to_user || "");
               if (!from || !to) return;
               if (from.toLowerCase() !== currentUser.username_lower && to.toLowerCase() !== currentUser.username_lower) return;
+              ensureUserRecord({ username: from });
+              ensureUserRecord({ username: to });
               const key = dmThreadKey(from, to);
               state.dms[key] = state.dms[key] || [];
               if (!state.dms[key].some(m => String(m.id) === String(r.id))) {
@@ -1752,17 +1838,23 @@
           }
         }
 
+        // 4. Load social_events history
         const { data: evRows, error: eErr } = await sb
           .from("social_events")
           .select("*")
-          .order("created_at", { ascending: false })
-          .limit(80);
+          .order("created_at", { ascending: true })
+          .limit(500);
 
         if (!eErr && evRows) {
-          evRows.reverse().forEach(ev => applySocialEvent(ev, false));
+          evRows.forEach(ev => applySocialEvent(ev, false));
           if (evRows.length > 0) {
             lastSocialCursor = evRows[evRows.length - 1].created_at;
           }
+        }
+
+        // Refresh currentUser reference with hydrated profile data
+        if (currentUser && state.users[currentUser.username_lower]) {
+          currentUser = state.users[currentUser.username_lower];
         }
 
         saveCache();
@@ -1777,9 +1869,9 @@
       pollTimer = setInterval(async () => {
         if (!sb || !currentUser) return;
         try {
-          let gQuery = sb.from("global_messages").select("*").order("created_at", { ascending: true }).limit(25);
+          let gQuery = sb.from("global_messages").select("*").order("created_at", { ascending: true }).limit(40);
           if (lastGlobalCursor) gQuery = gQuery.gt("created_at", lastGlobalCursor);
-          else gQuery = gQuery.limit(10);
+          else gQuery = gQuery.limit(15);
 
           const { data: newMsgs, error: gErr } = await gQuery;
           if (!gErr && newMsgs && newMsgs.length > 0) {
@@ -1813,14 +1905,16 @@
               }
             });
             if (addedChat || updatedSocial) {
-              state.globalMessages = state.globalMessages.slice(-80);
               saveCache();
               if (activeTab === "global") renderGlobalChat();
-              if (updatedSocial && activeTab === "feed") renderFeed();
+              if (updatedSocial) {
+                if (activeTab === "feed") renderFeed();
+                if (activeTab === "profile") renderProfile();
+              }
             }
           }
 
-          let sQuery = sb.from("social_events").select("*").order("created_at", { ascending: true }).limit(30);
+          let sQuery = sb.from("social_events").select("*").order("created_at", { ascending: true }).limit(40);
           if (lastSocialCursor) sQuery = sQuery.gt("created_at", lastSocialCursor);
           else sQuery = sQuery.limit(15);
 
@@ -1939,33 +2033,39 @@
       return escapeHTML((cleanUsername(username) || "U")[0].toUpperCase());
     }
 
+    function getDisplayLabel(username) {
+      const u = state.users[cleanUsername(username).toLowerCase()];
+      return (u && u.displayName) ? u.displayName : cleanUsername(username);
+    }
+
     // =========================================================
     // 7. GLOBAL CHAT + ATTACHMENTS + AUTO-MODERATION
     // =========================================================
     function renderGlobalChat() {
       const list = document.getElementById("globalChatList");
+      const visibleMessages = state.globalMessages.filter(m => !parseRawSocialEvent(m.text));
+
       document.getElementById("lockdownNotice").textContent = state.globalLockdown
         ? "🔒 Global Chat is in Admin Lockdown"
-        : "Live Supabase chat • Auto-moderation active";
-
-      const visibleMessages = state.globalMessages.filter(m => !parseRawSocialEvent(m.text));
+        : `Live Supabase chat • ${visibleMessages.length} messages synced`;
 
       list.innerHTML = visibleMessages.map(m => {
         const senderName = resolveRowSender(m);
+        const displayName = getDisplayLabel(senderName);
         const mine = currentUser && senderName.toLowerCase() === currentUser.username_lower;
         const adminBadge = isAdmin(senderName) ? `<span class="admin-tag">ADMIN</span>` : "";
         const imgHtml = m.imageUrl
           ? `<img class="chat-img-preview" src="${escapeHTML(m.imageUrl)}" alt="Shared photo" onclick="openLightbox(this.src)" />`
           : "";
         const attachHtml = m.attachment
-          ? `<div class="attachment-card"><span>📎 ${escapeHTML(m.attachment.name)}</span><a href="${m.attachment.data}" download="${escapeHTML(m.attachment.name)}" style="color:#a5b4fc;font-weight:700;">Download</a></div>`
+          ? `<div class="attachment-card"><span>📎 ${escapeHTML(m.attachment.name)}</span><a href="${m.attachment.data}" download="${escapeHTML(m.attachment.name)}" style="color:var(--accent-400);font-weight:700;">Download</a></div>`
           : "";
         return `
           <div class="msg-row ${mine ? "mine" : ""}">
             <div class="avatar">${getAvatarHtml(senderName)}</div>
             <div class="msg-bubble-wrap">
               <div class="msg-sender">
-                <strong>${escapeHTML(senderName)}</strong> ${adminBadge}
+                <strong>${escapeHTML(displayName)}</strong> ${adminBadge}
                 <span>${new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
               </div>
               <div class="msg-bubble">
@@ -2080,7 +2180,7 @@
     }
 
     // =========================================================
-    // 8. RANDOMIZED ALGORITHM FEED + TIKTOK COMMENTS & REPLIES
+    // 8. FEED + TIKTOK COMMENTS & REPLIES
     // =========================================================
     function shuffleFeed() {
       EclipseSFX.pop();
@@ -2090,9 +2190,9 @@
 
     function renderFeed() {
       const container = document.getElementById("feedList");
-      const clips = [...state.clips];
+      document.getElementById("feedSubtitle").textContent = `${state.clips.length} synced clips & posts`;
 
-      container.innerHTML = clips.map(clip => {
+      container.innerHTML = state.clips.map(clip => {
         const liked = currentUser && clip.likes.includes(currentUser.username_lower);
         const commentCount = clip.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0);
         let mediaHtml = "";
@@ -2107,8 +2207,8 @@
               <div style="display:flex;align-items:center;gap:10px;">
                 <div class="avatar">${getAvatarHtml(clip.author)}</div>
                 <div>
-                  <strong>${escapeHTML(clip.author)}</strong> ${isAdmin(clip.author) ? '<span class="admin-tag">ADMIN</span>' : ''}
-                  <div style="font-size:11px;color:var(--muted);">For You • Double-tap to like</div>
+                  <strong>${escapeHTML(getDisplayLabel(clip.author))}</strong> ${isAdmin(clip.author) ? '<span class="admin-tag">ADMIN</span>' : ''}
+                  <div style="font-size:11px;color:var(--muted);">@${escapeHTML(clip.author.toLowerCase())} • Double-tap to like</div>
                 </div>
               </div>
               <button class="icon-btn" onclick="followUser('${clip.author.toLowerCase()}')">
@@ -2127,7 +2227,7 @@
             </div>
           </article>
         `;
-      }).join("") || `<p style="color:var(--muted);font-size:13px;text-align:center;margin-top:36px;">No clips yet — tap + Upload to post the first one!</p>`;
+      }).join("") || `<p style="color:var(--muted);font-size:13px;text-align:center;margin-top:36px;">No clips yet — tap + Upload to post one!</p>`;
     }
 
     function doubleTapLike(clipId, cardEl) {
@@ -2136,6 +2236,7 @@
       if (!clip.likes.includes(currentUser.username_lower)) {
         clip.likes.push(currentUser.username_lower);
         saveCache();
+        broadcastSocialEvent("POST_REACT", { postId: clipId, kind: "like", user: currentUser.username_lower, active: true });
       }
       EclipseSFX.like();
       const heart = document.createElement("div");
@@ -2152,7 +2253,8 @@
       const clip = state.clips.find(c => c.id === clipId);
       if (!clip || !currentUser) return;
       const idx = clip.likes.indexOf(currentUser.username_lower);
-      if (idx >= 0) {
+      const active = idx === -1;
+      if (!active) {
         clip.likes.splice(idx, 1);
         EclipseSFX.tap();
       } else {
@@ -2161,6 +2263,8 @@
       }
       saveCache();
       renderFeed();
+      renderProfile();
+      broadcastSocialEvent("POST_REACT", { postId: clipId, kind: "like", user: currentUser.username_lower, active });
     }
 
     function openUploadModal() {
@@ -2188,7 +2292,7 @@
 
       const finalize = async (mediaUrl, mediaType) => {
         const clip = {
-          id: "clip_" + Date.now(),
+          id: "post_" + Date.now(),
           author: currentUser.username,
           caption: caption || "New clip",
           mediaUrl,
@@ -2231,7 +2335,6 @@
       });
     }
 
-    // TikTok Comment Sheet
     function openCommentSheet(clipId) {
       EclipseSFX.pop();
       activeClipId = clipId;
@@ -2328,13 +2431,15 @@
         }
         cancelReply();
       } else {
-        clip.comments.push({
+        const newComment = {
           id: "c_" + Date.now(),
           author: currentUser.username,
           text,
           likes: [],
           replies: []
-        });
+        };
+        clip.comments.push(newComment);
+        broadcastSocialEvent("POST_COMMENT", { postId: clip.id, comment: newComment });
       }
       input.value = "";
       saveCache();
@@ -2344,7 +2449,7 @@
     }
 
     // =========================================================
-    // 9. APPLE MESSAGES-STYLE DMs (NEWEST AT TOP + LIVE SYNC)
+    // 9. APPLE MESSAGES-STYLE DMs (NEWEST AT TOP + FULL HISTORY)
     // =========================================================
     function dmThreadKey(u1, u2) {
       return [cleanUsername(u1).toLowerCase(), cleanUsername(u2).toLowerCase()].sort().join("__");
@@ -2359,10 +2464,10 @@
         const key = dmThreadKey(currentUser.username_lower, u.username_lower);
         const thread = state.dms[key] || [];
         const lastMsg = thread[thread.length - 1] || null;
-        return { user: u, lastMsg, ts: lastMsg ? new Date(lastMsg.created_at).getTime() : 0 };
+        return { user: u, lastMsg, count: thread.length, ts: lastMsg ? new Date(lastMsg.created_at).getTime() : 0 };
       }).sort((a, b) => b.ts - a.ts);
 
-      list.innerHTML = enriched.map(({ user, lastMsg }) => {
+      list.innerHTML = enriched.map(({ user, lastMsg, count }) => {
         const active = activeDmPartner === user.username_lower ? "active" : "";
         const preview = lastMsg ? (lastMsg.text || (lastMsg.imageUrl ? "📷 Photo" : "Attachment")) : "Tap to start chatting";
         const timeStr = lastMsg ? new Date(lastMsg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
@@ -2371,11 +2476,11 @@
             <div class="avatar">${getAvatarHtml(user.username)}</div>
             <div style="flex:1;min-width:0;">
               <div style="display:flex;justify-content:space-between;align-items:center;">
-                <strong style="font-size:13.5px;">${escapeHTML(user.username)}</strong>
+                <strong style="font-size:13.5px;">${escapeHTML(user.displayName || user.username)}</strong>
                 <span style="font-size:11px;color:var(--muted);">${timeStr}</span>
               </div>
               <div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                ${escapeHTML(preview)}
+                ${count > 0 ? `<span style="color:var(--accent-400);font-weight:700;">(${count})</span> ` : ""}${escapeHTML(preview)}
               </div>
             </div>
           </div>
@@ -2387,7 +2492,7 @@
       EclipseSFX.tap();
       activeDmPartner = partnerLower;
       const partner = state.users[partnerLower];
-      document.getElementById("dmActiveName").textContent = partner ? partner.username : partnerLower;
+      document.getElementById("dmActiveName").textContent = partner ? (partner.displayName || partner.username) : partnerLower;
       document.getElementById("dmLayout").classList.add("in-thread");
       renderDmSidebar();
       renderDmMessages();
@@ -2411,7 +2516,7 @@
           ? `<img class="chat-img-preview" src="${escapeHTML(m.imageUrl)}" alt="Shared photo" onclick="openLightbox(this.src)" />`
           : "";
         const attachHtml = m.attachment
-          ? `<div class="attachment-card"><span>📎 ${escapeHTML(m.attachment.name)}</span><a href="${m.attachment.data}" download="${escapeHTML(m.attachment.name)}" style="color:#a5b4fc;font-weight:700;">Download</a></div>`
+          ? `<div class="attachment-card"><span>📎 ${escapeHTML(m.attachment.name)}</span><a href="${m.attachment.data}" download="${escapeHTML(m.attachment.name)}" style="color:var(--accent-400);font-weight:700;">Download</a></div>`
           : "";
         return `
           <div class="msg-row ${mine ? "mine" : ""}">
@@ -2475,7 +2580,7 @@
     }
 
     // =========================================================
-    // 10. FRIENDS & PROFILE (LIVE SUPABASE UPDATES)
+    // 10. FRIENDS, FULL PROFILE, THEMES & POSTS GRID
     // =========================================================
     function followUser(targetLower) {
       if (!currentUser || targetLower === currentUser.username_lower) return;
@@ -2510,7 +2615,7 @@
             <div style="display:flex;align-items:center;gap:10px;">
               <div class="avatar">${getAvatarHtml(u.username)}</div>
               <div>
-                <strong>${escapeHTML(u.username)}</strong>
+                <strong>${escapeHTML(u.displayName || u.username)}</strong>
                 ${isAdmin(u.username) ? '<span class="admin-tag">ADMIN</span>' : ''}
                 ${isFriend ? '<span class="ver-pill" style="margin-left:4px;">Friend</span>' : ''}
                 <div style="font-size:12px;color:var(--muted);">${escapeHTML(u.bio || "")}</div>
@@ -2525,25 +2630,60 @@
       }).join("");
     }
 
+    function renderThemeGrid() {
+      const grid = document.getElementById("profileThemeGrid");
+      if (!grid) return;
+      grid.innerHTML = ECLIPSE_THEMES.map(t => `
+        <button type="button" class="theme-chip ${activeThemeId === t.id ? "active" : ""}" onclick="applyTheme('${t.id}')">
+          <span style="width:14px;height:14px;border-radius:999px;background:${t.a500};flex-shrink:0;"></span>
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHTML(t.name)}</span>
+        </button>
+      `).join("");
+    }
+
     function renderProfile() {
       if (!currentUser) return;
+      const myPosts = state.clips.filter(c => c.author.toLowerCase() === currentUser.username_lower);
+      const totalLikes = myPosts.reduce((sum, p) => sum + p.likes.length, 0);
+
       document.getElementById("profileAvatar").innerHTML = getAvatarHtml(currentUser.username);
-      document.getElementById("profileDisplayName").textContent = currentUser.username;
+      document.getElementById("profileDisplayName").textContent = currentUser.displayName || currentUser.username;
       document.getElementById("profileHandle").textContent = `@${currentUser.username_lower}`;
       document.getElementById("profileAdminBadge").style.display = isAdmin(currentUser.username) ? "inline-block" : "none";
       document.getElementById("statFollowing").textContent = currentUser.following.length;
       document.getElementById("statFollowers").textContent = currentUser.followers.length;
       document.getElementById("statFriends").textContent = currentUser.friends.length;
+      document.getElementById("statLikes").textContent = totalLikes;
       document.getElementById("profileBioText").textContent = currentUser.bio || "No bio yet.";
+
+      document.getElementById("settingsDisplayNameInput").value = currentUser.displayName || currentUser.username;
       document.getElementById("settingsBioInput").value = currentUser.bio || "";
+      document.getElementById("myPostsCountPill").textContent = myPosts.length;
+
+      renderThemeGrid();
+
+      const grid = document.getElementById("myProfilePostsGrid");
+      grid.innerHTML = myPosts.map(p => {
+        if (p.mediaUrl && p.mediaType === "video") {
+          return `<div class="profile-post-tile" onclick="switchTab('feed')"><video src="${p.mediaUrl}" muted playsinline></video></div>`;
+        }
+        if (p.mediaUrl) {
+          return `<div class="profile-post-tile" onclick="openLightbox('${p.mediaUrl}')"><img src="${p.mediaUrl}" alt="" /></div>`;
+        }
+        return `<div class="profile-post-tile" onclick="switchTab('feed')">${escapeHTML(p.caption)}</div>`;
+      }).join("") || `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:12px;padding:18px;">No posts yet — upload a clip to see it here!</div>`;
     }
 
     async function saveProfileSettings() {
       if (!currentUser) return;
+      const newDisplay = document.getElementById("settingsDisplayNameInput").value.trim() || currentUser.username;
       const newBio = document.getElementById("settingsBioInput").value.trim();
       const newPass = document.getElementById("settingsPasswordInput").value;
-      if (containsBlockedContent(newBio)) return showToast("Bio contains blocked words.", true);
+      if (containsBlockedContent(newBio) || containsBlockedContent(newDisplay)) {
+        return showToast("Profile contains blocked words.", true);
+      }
 
+      currentUser.displayName = newDisplay;
       currentUser.bio = newBio;
       const updatePayload = { bio: newBio };
       if (newPass) {
@@ -2556,13 +2696,16 @@
       document.getElementById("settingsPasswordInput").value = "";
 
       if (sb) {
-        const { error } = await sb
-          .from("users")
-          .update(updatePayload)
-          .eq("username_lower", currentUser.username_lower);
-        if (error) return showToast(`Saved locally, DB sync error: ${error.message}`, true);
+        await sb.from("users").update(updatePayload).eq("username_lower", currentUser.username_lower);
       }
-      showToast("Profile updated in Supabase!");
+      await broadcastSocialEvent("PROFILE_UPDATE", {
+        username_lower: currentUser.username_lower,
+        displayName: newDisplay,
+        bio: newBio,
+        avatarUrl: currentUser.avatar || "",
+        theme: activeThemeId
+      });
+      showToast("Profile updated & synced!");
     }
 
     function handlePfpUpload(e) {
@@ -2580,9 +2723,11 @@
         if (sb) {
           await sb.from("users").update({ avatar_url: currentUser.avatar }).eq("username_lower", currentUser.username_lower);
         }
-        await broadcastSocialEvent("USER_MOD", {
-          targetLower: currentUser.username_lower,
-          avatar: currentUser.avatar
+        await broadcastSocialEvent("PROFILE_UPDATE", {
+          username_lower: currentUser.username_lower,
+          displayName: currentUser.displayName || currentUser.username,
+          bio: currentUser.bio,
+          avatarUrl: currentUser.avatar
         });
         showToast("Profile icon updated!");
       });
@@ -2766,8 +2911,8 @@
       box.innerHTML = state.logs.map(l => `<div>${escapeHTML(l)}</div>`).join("");
     }
 
-    // Auto-restore last session on page load
     window.addEventListener("DOMContentLoaded", () => {
+      applyTheme(activeThemeId, false);
       const last = localStorage.getItem("eclipse_last_user");
       if (last && state.users[last]) {
         completeLogin(state.users[last]);
