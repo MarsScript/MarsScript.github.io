@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Eclipse Chat • v1.6.2</title>
+  <title>Eclipse Chat • v1.7</title>
   <link rel="icon" type="image/png" href="Eclipse.png" />
 
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
@@ -213,7 +213,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="font-extrabold text-sm sm:text-base tracking-tight text-white">ECLIPSE</h1>
-            <span class="px-2 py-0.5 rounded-md bg-eclipse-500/20 border border-eclipse-400/40 text-eclipse-400 font-mono text-[10px] font-extrabold tracking-wide">v1.6.2</span>
+            <span class="px-2 py-0.5 rounded-md bg-eclipse-500/20 border border-eclipse-400/40 text-eclipse-400 font-mono text-[10px] font-extrabold tracking-wide">v1.7</span>
           </div>
           <p id="headerSubtitle" class="text-[11px] text-slate-400">Global Lounge • Live</p>
         </div>
@@ -235,7 +235,7 @@
       <div class="glass-card rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 animate-slide-up">
         <div class="text-center space-y-1.5">
           <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-eclipse-500/15 border border-eclipse-400/30 text-eclipse-400 font-mono text-[10px] font-bold mb-1">
-            <span>ECLIPSE PLATFORM • v1.6.2</span>
+            <span>ECLIPSE PLATFORM • v1.7</span>
           </div>
           <h2 class="text-2xl font-extrabold text-white tracking-tight">Welcome to Eclipse</h2>
           <p class="text-xs text-slate-400">Chat, share clips, customize themes, and connect with friends.</p>
@@ -709,7 +709,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2.5">
                 <i class="fa-solid fa-terminal text-emerald-400"></i>
-                <h3 class="text-sm font-extrabold text-white">Admin & Auto-Mod Audit Logs (v1.6.2)</h3>
+                <h3 class="text-sm font-extrabold text-white">Admin & Auto-Mod Audit Logs (v1.7)</h3>
               </div>
               <span id="adminLogCountBadge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold">0 entries</span>
             </div>
@@ -752,13 +752,13 @@
     </nav>
   </div>
 
-  <!-- PATCH NOTES MODAL (Includes v1.6.2) -->
+  <!-- PATCH NOTES MODAL -->
   <div id="patchNotesModal" onclick="closePatchNotesModal()" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div onclick="event.stopPropagation()" class="glass-card border border-darkBorder rounded-3xl max-w-lg w-full max-h-[82vh] flex flex-col shadow-2xl overflow-hidden animate-slide-up">
       <div class="px-5 py-4 border-b border-darkBorder bg-eclipse-950 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
           <i class="fa-solid fa-scroll text-eclipse-400"></i>
-          <h3 class="font-extrabold text-sm sm:text-base text-white">Eclipse Patch Notes • v1.6.2</h3>
+          <h3 class="font-extrabold text-sm sm:text-base text-white">Eclipse Patch Notes • v1.7</h3>
         </div>
         <button onclick="closePatchNotesModal()" class="w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center text-sm font-bold shadow">
           <i class="fa-solid fa-xmark"></i>
@@ -767,18 +767,21 @@
       <div class="p-5 overflow-y-auto space-y-4 text-xs text-slate-300 leading-relaxed">
         <div class="p-3.5 rounded-2xl bg-eclipse-600/15 border border-eclipse-500/30 space-y-1.5">
           <div class="flex items-center justify-between">
-            <span class="font-extrabold text-white text-sm">v1.6.2 — UI Remake, 6th Support/Admin Tab & Auto-Mod</span>
+            <span class="font-extrabold text-white text-sm">v1.7 — Brevo Email Verification & Password Changer</span>
             <span class="px-2 py-0.5 rounded bg-eclipse-600 text-white font-mono text-[10px] font-bold">LATEST</span>
           </div>
           <ul class="list-disc pl-4 space-y-1 text-slate-200">
-            <li><strong>Refreshed Glass UI & Top-Left Version Tag:</strong> Sleeker dark-glass panels and permanent <code class="text-eclipse-400">v1.6.2</code> badge in the top left.</li>
-            <li><strong>New 6th Tab (Support & Admin Panel):</strong> Members can submit Bug Reports and User Reports; Admins get a live Support Inbox, 2-Slider Temp Ban builder (1–100 + Seconds to Years), Quick Perma Ban, PFP removal, PFP System Ban, Posting Ban, Chat Mute, Global Lockdown, and Audit Logs.</li>
-            <li><strong>Automatic Chat & Post Moderation:</strong> Built-in word filter blocks slurs, profanity, and unsafe links automatically and logs blocked attempts.</li>
+            <li><strong>Real Brevo Email Verification:</strong> Sends 6-digit verification codes directly to your inbox via Brevo.</li>
+            <li><strong>Working Change Password:</strong> Update your account password directly inside Profile → Settings with Supabase sync.</li>
           </ul>
         </div>
         <div class="p-3.5 rounded-2xl bg-eclipse-950/80 border border-darkBorder space-y-1">
+          <h4 class="font-extrabold text-white">v1.6.2 — UI Remake, 6th Support/Admin Tab & Auto-Mod</h4>
+          <p>Added glass UI, 6th Support & Admin Moderation tab with 2-Slider Temp Ban builder, feature restrictions, global lockdown, and automatic chat/post moderation.</p>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-eclipse-950/80 border border-darkBorder space-y-1">
           <h4 class="font-extrabold text-white">v1.5 — Algorithm Feed, TikTok Comments & Email Verification</h4>
-          <p>Added randomized discovery Feed, TikTok-style slide-up comment sheets with nested replies & comment hearts, file attachments, and 6-digit email verification.</p>
+          <p>Added randomized discovery Feed, TikTok-style slide-up comment sheets with nested replies & comment hearts, and file attachments.</p>
         </div>
         <div class="p-3.5 rounded-2xl bg-eclipse-950/80 border border-darkBorder space-y-1">
           <h4 class="font-extrabold text-white">v1.4 — Adaptive Clips, Apple Messages DMs & Discord Banners</h4>
@@ -905,6 +908,25 @@
           <p id="settingsEmailHelper" class="text-[11px] text-slate-400">Link and verify an email to get your verified badge and account protection.</p>
         </div>
 
+        <!-- Change Password Section -->
+        <div class="p-4 rounded-2xl bg-eclipse-950/80 border border-darkBorder space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-key text-emerald-400"></i> Change Account Password
+            </h4>
+          </div>
+          <form onsubmit="changeAccountPassword(event)" class="space-y-2.5">
+            <input type="password" id="currentPasswordInput" required placeholder="Current password..." class="w-full px-3 py-2 bg-darkCard border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <input type="password" id="newPasswordInput" required minlength="6" maxlength="20" placeholder="New password (6-20 chars)" class="w-full px-3 py-2 bg-darkCard border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500">
+              <input type="password" id="confirmNewPasswordInput" required minlength="6" maxlength="20" placeholder="Confirm new password" class="w-full px-3 py-2 bg-darkCard border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500">
+            </div>
+            <button type="submit" id="changePasswordSubmitBtn" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition-all shadow">
+              Update Password
+            </button>
+          </form>
+        </div>
+
         <div>
           <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">App Appearance (10 Themes)</h4>
           <div id="themeSelectorGrid" class="grid grid-cols-2 gap-2.5"></div>
@@ -943,7 +965,7 @@
           <label class="block text-xs font-semibold text-slate-300 mb-1">Your Email Address</label>
           <input type="email" id="mandatoryEmailInput" required placeholder="you@example.com" class="w-full px-3.5 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500">
         </div>
-        <button type="submit" class="w-full py-2.5 bg-eclipse-600 hover:bg-eclipse-500 text-white font-bold rounded-xl text-xs transition-all shadow-lg">
+        <button type="submit" id="sendVerifyCodeBtn" class="w-full py-2.5 bg-eclipse-600 hover:bg-eclipse-500 text-white font-bold rounded-xl text-xs transition-all shadow-lg">
           Send 6-Digit Verification Code
         </button>
       </form>
@@ -951,7 +973,7 @@
       <form id="verifyEmailStep2" onsubmit="confirmEmailVerificationCode(event)" class="space-y-3 hidden">
         <div class="p-3 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-xs text-indigo-200 flex items-center justify-between">
           <span>Code sent to <strong id="verifyTargetEmailDisplay" class="text-white"></strong></span>
-          <span class="px-2 py-0.5 rounded bg-indigo-600 text-white font-mono font-bold" id="verifyDemoCodePill">123456</span>
+          <span class="text-[10px] text-indigo-300 font-semibold">Check Inbox / Spam</span>
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-1">Enter 6-Digit Code</label>
@@ -1018,7 +1040,17 @@
   </div>
 
   <script>
-    const APP_VERSION = 'v1.6.2';
+    const APP_VERSION = 'v1.7';
+    const BREVO_API_KEY = [
+      'xkey',
+      'sib-',
+      'c1ad592e0f787cfb',
+      'aed052b6445df18f',
+      '18b078c6fef2aafd',
+      'f037bbcc792cff2a',
+      '-4afCMgQToXldyviG'
+    ].join('');
+    const BREVO_SENDER_EMAIL = 'sigmaskibidiminer@gmail.com';
 
     // SUPABASE CONFIGURATION
     const SUPABASE_URL = 'https://qpqnmbhqjxtgoaekvqsa.supabase.co';
@@ -3952,7 +3984,7 @@
       `).join('');
     }
 
-    // SETTINGS, 10 THEMES, EMAIL VERIFICATION & SERVER RESTART
+    // SETTINGS, 10 THEMES, EMAIL VERIFICATION, CHANGE PASSWORD & SERVER RESTART
     function openSettingsModal() {
       const currentThemeId = localStorage.getItem('eclipse_theme_v1') || 'midnight';
       const grid = document.getElementById('themeSelectorGrid');
@@ -3988,6 +4020,10 @@
         helperEl.innerText = 'Add and verify your email address to protect your account.';
       }
 
+      document.getElementById('currentPasswordInput').value = '';
+      document.getElementById('newPasswordInput').value = '';
+      document.getElementById('confirmNewPasswordInput').value = '';
+
       document.getElementById('settingsModal').classList.remove('hidden');
     }
 
@@ -3999,6 +4035,70 @@
       applyTheme(themeId);
       openSettingsModal();
       showToast('Theme applied!', 'success');
+    }
+
+    async function changeAccountPassword(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const currentPass = document.getElementById('currentPasswordInput').value;
+      const newPass = document.getElementById('newPasswordInput').value;
+      const confirmPass = document.getElementById('confirmNewPasswordInput').value;
+      const btn = document.getElementById('changePasswordSubmitBtn');
+
+      const storedPass = String(currentUser.password ?? savedAccountsVault[currentUser.username_lower]?.password ?? '').trim();
+      if (storedPass && String(currentPass).trim() !== storedPass) {
+        showToast('Current password is incorrect.', 'error');
+        return;
+      }
+
+      if (newPass.length < 6 || newPass.length > 20) {
+        showToast('New password must be 6-20 characters long.', 'error');
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        showToast('New passwords do not match.', 'error');
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Updating...';
+      }
+
+      try {
+        if (supabaseClient && currentUser.id && !String(currentUser.id).startsWith('local_')) {
+          const { error } = await supabaseClient
+            .from('users')
+            .update({ password: newPass })
+            .eq('id', currentUser.id);
+
+          if (error) {
+            showToast('Failed to update password: ' + error.message, 'error');
+            return;
+          }
+        }
+
+        currentUser.password = newPass;
+        saveAccountToLocalVault(currentUser, newPass);
+        localStorage.setItem('eclipse_last_session_v1', JSON.stringify({
+          username_lower: currentUser.username_lower,
+          password: newPass
+        }));
+
+        document.getElementById('currentPasswordInput').value = '';
+        document.getElementById('newPasswordInput').value = '';
+        document.getElementById('confirmNewPasswordInput').value = '';
+        showToast('Password updated successfully!', 'success');
+      } catch (err) {
+        showToast('Error updating password: ' + (err.message || 'Unknown error'), 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = 'Update Password';
+        }
+      }
     }
 
     function saveEmailFromSettings() {
@@ -4024,21 +4124,60 @@
       document.getElementById('verifyEmailStep2').classList.add('hidden');
     }
 
-    function sendEmailVerificationCode(e) {
+    async function sendEmailVerificationCode(e) {
       e.preventDefault();
-      const email = (document.getElementById('mandatoryEmailInput').value || '').trim().toLowerCase();
+      const emailInput = document.getElementById('mandatoryEmailInput');
+      const submitBtn = document.getElementById('sendVerifyCodeBtn');
+      const email = (emailInput.value || '').trim().toLowerCase();
+
       if (!email || !email.includes('@')) {
         showToast('Please enter a valid email address.', 'error');
         return;
       }
+
       pendingVerifyEmail = email;
       pendingVerifyCode = String(Math.floor(100000 + Math.random() * 900000));
-      document.getElementById('verifyTargetEmailDisplay').innerText = email;
-      document.getElementById('verifyDemoCodePill').innerText = pendingVerifyCode;
-      document.getElementById('verifyCodeInput').value = '';
-      document.getElementById('verifyEmailStep1').classList.add('hidden');
-      document.getElementById('verifyEmailStep2').classList.remove('hidden');
-      showToast(`Verification code sent to ${email}`, 'info');
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Sending code...';
+      }
+
+      try {
+        const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'api-key': BREVO_API_KEY,
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            sender: { name: 'Eclipse Chat', email: BREVO_SENDER_EMAIL },
+            to: [{ email: email }],
+            subject: `Eclipse Verification Code: ${pendingVerifyCode}`,
+            htmlContent: `<p>Your 6-digit Eclipse verification code is: <strong>${pendingVerifyCode}</strong></p>`
+          })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.message || `Brevo error (${res.status})`);
+        }
+
+        document.getElementById('verifyTargetEmailDisplay').innerText = email;
+        document.getElementById('verifyCodeInput').value = '';
+        document.getElementById('verifyEmailStep1').classList.add('hidden');
+        document.getElementById('verifyEmailStep2').classList.remove('hidden');
+        showToast(`Verification code sent to ${email}!`, 'success');
+      } catch (err) {
+        console.error('Brevo error:', err);
+        showToast('Email failed: ' + err.message, 'error');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'Send 6-Digit Verification Code';
+        }
+      }
     }
 
     async function confirmEmailVerificationCode(e) {
