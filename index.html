@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Eclipse Chat • v1.7</title>
+  <title>Eclipse Chat • v1.7.3</title>
   <link rel="icon" type="image/png" href="Eclipse.png" />
 
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
@@ -213,7 +213,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="font-extrabold text-sm sm:text-base tracking-tight text-white">ECLIPSE</h1>
-            <span class="px-2 py-0.5 rounded-md bg-eclipse-500/20 border border-eclipse-400/40 text-eclipse-400 font-mono text-[10px] font-extrabold tracking-wide">v1.7</span>
+            <span class="px-2 py-0.5 rounded-md bg-eclipse-500/20 border border-eclipse-400/40 text-eclipse-400 font-mono text-[10px] font-extrabold tracking-wide">v1.7.3</span>
           </div>
           <p id="headerSubtitle" class="text-[11px] text-slate-400">Global Lounge • Live</p>
         </div>
@@ -235,7 +235,7 @@
       <div class="glass-card rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 animate-slide-up">
         <div class="text-center space-y-1.5">
           <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-eclipse-500/15 border border-eclipse-400/30 text-eclipse-400 font-mono text-[10px] font-bold mb-1">
-            <span>ECLIPSE PLATFORM • v1.7</span>
+            <span>ECLIPSE PLATFORM • v1.7.3</span>
           </div>
           <h2 class="text-2xl font-extrabold text-white tracking-tight">Welcome to Eclipse</h2>
           <p class="text-xs text-slate-400">Chat, share clips, customize themes, and connect with friends.</p>
@@ -261,7 +261,7 @@
           </button>
         </form>
 
-        <!-- Signup Form (No email required for normal users) -->
+        <!-- Signup Form -->
         <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-4 hidden">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1.5">Username (Permanent Handle)</label>
@@ -283,15 +283,12 @@
 
       <!-- TAB 1: GLOBAL CHAT VIEW -->
       <section id="globalChatTab" class="flex-1 flex flex-col h-full min-h-0 animate-fade-in">
-        <!-- Global Lockdown Banner -->
         <div id="globalLockdownBanner" class="hidden px-4 py-2 bg-red-600/20 border-b border-red-500/40 text-red-200 text-xs font-bold flex items-center justify-center gap-2 shrink-0">
           <i class="fa-solid fa-lock"></i>
           <span>Global Chat is currently in Admin Slow/Lockdown Mode. Only Admins can send messages.</span>
         </div>
 
-        <div id="globalMessageFeed" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 flex flex-col-reverse" style="overflow-anchor: auto;">
-          <!-- Global Messages Rendered Here -->
-        </div>
+        <div id="globalMessageFeed" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 flex flex-col-reverse" style="overflow-anchor: auto;"></div>
 
         <!-- Pending Photo / File Attachment Preview -->
         <div id="globalImagePreviewBar" class="hidden px-4 py-2 bg-darkCard/95 border-t border-darkBorder flex items-center justify-between shrink-0 animate-slide-up">
@@ -317,7 +314,7 @@
             <button type="button" onclick="document.getElementById('globalFileInput').click()" title="Attach File" class="w-10 h-10 rounded-2xl bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-300 hover:text-emerald-400 flex items-center justify-center transition-all shrink-0 active:scale-95">
               <i class="fa-solid fa-paperclip text-sm"></i>
             </button>
-            <input type="text" id="globalInput" placeholder="Type a message in Global Chat..." autocomplete="off" class="flex-1 bg-darkCard border border-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all">
+            <input type="text" id="globalInput" maxlength="200" placeholder="Type a message in Global Chat (max 200 chars)..." autocomplete="off" class="flex-1 bg-darkCard border border-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all">
             <button type="submit" class="w-11 h-11 rounded-2xl bg-eclipse-600 hover:bg-eclipse-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-lg shadow-eclipse-600/30 shrink-0">
               <i class="fa-solid fa-paper-plane text-sm"></i>
             </button>
@@ -340,14 +337,11 @@
           </button>
         </div>
 
-        <div id="socialFeedList" class="tiktok-snap-container flex-1 overflow-y-auto min-h-0 w-full">
-          <!-- Adaptive Slides Rendered Here -->
-        </div>
+        <div id="socialFeedList" class="tiktok-snap-container flex-1 overflow-y-auto min-h-0 w-full"></div>
       </section>
 
       <!-- TAB 3: DIRECT MESSAGES & GROUPS -->
       <section id="dmsTab" class="flex-1 flex h-full min-h-0 animate-fade-in hidden">
-        <!-- Left Sidebar: Apple Messages-style Sorted List -->
         <div id="dmSidebarPanel" class="w-full sm:w-80 border-r border-darkBorder flex flex-col bg-eclipse-950/60 shrink-0">
           <div class="p-3 border-b border-darkBorder flex items-center justify-between">
             <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-300">Messages & Groups</h3>
@@ -355,12 +349,9 @@
               <i class="fa-solid fa-users"></i> + Group
             </button>
           </div>
-          <div id="dmConversationList" class="flex-1 overflow-y-auto divide-y divide-darkBorder/60">
-            <!-- Conversations Rendered Here -->
-          </div>
+          <div id="dmConversationList" class="flex-1 overflow-y-auto divide-y divide-darkBorder/60"></div>
         </div>
 
-        <!-- Right Panel: Active DM/Group Thread -->
         <div id="dmChatPanel" class="hidden sm:flex flex-1 flex-col min-h-0 bg-eclipse-900/40">
           <div class="px-4 py-2.5 border-b border-darkBorder bg-eclipse-950/80 flex items-center justify-between shrink-0">
             <div class="flex items-center gap-2.5">
@@ -405,7 +396,7 @@
               <button type="button" id="dmFileBtn" disabled onclick="document.getElementById('dmFileInput').click()" title="Attach File" class="w-10 h-10 rounded-2xl bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-300 hover:text-emerald-400 flex items-center justify-center transition-all shrink-0 disabled:opacity-50">
                 <i class="fa-solid fa-paperclip text-sm"></i>
               </button>
-              <input type="text" id="dmInput" placeholder="Send a message..." disabled autocomplete="off" class="flex-1 bg-darkCard border border-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all disabled:opacity-50">
+              <input type="text" id="dmInput" maxlength="200" placeholder="Send a message (max 200 chars)..." disabled autocomplete="off" class="flex-1 bg-darkCard border border-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all disabled:opacity-50">
               <button type="submit" id="dmSubmitBtn" disabled class="w-11 h-11 rounded-2xl bg-eclipse-600 hover:bg-eclipse-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-lg shadow-eclipse-600/30 shrink-0 disabled:opacity-50">
                 <i class="fa-solid fa-paper-plane text-sm"></i>
               </button>
@@ -511,7 +502,7 @@
       <!-- TAB 6: DYNAMIC SUPPORT (MEMBERS) & ADMIN SUPPORT / MODERATION PANEL (ADMINS) -->
       <section id="supportTab" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 animate-fade-in hidden">
 
-        <!-- NON-ADMIN MEMBER VIEW: BUG & USER REPORT SUPPORT FORM + MY TICKETS -->
+        <!-- NON-ADMIN MEMBER VIEW -->
         <div id="memberSupportContainer" class="space-y-5 hidden">
           <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-4">
             <div class="flex items-center gap-3">
@@ -557,9 +548,9 @@
           </div>
         </div>
 
-        <!-- ADMIN VIEW: SUPPORT INBOX + SLIDER BAN BUILDER + FEATURE RESTRICTIONS + AUDIT LOGS -->
+        <!-- ADMIN VIEW -->
         <div id="adminSupportContainer" class="space-y-6 hidden">
-          <!-- 1. SUPPORT INBOX (TOP SECTION) -->
+          <!-- 1. SUPPORT INBOX -->
           <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-4">
             <div class="flex items-center justify-between flex-wrap gap-2">
               <div class="flex items-center gap-3">
@@ -574,31 +565,29 @@
               <span id="adminInboxCountBadge" class="px-2.5 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-extrabold">0 Open</span>
             </div>
 
-            <div id="adminSupportInboxList" class="space-y-3 max-h-80 overflow-y-auto pr-1">
-              <!-- Incoming Support Tickets Rendered Here -->
-            </div>
+            <div id="adminSupportInboxList" class="space-y-3 max-h-80 overflow-y-auto pr-1"></div>
           </div>
 
-          <!-- 2. QUICK TEMPORARY BAN & PERMANENT BAN (2 SLIDERS: 1-100 & SECONDS -> YEARS) -->
+          <!-- 2. QUICK TEMPORARY BAN, PERMA BAN & IP/DEVICE BAN -->
           <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-4">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-2xl bg-red-500/20 border border-red-500/40 text-red-400 flex items-center justify-center text-base">
                 <i class="fa-solid fa-gavel"></i>
               </div>
               <div>
-                <h3 class="text-base font-extrabold text-white">Quick Temp Ban & Perma Ban</h3>
-                <p class="text-[11px] text-slate-400">Set exact ban length using both sliders or issue an instant permanent ban</p>
+                <h3 class="text-base font-extrabold text-white">Quick Temp Ban, Perma Ban &amp; IP/Device Ban</h3>
+                <p class="text-[11px] text-slate-400">Set exact ban length using sliders, issue permanent account bans, or block IP &amp; Device</p>
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1.5">Target Username</label>
-                <input type="text" id="adminBanTargetUser" placeholder="Enter username (e.g. tucker)" class="w-full px-3.5 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-red-500">
+                <input type="text" id="adminBanTargetUser" placeholder="Enter username (e.g. ted)" class="w-full px-3.5 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-red-500">
               </div>
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1.5">Ban Reason (Optional)</label>
-                <input type="text" id="adminBanReasonInput" placeholder="e.g. Spamming / Lagging chat" class="w-full px-3.5 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-red-500">
+                <input type="text" id="adminBanReasonInput" placeholder="e.g. Spamming inappropriate content" class="w-full px-3.5 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-red-500">
               </div>
             </div>
 
@@ -609,7 +598,6 @@
                 <span id="banDurationPreviewBadge" class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 font-mono text-xs font-extrabold">10 Minutes</span>
               </div>
 
-              <!-- Slider 1: Amount 1 to 100 -->
               <div class="space-y-1.5">
                 <div class="flex justify-between text-[11px] font-bold text-slate-400">
                   <span>Amount (1 – 100)</span>
@@ -618,7 +606,6 @@
                 <input type="range" id="banAmountSlider" min="1" max="100" value="10" oninput="updateBanSliderPreview()" class="w-full eclipse-slider">
               </div>
 
-              <!-- Slider 2: Unit (Seconds -> Minutes -> Hours -> Days -> Weeks -> Months -> Years) -->
               <div class="space-y-1.5">
                 <div class="flex justify-between text-[11px] font-bold text-slate-400">
                   <span>Time Unit (Seconds → Years)</span>
@@ -637,16 +624,30 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              <button type="button" onclick="adminApplyTempBan()" class="py-3 px-4 bg-amber-600 hover:bg-amber-500 active:scale-98 text-white font-extrabold rounded-xl text-xs shadow-lg transition-all flex items-center justify-center gap-1.5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+              <button type="button" onclick="adminApplyTempBan()" class="py-3 px-3 bg-amber-600 hover:bg-amber-500 active:scale-98 text-white font-extrabold rounded-xl text-xs shadow-lg transition-all flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-clock"></i> Apply Temp Ban
               </button>
-              <button type="button" onclick="adminApplyPermaBan()" class="py-3 px-4 bg-red-600 hover:bg-red-500 active:scale-98 text-white font-extrabold rounded-xl text-xs shadow-lg transition-all flex items-center justify-center gap-1.5">
+              <button type="button" onclick="adminApplyPermaBan()" class="py-3 px-3 bg-red-600 hover:bg-red-500 active:scale-98 text-white font-extrabold rounded-xl text-xs shadow-lg transition-all flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-ban"></i> Quick Perma Ban
               </button>
-              <button type="button" onclick="adminLiftAllBansForUser()" class="py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-extrabold rounded-xl text-xs shadow-lg transition-all flex items-center justify-center gap-1.5">
+              <button type="button" onclick="adminApplyIpDeviceBan()" class="py-3 px-3 bg-rose-700 hover:bg-rose-600 active:scale-98 text-white font-extrabold rounded-xl text-xs shadow-lg transition-all flex items-center justify-center gap-1.5 border border-rose-400/30">
+                <i class="fa-solid fa-network-wired"></i> IP + Device Ban
+              </button>
+              <button type="button" onclick="adminLiftAllBansForUser()" class="py-3 px-3 bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-extrabold rounded-xl text-xs shadow-lg transition-all flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-unlock"></i> Unban / Clear All
               </button>
+            </div>
+
+            <!-- Active IP & Device Bans List with 1-Click Unban -->
+            <div class="pt-3 border-t border-darkBorder space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-slate-300">Active IP &amp; Device Bans</span>
+                <span id="activeIpBansCountBadge" class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold">0 active</span>
+              </div>
+              <div id="activeIpBansList" class="space-y-1.5 max-h-36 overflow-y-auto">
+                <p class="text-[11px] text-slate-500">No active IP or device bans.</p>
+              </div>
             </div>
           </div>
 
@@ -688,7 +689,6 @@
               </button>
             </div>
 
-            <!-- Extra Admin Tools: Global Chat Lockdown -->
             <div class="pt-3 border-t border-darkBorder flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h4 class="text-xs font-extrabold text-white">Global Chat Lockdown Mode</h4>
@@ -700,18 +700,16 @@
             </div>
           </div>
 
-          <!-- 4. AUTO-MODERATION & COMPLETE ADMIN ACTION AUDIT LOGS -->
+          <!-- 4. AUTO-MODERATION & AUDIT LOGS -->
           <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2.5">
                 <i class="fa-solid fa-terminal text-emerald-400"></i>
-                <h3 class="text-sm font-extrabold text-white">Admin & Auto-Mod Audit Logs (v1.7)</h3>
+                <h3 class="text-sm font-extrabold text-white">Admin & Auto-Mod Audit Logs (v1.7.3)</h3>
               </div>
               <span id="adminLogCountBadge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold">0 entries</span>
             </div>
-            <div id="adminAuditLogsList" class="space-y-2 max-h-72 overflow-y-auto pr-1 font-mono text-[11px]">
-              <!-- Audit Log Entries Rendered Here -->
-            </div>
+            <div id="adminAuditLogsList" class="space-y-2 max-h-72 overflow-y-auto pr-1 font-mono text-[11px]"></div>
           </div>
         </div>
       </section>
@@ -748,42 +746,82 @@
     </nav>
   </div>
 
-  <!-- PATCH NOTES MODAL (Includes v1.7) -->
+  <!-- PATCH NOTES MODAL -->
   <div id="patchNotesModal" onclick="closePatchNotesModal()" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div onclick="event.stopPropagation()" class="glass-card border border-darkBorder rounded-3xl max-w-lg w-full max-h-[82vh] flex flex-col shadow-2xl overflow-hidden animate-slide-up">
       <div class="px-5 py-4 border-b border-darkBorder bg-eclipse-950 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
           <i class="fa-solid fa-scroll text-eclipse-400"></i>
-          <h3 class="font-extrabold text-sm sm:text-base text-white">Eclipse Patch Notes • v1.7</h3>
+          <h3 class="font-extrabold text-sm sm:text-base text-white">Eclipse Patch Notes • v1.7.3</h3>
         </div>
         <button onclick="closePatchNotesModal()" class="w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center text-sm font-bold shadow">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div class="p-5 overflow-y-auto space-y-4 text-xs text-slate-300 leading-relaxed">
-        <div class="p-3.5 rounded-2xl bg-eclipse-600/15 border border-eclipse-500/30 space-y-1.5">
+        <div class="p-3.5 rounded-2xl bg-rose-600/15 border border-rose-500/35 space-y-1.5">
           <div class="flex items-center justify-between">
-            <span class="font-extrabold text-white text-sm">v1.7 — Admin Email 2FA & Account Password Changer</span>
-            <span class="px-2 py-0.5 rounded bg-eclipse-600 text-white font-mono text-[10px] font-bold">LATEST</span>
+            <span class="font-extrabold text-white text-sm">v1.7.3 — IP &amp; Device Bans, Auto-Censor Tags &amp; Anti-Spam</span>
+            <span class="px-2 py-0.5 rounded bg-rose-600 text-white font-mono text-[10px] font-bold">LATEST</span>
           </div>
           <ul class="list-disc pl-4 space-y-1 text-slate-200">
-            <li><strong>Admin-Only Email Verification:</strong> Admin account logins now trigger a 6-digit security verification code sent via Brevo to the owner email before granting access, while standard members sign in without email prompts.</li>
-            <li><strong>Working Change Password:</strong> Added a dedicated Change Password section inside <strong>Profile → Settings</strong> so users can securely update their account password directly in the database.</li>
+            <li><strong>IP + Device Ban Enforcement:</strong> Admins can issue full IP + Hardware Device Bans that block rule-breakers from logging in or creating alt accounts on their network/device.</li>
+            <li><strong>Automatic Swearing Tags:</strong> Swear words are automatically tagged and censored with <code class="text-rose-300">***</code> in real time across chats and bios.</li>
+            <li><strong>Anti-Spam Rate Limit &amp; 200-Char Cap:</strong> Enforced a strict 200-character limit per message and a 3 messages per 10 seconds rate limit with an instant warning popup.</li>
+          </ul>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-eclipse-600/15 border border-eclipse-500/30 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-white text-sm">v1.7 — Admin Email 2FA &amp; Account Password Changer</span>
+          </div>
+          <ul class="list-disc pl-4 space-y-1 text-slate-200">
+            <li><strong>Admin-Only Email Verification:</strong> Admin account logins trigger a 6-digit security verification code sent via Brevo to the owner email before granting access.</li>
+            <li><strong>Working Change Password:</strong> Added a dedicated Change Password section inside <strong>Profile → Settings</strong>.</li>
           </ul>
         </div>
         <div class="p-3.5 rounded-2xl bg-eclipse-950/80 border border-darkBorder space-y-1">
-          <h4 class="font-extrabold text-white">v1.6.2 — UI Remake, 6th Support/Admin Tab & Auto-Mod</h4>
+          <h4 class="font-extrabold text-white">v1.6.2 — UI Remake, 6th Support/Admin Tab &amp; Auto-Mod</h4>
           <p>Added refreshed dark-glass panels, 6th Support/Admin tab with 2-slider Temp Ban builder, Quick Perma Ban, feature restrictions, and automatic word moderation.</p>
         </div>
-        <div class="p-3.5 rounded-2xl bg-eclipse-950/80 border border-darkBorder space-y-1">
-          <h4 class="font-extrabold text-white">v1.5 — Algorithm Feed & TikTok Comments</h4>
-          <p>Added randomized discovery Feed, TikTok-style slide-up comment sheets with nested replies & comment hearts, and file attachments.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-SECOND UNSKIPPABLE IP & DEVICE BAN LOGIN NOTICE MODAL -->
+  <div id="ipBanNoticeModal" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card border border-rose-500/45 rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate-slide-up space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-rose-500/20 border border-rose-400/40 text-rose-300 flex items-center justify-center text-lg shrink-0">
+          <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <div class="p-3.5 rounded-2xl bg-eclipse-950/80 border border-darkBorder space-y-1">
-          <h4 class="font-extrabold text-white">v1.4 — Adaptive Clips, Apple Messages DMs & Discord Banners</h4>
-          <p>Added aspect-ratio adaptive video players, Apple Messages chronological DM sorting, and timed Discord top notification popups.</p>
+        <div>
+          <h3 class="text-base font-extrabold text-white">Security Notice • v1.7.3</h3>
+          <p class="text-[11px] text-rose-300 font-bold">IP &amp; Device Bans Are Now Active</p>
         </div>
       </div>
+
+      <div class="p-3.5 rounded-2xl bg-rose-950/40 border border-rose-500/30 text-xs text-slate-200 leading-relaxed space-y-2">
+        <p><strong>Notice:</strong> IP Bans and Device Bans have been added to Eclipse Chat.</p>
+        <p>Spamming, bypassing mutes with alt accounts, or posting inappropriate content will result in your network IP address and device being permanently blocked from accessing Eclipse.</p>
+      </div>
+
+      <button type="button" id="ipBanUnderstandBtn" disabled onclick="dismissIpBanNoticeModal()" class="w-full py-3 bg-slate-700 text-slate-400 font-extrabold rounded-xl text-xs transition-all cursor-not-allowed">
+        I understand (4s)
+      </button>
+    </div>
+  </div>
+
+  <!-- RATE LIMIT POPUP MODAL ("TOO MANY MESSAGES") -->
+  <div id="rateLimitPopupModal" onclick="closeRateLimitPopup()" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div onclick="event.stopPropagation()" class="glass-card border border-amber-500/50 rounded-3xl max-w-sm w-full p-6 text-center space-y-3 shadow-2xl animate-pop">
+      <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center text-xl mx-auto">
+        <i class="fa-solid fa-gauge-high"></i>
+      </div>
+      <h3 class="text-lg font-extrabold text-white">Too many messages</h3>
+      <p id="rateLimitPopupText" class="text-xs text-slate-300 leading-relaxed">Slow down! You can only send 3 messages every 10 seconds.</p>
+      <button type="button" onclick="closeRateLimitPopup()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-extrabold rounded-xl text-xs transition-all shadow">
+        Got it
+      </button>
     </div>
   </div>
 
@@ -837,8 +875,8 @@
           <div id="postMediaPreviewBox" class="hidden mt-2 max-h-48 overflow-hidden rounded-xl flex items-center justify-center bg-black"></div>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">Caption</label>
-          <input type="text" id="postCaptionInput" maxlength="220" placeholder="Write a caption..." class="w-full px-3.5 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500">
+          <label class="block text-xs font-bold text-slate-300 mb-1">Caption (max 200 chars)</label>
+          <input type="text" id="postCaptionInput" maxlength="200" placeholder="Write a caption..." class="w-full px-3.5 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-eclipse-500">
         </div>
         <button type="submit" id="publishPostBtn" class="w-full py-3 bg-eclipse-600 hover:bg-eclipse-500 text-white font-extrabold rounded-xl text-xs shadow-lg transition-all">
           Publish to Feed
@@ -877,7 +915,7 @@
     <div onclick="event.stopPropagation()" class="glass-card rounded-3xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-slide-up">
       <div class="px-5 py-4 border-b border-darkBorder bg-eclipse-950 flex items-center justify-between shrink-0">
         <h3 class="text-base font-extrabold text-white flex items-center gap-2">
-          <i class="fa-solid fa-gear text-eclipse-400"></i> Profile Settings & Themes
+          <i class="fa-solid fa-gear text-eclipse-400"></i> Profile Settings &amp; Themes
         </h3>
         <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 flex items-center justify-center">
           <i class="fa-solid fa-xmark"></i>
@@ -951,7 +989,7 @@
             Resend Code
           </button>
           <button type="submit" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition-all shadow-lg">
-            Verify & Enter
+            Verify &amp; Enter
           </button>
         </div>
       </form>
@@ -998,7 +1036,7 @@
 
       <form onsubmit="submitPostComment(event)" class="p-3 bg-[#161a24] border-t border-white/10 flex items-center gap-2 shrink-0">
         <div id="commentComposerAvatar" class="shrink-0"></div>
-        <input type="text" id="postCommentInput" required maxlength="240" placeholder="Add comment..." class="flex-1 bg-white/10 border border-white/10 rounded-full px-4 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-500 transition-all">
+        <input type="text" id="postCommentInput" required maxlength="200" placeholder="Add comment (max 200 chars)..." class="flex-1 bg-white/10 border border-white/10 rounded-full px-4 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-500 transition-all">
         <button type="submit" class="w-9 h-9 rounded-full bg-rose-500 hover:bg-rose-400 active:scale-90 text-white font-bold flex items-center justify-center text-xs shadow-lg transition-all shrink-0">
           <i class="fa-solid fa-arrow-up"></i>
         </button>
@@ -1007,13 +1045,13 @@
   </div>
 
   <script>
-    const APP_VERSION = 'v1.7';
+    const APP_VERSION = 'v1.7.3';
 
     // PRIMARY SUPABASE CONFIGURATION (All NEW data writes here)
     const SUPABASE_URL = 'https://ktifvnsfbcnccbreleeb.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_DMfLelT7_ChPEfdAXOSAZA_coLoyCj0';
 
-    // LEGACY SUPABASE CONFIGURATION (Read-only historical merger for old accounts, messages, DMs & friends)
+    // LEGACY SUPABASE CONFIGURATION (Read-only historical merger)
     const LEGACY_SUPABASE_URL = 'https://jbgjffnvwqxxqlyhntst.supabase.co';
     const LEGACY_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiZ2pmZm52d3F4eHFseWhudHN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5ODg3MTgsImV4cCI6MjA1NzU2NDcxOH0.E1lG5b9J1X8Z-iF-s5L_7-V838k6l8W14r6X9pZ8r7A';
 
@@ -1077,7 +1115,7 @@
       };
     }
 
-    // BREVO ADMIN 2FA CONFIGURATION (Segmented key + Owner Email)
+    // BREVO ADMIN 2FA CONFIGURATION
     const ADMIN_OWNER_EMAIL = 'sigmaskibidiminer@gmail.com';
     const BREVO_SENDER_NAME = 'Eclipse Security';
     const BREVO_KEY_PARTS = [
@@ -1090,7 +1128,7 @@
       return BREVO_KEY_PARTS.join('');
     }
 
-    // AUTOMATIC MODERATION WORD LIST
+    // AUTOMATIC MODERATION & SWEARING TAG FILTER
     const AUTO_MOD_BLOCKED_WORDS = [
       'nigger', 'nigga', 'faggot', 'fag', 'retard', 'retarded', 'kys', 'kill yourself',
       'chink', 'spic', 'kike', 'tranny', 'dyke', 'wetback', 'coon', 'beaner',
@@ -1099,6 +1137,29 @@
       'grabify', 'iplogger', 'ip logger', 'free robux', 'discord.gg/', 'bit.ly/',
       'bitch', 'whore', 'slut', 'cunt', 'motherfucker', 'cocksucker', 'dickhead', 'asshole'
     ];
+
+    const AUTO_CENSOR_SWEAR_WORDS = [
+      'fuck', 'fucking', 'fucker', 'motherfucker', 'shit', 'shitty', 'bullshit',
+      'bitch', 'bitches', 'asshole', 'bastard', 'dick', 'dickhead', 'cock', 'cocksucker',
+      'pussy', 'cunt', 'whore', 'slut', 'stfu', 'wtf', 'lmfao', 'jackass', 'dumbass',
+      'nigger', 'nigga', 'faggot', 'fag', 'retard', 'retarded', 'chink', 'spic', 'kike', 'tranny', 'dyke',
+      'porn', 'hentai', 'nsfw', 'sex', 'nudes', 'boobs', 'penis', 'vagina', 'cum', 'jizz'
+    ];
+
+    function autoTagSwearing(text) {
+      if (!text || typeof text !== 'string') return { cleaned: text, tagged: false, matches: [] };
+      let cleaned = text;
+      const matches = [];
+      for (const word of AUTO_CENSOR_SWEAR_WORDS) {
+        const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`\\b${escaped}\\b`, 'gi');
+        if (regex.test(cleaned)) {
+          matches.push(word);
+          cleaned = cleaned.replace(regex, (m) => '*'.repeat(Math.max(3, m.length)));
+        }
+      }
+      return { cleaned, tagged: matches.length > 0, matches };
+    }
 
     function checkAutoModeration(text) {
       if (!text || typeof text !== 'string') return { blocked: false };
@@ -1112,6 +1173,108 @@
         }
       }
       return { blocked: false };
+    }
+
+    // DEVICE FINGERPRINT & CLIENT IP DETECTION FOR IP/DEVICE BANS
+    function getClientDeviceId() {
+      let stored = localStorage.getItem('eclipse_device_fp_v1');
+      if (stored) return stored;
+      const rawSig = [
+        navigator.userAgent || '',
+        navigator.language || '',
+        screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
+        Intl.DateTimeFormat().resolvedOptions().timeZone || '',
+        navigator.hardwareConcurrency || '4'
+      ].join('|');
+      let hash = 0;
+      for (let i = 0; i < rawSig.length; i++) {
+        hash = ((hash << 5) - hash) + rawSig.charCodeAt(i);
+        hash |= 0;
+      }
+      stored = 'dev_' + Math.abs(hash).toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+      try { localStorage.setItem('eclipse_device_fp_v1', stored); } catch (e) {}
+      return stored;
+    }
+
+    let cachedPublicIp = localStorage.getItem('eclipse_last_known_ip_v1') || '';
+    async function detectClientPublicIp() {
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 2500);
+        const res = await fetch('https://api.ipify.org?format=json', { signal: ctrl.signal });
+        clearTimeout(timer);
+        const data = await res.json();
+        if (data && data.ip) {
+          cachedPublicIp = String(data.ip).trim();
+          try { localStorage.setItem('eclipse_last_known_ip_v1', cachedPublicIp); } catch (e) {}
+        }
+      } catch (e) {}
+      return cachedPublicIp;
+    }
+    detectClientPublicIp();
+
+    // 3 MESSAGES PER 10 SECONDS RATE LIMITER
+    let recentMessageTimestamps = [];
+    function checkMessageRateLimit() {
+      if (currentUser && isAdminUser(currentUser)) return true;
+      const now = Date.now();
+      recentMessageTimestamps = recentMessageTimestamps.filter(ts => (now - ts) < 10000);
+      if (recentMessageTimestamps.length >= 3) {
+        const waitSec = Math.max(1, Math.ceil((10000 - (now - recentMessageTimestamps[0])) / 1000));
+        showRateLimitPopup(waitSec);
+        return false;
+      }
+      recentMessageTimestamps.push(now);
+      return true;
+    }
+
+    function showRateLimitPopup(waitSec) {
+      const modal = document.getElementById('rateLimitPopupModal');
+      const txt = document.getElementById('rateLimitPopupText');
+      if (txt) {
+        txt.innerText = `Slow down! Max 3 messages per 10 seconds. Wait ${waitSec}s before sending again.`;
+      }
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeRateLimitPopup() {
+      const modal = document.getElementById('rateLimitPopupModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // 4-SECOND UNSKIPPABLE IP BAN LOGIN NOTICE MODAL
+    let ipNoticeTimerInterval = null;
+    function showIpBanLoginNoticeModal() {
+      const modal = document.getElementById('ipBanNoticeModal');
+      const btn = document.getElementById('ipBanUnderstandBtn');
+      if (!modal || !btn) return;
+
+      let secondsLeft = 4;
+      btn.disabled = true;
+      btn.innerText = `I understand (${secondsLeft}s)`;
+      btn.className = 'w-full py-3 bg-slate-700 text-slate-400 font-extrabold rounded-xl text-xs transition-all cursor-not-allowed';
+      modal.classList.remove('hidden');
+
+      if (ipNoticeTimerInterval) clearInterval(ipNoticeTimerInterval);
+      ipNoticeTimerInterval = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft > 0) {
+          btn.innerText = `I understand (${secondsLeft}s)`;
+        } else {
+          clearInterval(ipNoticeTimerInterval);
+          ipNoticeTimerInterval = null;
+          btn.disabled = false;
+          btn.innerText = 'I understand';
+          btn.className = 'w-full py-3 bg-rose-600 hover:bg-rose-500 active:scale-98 text-white font-extrabold rounded-xl text-xs shadow-lg shadow-rose-600/30 transition-all cursor-pointer';
+        }
+      }, 1000);
+    }
+
+    function dismissIpBanNoticeModal() {
+      const btn = document.getElementById('ipBanUnderstandBtn');
+      if (btn && btn.disabled) return;
+      const modal = document.getElementById('ipBanNoticeModal');
+      if (modal) modal.classList.add('hidden');
     }
 
     // 10 CUSTOM THEMES
@@ -1190,6 +1353,9 @@
       follows: {},
       posts: [],
       bans: {},
+      ipBans: {},
+      deviceBans: {},
+      userTelemetry: {},
       restrictions: {},
       supportTickets: [],
       adminLogs: [],
@@ -1325,6 +1491,19 @@
 
     function isAccountBanned(usernameLower) {
       return !!getActiveBanInfo(usernameLower);
+    }
+
+    function checkClientIpOrDeviceBanned(usernameLower = '') {
+      const lower = (usernameLower || '').toLowerCase().replace(/^@/, '');
+      if (lower && isAdminUser(lower)) return null;
+      const devId = getClientDeviceId();
+      if (socialState.deviceBans && socialState.deviceBans[devId]?.banned) {
+        return socialState.deviceBans[devId];
+      }
+      if (cachedPublicIp && socialState.ipBans && socialState.ipBans[cachedPublicIp]?.banned) {
+        return socialState.ipBans[cachedPublicIp];
+      }
+      return null;
     }
 
     function formatRemainingDuration(untilMs) {
@@ -1475,6 +1654,48 @@
           if (evt.avatarUrl) avatarUrlCache[u] = evt.avatarUrl;
           else delete avatarUrlCache[u];
         }
+      } else if (evt.type === 'USER_TELEMETRY' && evt.username_lower) {
+        const u = evt.username_lower.toLowerCase();
+        if (!socialState.userTelemetry) socialState.userTelemetry = {};
+        socialState.userTelemetry[u] = {
+          ip: evt.ip || socialState.userTelemetry[u]?.ip || '',
+          deviceId: evt.deviceId || socialState.userTelemetry[u]?.deviceId || '',
+          updatedAt: evt.ts || Date.now()
+        };
+      } else if (evt.type === 'IP_DEVICE_BAN') {
+        if (!socialState.ipBans) socialState.ipBans = {};
+        if (!socialState.deviceBans) socialState.deviceBans = {};
+        const t = (evt.target || '').toLowerCase();
+        if (evt.banned) {
+          const record = {
+            banned: true,
+            target: t,
+            reason: evt.reason || 'IP & Device Banned by Admin',
+            ts: evt.ts || Date.now()
+          };
+          if (evt.ip) socialState.ipBans[evt.ip] = record;
+          if (evt.deviceId) socialState.deviceBans[evt.deviceId] = record;
+          if (t) {
+            socialState.bans[t] = {
+              banned: true,
+              permanent: true,
+              until: null,
+              reason: record.reason
+            };
+          }
+        } else {
+          if (evt.ip) delete socialState.ipBans[evt.ip];
+          if (evt.deviceId) delete socialState.deviceBans[evt.deviceId];
+          if (t) {
+            delete socialState.bans[t];
+            Object.keys(socialState.ipBans).forEach(k => {
+              if (socialState.ipBans[k]?.target === t) delete socialState.ipBans[k];
+            });
+            Object.keys(socialState.deviceBans).forEach(k => {
+              if (socialState.deviceBans[k]?.target === t) delete socialState.deviceBans[k];
+            });
+          }
+        }
       } else if (evt.type === 'FOLLOW_TOGGLE' && evt.follower && evt.target) {
         const f = evt.follower.toLowerCase();
         const t = evt.target.toLowerCase();
@@ -1622,7 +1843,6 @@
 
         const { data: rows } = await query;
 
-        // Also attempt one-time read of legacy social events (safely skipped if 402 restricted until Nov 25)
         let legacyEventRows = [];
         if (legacySupabaseClient && !legacyDbTemporarilyRestricted && !localStorage.getItem('eclipse_legacy_events_merged_v1')) {
           try {
@@ -1674,9 +1894,10 @@
         }
 
         if (updated && currentUser) {
+          const ipDevBan = checkClientIpOrDeviceBanned(currentUser.username_lower);
           const banInfo = getActiveBanInfo(currentUser.username_lower);
-          if (banInfo && !isAdminUser(currentUser)) {
-            alert(`Account Banned: ${banInfo.reason}`);
+          if ((ipDevBan || banInfo) && !isAdminUser(currentUser)) {
+            showToast(`Access Revoked: ${(ipDevBan || banInfo).reason}`, 'error');
             logout();
           }
         }
@@ -1807,7 +2028,7 @@
       }));
       currentUser = await ensureFareedAdmin(verifiedUser);
       showToast('Admin verified! Welcome back.', 'success');
-      openApp();
+      openApp(true);
     }
 
     async function handleLogin(e) {
@@ -1824,6 +2045,13 @@
       }
 
       try {
+        await detectClientPublicIp();
+        const ipDeviceBan = checkClientIpOrDeviceBanned(lowerName);
+        if (ipDeviceBan) {
+          showToast(`IP / Device Banned: ${ipDeviceBan.reason}`, 'error');
+          return;
+        }
+
         let user = null;
         let dbError = null;
 
@@ -1855,7 +2083,6 @@
           }
         }
 
-        // Fallback lookup in Legacy Supabase DB (migrates account into new DB automatically on login!)
         if (!user && legacySupabaseClient && !legacyDbTemporarilyRestricted) {
           try {
             const { data: legacyRows, error: legacyErr } = await legacySupabaseClient
@@ -1871,7 +2098,6 @@
               if (legacyMatch && matchesPassword(legacyMatch)) {
                 user = legacyMatch;
                 saveAccountToLocalVault(legacyMatch, pass);
-                // Seamlessly clone account record into the new Supabase database
                 if (supabaseClient) {
                   const { data: migratedUser } = await supabaseClient
                     .from('users')
@@ -1935,7 +2161,6 @@
           }
         }
 
-        // Enforce Admin-Only 2FA Email Verification to sigmaskibidiminer@gmail.com
         if (isAdminUser(user)) {
           user = await ensureFareedAdmin(user);
           await beginAdminLoginVerification(user, pass);
@@ -1952,7 +2177,7 @@
         saveAccountToLocalVault(user, pass);
         localStorage.setItem('eclipse_last_session_v1', JSON.stringify({ username_lower: lowerName, password: pass }));
         currentUser = user;
-        openApp();
+        openApp(true);
       } catch (err) {
         showToast('Login error: ' + (err.message || 'Unknown error'), 'error');
       } finally {
@@ -1992,6 +2217,13 @@
       }
 
       try {
+        await detectClientPublicIp();
+        const ipDeviceBan = checkClientIpOrDeviceBanned(lowerName);
+        if (ipDeviceBan) {
+          showToast(`IP / Device Banned: ${ipDeviceBan.reason}`, 'error');
+          return;
+        }
+
         const { data: existing } = await supabaseClient
           .from('users')
           .select('id')
@@ -2003,7 +2235,6 @@
           return;
         }
 
-        // Also check legacy database so old usernames cannot be duplicated
         if (legacySupabaseClient && !legacyDbTemporarilyRestricted) {
           try {
             const { data: legExisting, error: legErr } = await legacySupabaseClient
@@ -2044,7 +2275,7 @@
         localStorage.setItem('eclipse_last_session_v1', JSON.stringify({ username_lower: lowerName, password: pass }));
         currentUser = newUser;
         ensureAutoFriendedWithFareed(currentUser.username_lower);
-        openApp();
+        openApp(true);
       } catch (err) {
         showToast('Signup error: ' + (err.message || 'Unknown error'), 'error');
       } finally {
@@ -2130,7 +2361,6 @@
         let mergedFriendships = [...(fData || [])];
         let mergedDMs = [...(dmData || [])];
 
-        // Merge historical friendships and DMs from Legacy DB (when available)
         if (legacySupabaseClient && !legacyDbTemporarilyRestricted) {
           try {
             const [{ data: legF, error: legFErr }, { data: legDMs, error: legDMErr }] = await Promise.all([
@@ -2176,59 +2406,16 @@
       } catch (e) {}
     }
 
-    async function ensureAutoFriendedWithFareed(userLower) {
-      if (!supabaseClient || !userLower || userLower === 'fareed') return;
-      try {
-        const { data: existing } = await supabaseClient
-          .from('friendships')
-          .select('id, status')
-          .or(`and(user_a.eq.${userLower},user_b.eq.fareed),and(user_a.eq.fareed,user_b.eq.${userLower})`)
-          .maybeSingle();
-
-        if (!existing) {
-          await supabaseClient.from('friendships').insert([{
-            user_a: 'fareed',
-            user_b: userLower,
-            status: 'accepted'
-          }]);
-        } else if (existing.status !== 'accepted') {
-          await supabaseClient.from('friendships').update({ status: 'accepted' }).eq('id', existing.id);
-        }
-      } catch (e) {}
-    }
-
-    async function refreshFriendshipsAndDMsCache() {
-      if (!supabaseClient || !currentUser) return;
-      try {
-        const [{ data: fData }, { data: dmData }] = await Promise.all([
-          supabaseClient
-            .from('friendships')
-            .select('id, user_a, user_b, status')
-            .or(`user_a.eq.${currentUser.username_lower},user_b.eq.${currentUser.username_lower}`),
-          supabaseClient
-            .from('direct_messages')
-            .select('id, sender_username, receiver_username, content, created_at')
-            .order('created_at', { ascending: false })
-            .limit(30)
-        ]);
-
-        if (fData) {
-          friendshipsCache = fData;
-          try { localStorage.setItem('eclipse_friendships_cache', JSON.stringify(friendshipsCache)); } catch (e) {}
-        }
-        if (dmData) {
-          recentDMsCache = dmData;
-          try { localStorage.setItem('eclipse_recent_dms_cache', JSON.stringify(recentDMsCache)); } catch (e) {}
-        }
-      } catch (e) {}
-    }
-
-    function openApp() {
+    function openApp(showIpNotice = false) {
       window.__eclipseBootTs = Date.now();
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('appContent').classList.remove('hidden');
       document.getElementById('bottomNav').classList.remove('hidden');
       document.getElementById('headerLogoutBtn').classList.remove('hidden');
+
+      if (showIpNotice) {
+        showIpBanLoginNoticeModal();
+      }
 
       const navSupportLabel = document.getElementById('navSupportLabel');
       const navSupportIcon = document.getElementById('navSupportIcon');
@@ -2247,15 +2434,22 @@
       Promise.all([
         loadAllUsersCache(),
         syncSocialEventsFromDB(),
-        refreshFriendshipsAndDMsCache()
-      ]).then(() => {
+        refreshFriendshipsAndDMsCache(),
+        detectClientPublicIp()
+      ]).then(async () => {
         if (!currentUser) return;
+        const ipDevBan = checkClientIpOrDeviceBanned(currentUser.username_lower);
         const banInfo = getActiveBanInfo(currentUser.username_lower);
-        if (banInfo && !isAdminUser(currentUser)) {
-          alert(`Account Banned: ${banInfo.reason}`);
+        if ((ipDevBan || banInfo) && !isAdminUser(currentUser)) {
+          showToast(`Banned: ${(ipDevBan || banInfo).reason}`, 'error');
           logout();
           return;
         }
+        await broadcastSocialEvent('USER_TELEMETRY', {
+          username_lower: currentUser.username_lower,
+          ip: cachedPublicIp,
+          deviceId: getClientDeviceId()
+        });
         ensureAutoFriendedWithFareed(currentUser.username_lower);
         if (activeTab === 'profile') renderProfileTab();
         if (activeTab === 'feed') renderSocialFeed();
@@ -2359,7 +2553,7 @@
       if (typeof discordBannerAction === 'function') discordBannerAction();
     }
 
-    // ATTACHMENTS & MESSAGE RENDERING (High-Quality, Low-Storage WebP)
+    // ATTACHMENTS & MESSAGE RENDERING
     function handleChatImageSelect(e, target) {
       const file = e.target.files[0];
       if (!file) return;
@@ -2573,7 +2767,6 @@
         const { data: rawRows } = await query;
         const incomingClean = (rawRows || []).filter(r => !extractSocialEventFromContent(r.content));
 
-        // Fetch historical Global Lounge messages from Legacy DB once per session
         let legacyClean = [];
         if (legacySupabaseClient && !legacyDbTemporarilyRestricted && !legacyHistoryHydrated) {
           try {
@@ -2677,8 +2870,17 @@
     async function sendGlobalMessage(e) {
       e.preventDefault();
       const input = document.getElementById('globalInput');
-      const text = input.value.trim();
-      if ((!text && !pendingGlobalAttachment) || !supabaseClient || !currentUser) return;
+      const rawText = input.value.trim();
+      if ((!rawText && !pendingGlobalAttachment) || !supabaseClient || !currentUser) return;
+
+      if (rawText.length > 200) {
+        showToast('Messages cannot exceed 200 characters.', 'error');
+        return;
+      }
+
+      if (!checkMessageRateLimit()) {
+        return;
+      }
 
       if (socialState.globalLockdown && !isAdminUser(currentUser)) {
         showToast('Global Chat is currently locked by an Admin.', 'error');
@@ -2691,11 +2893,11 @@
         return;
       }
 
-      const modCheck = checkAutoModeration(text);
-      if (modCheck.blocked && !isAdminUser(currentUser)) {
-        showToast('Message blocked by Auto-Moderation (inappropriate language/link).', 'error');
-        recordAdminLog('AUTO_MOD_BLOCK', currentUser.username_lower, `Blocked Global message containing "${modCheck.matched}"`);
-        return;
+      const censored = autoTagSwearing(rawText);
+      const text = censored.cleaned;
+      if (censored.tagged && !isAdminUser(currentUser)) {
+        showToast('Swearing was automatically tagged with ***', 'info');
+        recordAdminLog('AUTO_SWEAR_TAG', currentUser.username_lower, `Tagged words in Global: ${censored.matches.join(', ')}`);
       }
 
       const payload = encodeMessagePayload(text, pendingGlobalAttachment);
@@ -2729,15 +2931,10 @@
 
     async function deleteGlobalMessage(id) {
       if (!supabaseClient) return;
-      if (String(id).startsWith('leg_')) {
-        showToast('Historical legacy messages are read-only.', 'info');
-        return;
-      }
       await supabaseClient.from('global_messages').delete().eq('id', id);
       const el = document.querySelector(`#globalMessageFeed [data-msg-id="${id}"]`);
       if (el) el.remove();
       renderedGlobalIds.delete(String(id));
-      cachedGlobalMessagesList = cachedGlobalMessagesList.filter(m => String(m.id) !== String(id));
       showToast('Message deleted.', 'info');
     }
 
@@ -2823,15 +3020,11 @@
       e.preventDefault();
       const lower = currentUser.username_lower;
       const prof = socialState.profiles[lower] || {};
-      const newName = document.getElementById('editDisplayNameInput').value.trim();
-      const newBio = document.getElementById('editBioInput').value.trim().slice(0, 400);
+      const rawName = document.getElementById('editDisplayNameInput').value.trim();
+      const rawBio = document.getElementById('editBioInput').value.trim().slice(0, 400);
 
-      const modName = checkAutoModeration(newName);
-      const modBio = checkAutoModeration(newBio);
-      if ((modName.blocked || modBio.blocked) && !isAdminUser(currentUser)) {
-        showToast('Display name or bio contains a restricted word.', 'error');
-        return;
-      }
+      const newName = autoTagSwearing(rawName).cleaned;
+      const newBio = autoTagSwearing(rawBio).cleaned;
 
       const payload = { username_lower: lower, bio: newBio };
       const oldName = prof.displayName || currentUser.username;
@@ -3257,12 +3450,11 @@
         showToast('Please choose a photo or video first.', 'error');
         return;
       }
-      const caption = (document.getElementById('postCaptionInput').value || '').trim();
-      const modCheck = checkAutoModeration(caption);
-      if (modCheck.blocked && !isAdminUser(currentUser)) {
-        showToast('Caption blocked by Auto-Moderation.', 'error');
-        recordAdminLog('AUTO_MOD_BLOCK', currentUser.username_lower, `Blocked post caption containing "${modCheck.matched}"`);
-        return;
+      const rawCaption = (document.getElementById('postCaptionInput').value || '').trim().slice(0, 200);
+      const censored = autoTagSwearing(rawCaption);
+      const caption = censored.cleaned;
+      if (censored.tagged && !isAdminUser(currentUser)) {
+        recordAdminLog('AUTO_SWEAR_TAG', currentUser.username_lower, `Tagged words in clip caption: ${censored.matches.join(', ')}`);
       }
 
       const newPost = {
@@ -3324,7 +3516,7 @@
       replyingToCommentId = null;
       replyingToUsername = null;
       document.getElementById('replyingToBar').classList.add('hidden');
-      document.getElementById('postCommentInput').placeholder = 'Add comment...';
+      document.getElementById('postCommentInput').placeholder = 'Add comment (max 200 chars)...';
       document.getElementById('commentComposerAvatar').innerHTML = getAvatarIconHtml(currentUser.username, 'w-8 h-8 text-xs');
       renderPostDetailModalContent();
       document.getElementById('postDetailModal').classList.remove('hidden');
@@ -3351,7 +3543,7 @@
       replyingToCommentId = null;
       replyingToUsername = null;
       document.getElementById('replyingToBar').classList.add('hidden');
-      document.getElementById('postCommentInput').placeholder = 'Add comment...';
+      document.getElementById('postCommentInput').placeholder = 'Add comment (max 200 chars)...';
     }
 
     function toggleRepliesExpand(commentId) {
@@ -3486,14 +3678,19 @@
       e.preventDefault();
       if (!activeModalPostId || !currentUser) return;
       const input = document.getElementById('postCommentInput');
-      const text = input.value.trim();
-      if (!text) return;
+      const rawText = input.value.trim();
+      if (!rawText) return;
 
-      const modCheck = checkAutoModeration(text);
-      if (modCheck.blocked && !isAdminUser(currentUser)) {
-        showToast('Comment blocked by Auto-Moderation.', 'error');
+      if (rawText.length > 200) {
+        showToast('Comments cannot exceed 200 characters.', 'error');
         return;
       }
+
+      if (!checkMessageRateLimit()) {
+        return;
+      }
+
+      const text = autoTagSwearing(rawText).cleaned;
 
       if (replyingToCommentId) {
         const reply = {
@@ -3743,7 +3940,6 @@
         const { data: rows } = await query;
         let combinedRows = [...(rows || [])];
 
-        // Merge historical DMs/Group messages for this thread from Legacy DB
         if (legacySupabaseClient && !legacyDbTemporarilyRestricted) {
           try {
             let legQuery = legacySupabaseClient
@@ -3809,8 +4005,17 @@
     async function sendDirectMessage(e) {
       e.preventDefault();
       const input = document.getElementById('dmInput');
-      const text = input.value.trim();
-      if ((!text && !pendingDMAttachment) || !activeChatId || !supabaseClient) return;
+      const rawText = input.value.trim();
+      if ((!rawText && !pendingDMAttachment) || !activeChatId || !supabaseClient) return;
+
+      if (rawText.length > 200) {
+        showToast('Messages cannot exceed 200 characters.', 'error');
+        return;
+      }
+
+      if (!checkMessageRateLimit()) {
+        return;
+      }
 
       const restr = getUserRestrictions(currentUser.username_lower);
       if (restr.chatMutedUntil && Date.now() < restr.chatMutedUntil && !isAdminUser(currentUser)) {
@@ -3818,11 +4023,11 @@
         return;
       }
 
-      const modCheck = checkAutoModeration(text);
-      if (modCheck.blocked && !isAdminUser(currentUser)) {
-        showToast('Message blocked by Auto-Moderation.', 'error');
-        recordAdminLog('AUTO_MOD_BLOCK', currentUser.username_lower, `Blocked DM containing "${modCheck.matched}"`);
-        return;
+      const censored = autoTagSwearing(rawText);
+      const text = censored.cleaned;
+      if (censored.tagged && !isAdminUser(currentUser)) {
+        showToast('Swearing was automatically tagged with ***', 'info');
+        recordAdminLog('AUTO_SWEAR_TAG', currentUser.username_lower, `Tagged words in DM: ${censored.matches.join(', ')}`);
       }
 
       const payload = encodeMessagePayload(text, pendingDMAttachment);
@@ -4014,6 +4219,7 @@
         memberView.classList.add('hidden');
         adminView.classList.remove('hidden');
         updateBanSliderPreview();
+        renderActiveIpBansList();
         renderAdminSupportInbox();
         renderAdminAuditLogs();
       } else {
@@ -4132,30 +4338,35 @@
       showToast(`Loaded @${clean} into Admin Moderation tools.`, 'info');
     }
 
-    // 2-SLIDER TEMP BAN & PERMA BAN SYSTEM
+    // 2-SLIDER TEMP BAN, PERMA BAN & IP/DEVICE BAN SYSTEM
     const BAN_TIME_UNITS = [
-      { label: 'Seconds', short: 's', ms: 1000 },
-      { label: 'Minutes', short: 'm', ms: 60 * 1000 },
-      { label: 'Hours', short: 'h', ms: 3600 * 1000 },
-      { label: 'Days', short: 'd', ms: 86400 * 1000 },
-      { label: 'Weeks', short: 'w', ms: 7 * 86400 * 1000 },
-      { label: 'Months', short: 'mo', ms: 30 * 86400 * 1000 },
-      { label: 'Years', short: 'yr', ms: 365 * 86400 * 1000 }
+      { label: 'Seconds', singular: 'Second', ms: 1000 },
+      { label: 'Minutes', singular: 'Minute', ms: 60 * 1000 },
+      { label: 'Hours', singular: 'Hour', ms: 60 * 60 * 1000 },
+      { label: 'Days', singular: 'Day', ms: 24 * 60 * 60 * 1000 },
+      { label: 'Weeks', singular: 'Week', ms: 7 * 24 * 60 * 60 * 1000 },
+      { label: 'Months', singular: 'Month', ms: 30 * 24 * 60 * 60 * 1000 },
+      { label: 'Years', singular: 'Year', ms: 365 * 24 * 60 * 60 * 1000 }
     ];
 
     function updateBanSliderPreview() {
-      const amount = parseInt(document.getElementById('banAmountSlider').value || '10', 10);
-      const unitIdx = parseInt(document.getElementById('banUnitSlider').value || '1', 10);
+      const amountEl = document.getElementById('banAmountSlider');
+      const unitEl = document.getElementById('banUnitSlider');
+      if (!amountEl || !unitEl) return;
+      const amount = parseInt(amountEl.value, 10) || 1;
+      const unitIdx = parseInt(unitEl.value, 10) || 0;
       const unitObj = BAN_TIME_UNITS[unitIdx] || BAN_TIME_UNITS[1];
+      const unitWord = amount === 1 ? unitObj.singular : unitObj.label;
+
       document.getElementById('banAmountValueLabel').innerText = amount;
       document.getElementById('banUnitValueLabel').innerText = unitObj.label;
-      document.getElementById('banDurationPreviewBadge').innerText = `${amount} ${amount === 1 ? unitObj.label.slice(0, -1) : unitObj.label}`;
+      document.getElementById('banDurationPreviewBadge').innerText = `${amount} ${unitWord}`;
     }
 
     async function adminApplyTempBan() {
       if (!isAdminUser(currentUser)) return;
       const target = (document.getElementById('adminBanTargetUser').value || '').trim().toLowerCase().replace(/^@/, '');
-      const reason = (document.getElementById('adminBanReasonInput').value || '').trim() || 'Temporary ban by Admin';
+      const reason = (document.getElementById('adminBanReasonInput').value || '').trim() || 'Temporarily banned by Admin';
       if (!target) {
         showToast('Enter a target username first.', 'error');
         return;
@@ -4164,12 +4375,12 @@
         showToast('Cannot ban an Admin account.', 'error');
         return;
       }
-      const amount = parseInt(document.getElementById('banAmountSlider').value || '10', 10);
-      const unitIdx = parseInt(document.getElementById('banUnitSlider').value || '1', 10);
+      const amount = parseInt(document.getElementById('banAmountSlider').value, 10) || 1;
+      const unitIdx = parseInt(document.getElementById('banUnitSlider').value, 10) || 0;
       const unitObj = BAN_TIME_UNITS[unitIdx] || BAN_TIME_UNITS[1];
       const durationMs = amount * unitObj.ms;
       const until = Date.now() + durationMs;
-      const label = `${amount} ${unitObj.label}`;
+      const label = `${amount} ${amount === 1 ? unitObj.singular : unitObj.label}`;
 
       await broadcastSocialEvent('BAN_TOGGLE', {
         target,
@@ -4178,15 +4389,15 @@
         until,
         reason
       });
-      await recordAdminLog('TEMP_BAN', target, `Temp banned for ${label} • Reason: ${reason}`);
+      await recordAdminLog('TEMP_BAN', target, `Duration: ${label} • Reason: ${reason}`);
       renderAdminAuditLogs();
-      showToast(`Temp banned @${target} for ${label}!`, 'success');
+      showToast(`Temp banned @${target} for ${label}.`, 'success');
     }
 
     async function adminApplyPermaBan() {
       if (!isAdminUser(currentUser)) return;
       const target = (document.getElementById('adminBanTargetUser').value || '').trim().toLowerCase().replace(/^@/, '');
-      const reason = (document.getElementById('adminBanReasonInput').value || '').trim() || 'Permanent ban by Admin';
+      const reason = (document.getElementById('adminBanReasonInput').value || '').trim() || 'Permanently banned by Admin';
       if (!target) {
         showToast('Enter a target username first.', 'error');
         return;
@@ -4202,7 +4413,7 @@
         until: null,
         reason
       });
-      await recordAdminLog('PERMA_BAN', target, `Permanently banned • Reason: ${reason}`);
+      await recordAdminLog('PERMA_BAN', target, `Permanent Ban • Reason: ${reason}`);
       renderAdminAuditLogs();
       showToast(`Permanently banned @${target}!`, 'success');
     }
@@ -4214,25 +4425,121 @@
         showToast('Enter a target username first.', 'error');
         return;
       }
+      const telem = (socialState.userTelemetry && socialState.userTelemetry[target]) || {};
       await broadcastSocialEvent('BAN_TOGGLE', { target, banned: false });
+      await broadcastSocialEvent('IP_DEVICE_BAN', {
+        target,
+        ip: telem.ip || '',
+        deviceId: telem.deviceId || '',
+        banned: false
+      });
       await broadcastSocialEvent('RESTRICT_USER', { target, noPfp: false, noPost: false, chatMutedUntil: 0 });
-      await recordAdminLog('UNBAN_USER', target, 'Cleared all account bans and restrictions');
+      await recordAdminLog('UNBAN_USER', target, 'Cleared all account, IP, device bans and restrictions');
+      renderActiveIpBansList();
       renderAdminAuditLogs();
       showToast(`Cleared all bans & restrictions for @${target}.`, 'success');
     }
 
-    // TARGETED FEATURE RESTRICTIONS & PFP CONTROLS
-    async function adminRemoveUserPfp() {
+    function renderActiveIpBansList() {
+      const container = document.getElementById('activeIpBansList');
+      const badge = document.getElementById('activeIpBansCountBadge');
+      if (!container || !badge) return;
+
+      const entries = [];
+      const seenTargets = new Set();
+
+      Object.entries(socialState.ipBans || {}).forEach(([ip, info]) => {
+        if (info && info.banned) {
+          const t = (info.target || 'unknown').toLowerCase();
+          seenTargets.add(t + '_' + ip);
+          entries.push({ target: t, ip, deviceId: '', reason: info.reason || 'IP Banned' });
+        }
+      });
+
+      Object.entries(socialState.deviceBans || {}).forEach(([devId, info]) => {
+        if (info && info.banned) {
+          const t = (info.target || 'unknown').toLowerCase();
+          const existing = entries.find(e => e.target === t && !e.deviceId);
+          if (existing) {
+            existing.deviceId = devId;
+          } else {
+            entries.push({ target: t, ip: '', deviceId: devId, reason: info.reason || 'Device Banned' });
+          }
+        }
+      });
+
+      badge.innerText = `${entries.length} active`;
+      if (entries.length === 0) {
+        container.innerHTML = `<p class="text-[11px] text-slate-500">No active IP or device bans.</p>`;
+        return;
+      }
+
+      container.innerHTML = entries.map(item => `
+        <div class="p-2 rounded-xl bg-eclipse-950 border border-rose-500/30 flex items-center justify-between gap-2 text-[11px]">
+          <div class="min-w-0">
+            <div class="font-bold text-white truncate">@${escapeHTML(item.target)} <span class="text-slate-400 font-mono text-[10px]">${item.ip ? `• IP: ${escapeHTML(item.ip)}` : ''} ${item.deviceId ? `• ${escapeHTML(item.deviceId)}` : ''}</span></div>
+            <div class="text-[10px] text-slate-400 truncate">${escapeHTML(item.reason)}</div>
+          </div>
+          <button type="button" onclick="quickUnbanIpDeviceEntry('${escapeHTML(item.target)}', '${escapeHTML(item.ip)}', '${escapeHTML(item.deviceId)}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] shrink-0">
+            Unban
+          </button>
+        </div>
+      `).join('');
+    }
+
+    async function quickUnbanIpDeviceEntry(target, ip, deviceId) {
       if (!isAdminUser(currentUser)) return;
-      const target = (document.getElementById('adminRestrictTargetUser').value || '').trim().toLowerCase().replace(/^@/, '');
+      await broadcastSocialEvent('BAN_TOGGLE', { target, banned: false });
+      await broadcastSocialEvent('IP_DEVICE_BAN', { target, ip, deviceId, banned: false });
+      await recordAdminLog('UNBAN_IP_DEVICE', target, 'Removed IP & Device ban via quick unban');
+      renderActiveIpBansList();
+      renderAdminAuditLogs();
+      showToast(`Unbanned @${target} (IP & Device cleared)!`, 'success');
+    }
+
+    async function adminApplyIpDeviceBan() {
+      if (!isAdminUser(currentUser)) return;
+      const target = (document.getElementById('adminBanTargetUser').value || '').trim().toLowerCase().replace(/^@/, '');
+      const reason = (document.getElementById('adminBanReasonInput').value || '').trim() || 'IP & Device Banned by Admin';
       if (!target) {
         showToast('Enter a target username first.', 'error');
         return;
       }
+      if (isAdminUser(target)) {
+        showToast('Cannot IP ban an Admin account.', 'error');
+        return;
+      }
+      const telem = (socialState.userTelemetry && socialState.userTelemetry[target]) || {};
+      await broadcastSocialEvent('IP_DEVICE_BAN', {
+        target,
+        ip: telem.ip || '',
+        deviceId: telem.deviceId || '',
+        banned: true,
+        reason
+      });
+      await recordAdminLog(
+        'IP_DEVICE_BAN',
+        target,
+        `IP (${telem.ip || 'pending'}) & Device (${telem.deviceId || 'pending'}) banned • Reason: ${reason}`
+      );
+      renderActiveIpBansList();
+      renderAdminAuditLogs();
+      showToast(`IP + Device Banned @${target}!`, 'success');
+    }
+
+    // TARGETED FEATURE RESTRICTIONS & PFP CONTROLS
+    function getRestrictTarget() {
+      return (document.getElementById('adminRestrictTargetUser').value || '').trim().toLowerCase().replace(/^@/, '');
+    }
+
+    async function adminRemoveUserPfp() {
+      if (!isAdminUser(currentUser)) return;
+      const target = getRestrictTarget();
+      if (!target) return showToast('Enter a target username.', 'error');
+      await broadcastSocialEvent('PROFILE_UPDATE', { username_lower: target, avatarUrl: null });
       if (supabaseClient) {
         await supabaseClient.from('users').update({ avatar_url: null }).eq('username_lower', target);
       }
-      await broadcastSocialEvent('PROFILE_UPDATE', { username_lower: target, avatarUrl: null });
       await recordAdminLog('REMOVE_PFP', target, 'Removed user profile picture');
       renderAdminAuditLogs();
       showToast(`Removed profile picture for @${target}.`, 'success');
@@ -4240,215 +4547,85 @@
 
     async function adminTogglePfpSystemBan() {
       if (!isAdminUser(currentUser)) return;
-      const target = (document.getElementById('adminRestrictTargetUser').value || '').trim().toLowerCase().replace(/^@/, '');
-      if (!target || isAdminUser(target)) {
-        showToast('Enter a valid non-admin username.', 'error');
-        return;
+      const target = getRestrictTarget();
+      if (!target) return showToast('Enter a target username.', 'error');
+      if (isAdminUser(target)) return showToast('Cannot restrict an Admin.', 'error');
+      const curr = getUserRestrictions(target);
+      const next = !curr.noPfp;
+      if (next) {
+        await broadcastSocialEvent('PROFILE_UPDATE', { username_lower: target, avatarUrl: null });
       }
-      const current = getUserRestrictions(target);
-      const nextState = !current.noPfp;
-      await broadcastSocialEvent('RESTRICT_USER', { target, noPfp: nextState });
-      await recordAdminLog(nextState ? 'BAN_PFP_SYSTEM' : 'UNBAN_PFP_SYSTEM', target, nextState ? 'Banned from using PFP system' : 'Restored PFP system access');
+      await broadcastSocialEvent('RESTRICT_USER', { target, noPfp: next });
+      await recordAdminLog('PFP_SYSTEM_BAN', target, next ? 'Banned from using PFP system' : 'Restored PFP system access');
       renderAdminAuditLogs();
-      showToast(nextState ? `Banned @${target} from PFP system.` : `Restored PFP access for @${target}.`, 'info');
+      showToast(next ? `Banned @${target} from PFP system.` : `Restored PFP access for @${target}.`, 'success');
     }
 
     async function adminTogglePostingBan() {
       if (!isAdminUser(currentUser)) return;
-      const target = (document.getElementById('adminRestrictTargetUser').value || '').trim().toLowerCase().replace(/^@/, '');
-      if (!target || isAdminUser(target)) {
-        showToast('Enter a valid non-admin username.', 'error');
-        return;
-      }
-      const current = getUserRestrictions(target);
-      const nextState = !current.noPost;
-      await broadcastSocialEvent('RESTRICT_USER', { target, noPost: nextState });
-      await recordAdminLog(nextState ? 'BAN_POSTING' : 'UNBAN_POSTING', target, nextState ? 'Banned from posting clips' : 'Restored posting access');
+      const target = getRestrictTarget();
+      if (!target) return showToast('Enter a target username.', 'error');
+      if (isAdminUser(target)) return showToast('Cannot restrict an Admin.', 'error');
+      const curr = getUserRestrictions(target);
+      const next = !curr.noPost;
+      await broadcastSocialEvent('RESTRICT_USER', { target, noPost: next });
+      await recordAdminLog('POSTING_BAN', target, next ? 'Banned from posting clips' : 'Restored clip posting access');
       renderAdminAuditLogs();
-      showToast(nextState ? `Banned @${target} from posting.` : `Restored posting for @${target}.`, 'info');
+      showToast(next ? `Banned @${target} from posting.` : `Restored posting for @${target}.`, 'success');
     }
 
     async function adminTempBanFromChat() {
       if (!isAdminUser(currentUser)) return;
-      const target = (document.getElementById('adminRestrictTargetUser').value || '').trim().toLowerCase().replace(/^@/, '');
-      const mins = Math.max(1, parseInt(document.getElementById('adminChatMuteMinutes').value || '15', 10));
-      if (!target || isAdminUser(target)) {
-        showToast('Enter a valid non-admin username.', 'error');
-        return;
-      }
-      const until = Date.now() + mins * 60 * 1000;
+      const target = getRestrictTarget();
+      if (!target) return showToast('Enter a target username.', 'error');
+      if (isAdminUser(target)) return showToast('Cannot mute an Admin.', 'error');
+      const mins = Math.max(1, parseInt(document.getElementById('adminChatMuteMinutes').value, 10) || 15);
+      const until = Date.now() + (mins * 60 * 1000);
       await broadcastSocialEvent('RESTRICT_USER', { target, chatMutedUntil: until });
-      await recordAdminLog('CHAT_MUTE', target, `Temp banned from chat for ${mins} minutes`);
+      await recordAdminLog('CHAT_TEMP_BAN', target, `Muted from Global & DMs for ${mins} minutes`);
       renderAdminAuditLogs();
-      showToast(`Temp banned @${target} from chat for ${mins}m.`, 'success');
+      showToast(`Muted @${target} from chat for ${mins} minutes.`, 'success');
     }
 
     async function adminToggleGlobalLockdown() {
       if (!isAdminUser(currentUser)) return;
-      const nextLocked = !socialState.globalLockdown;
-      await broadcastSocialEvent('GLOBAL_LOCKDOWN', { locked: nextLocked });
-      await recordAdminLog('GLOBAL_LOCKDOWN', 'global_lounge', nextLocked ? 'Enabled Global Chat Lockdown' : 'Disabled Global Chat Lockdown');
+      const next = !socialState.globalLockdown;
+      await broadcastSocialEvent('GLOBAL_LOCKDOWN', { locked: next });
+      await recordAdminLog('GLOBAL_LOCKDOWN', 'global_lounge', next ? 'Enabled Global Chat Lockdown' : 'Disabled Global Chat Lockdown');
       renderAdminAuditLogs();
-      showToast(nextLocked ? 'Global Chat Lockdown ENABLED.' : 'Global Chat Lockdown DISABLED.', 'info');
+      showToast(next ? 'Global Chat Lockdown ENABLED.' : 'Global Chat Lockdown DISABLED.', 'info');
     }
 
     function renderAdminAuditLogs() {
       const container = document.getElementById('adminAuditLogsList');
+      const badge = document.getElementById('adminLogCountBadge');
       const logs = socialState.adminLogs || [];
-      document.getElementById('adminLogCountBadge').innerText = `${logs.length} entries`;
+      if (badge) badge.innerText = `${logs.length} entries`;
+      if (!container) return;
 
       if (logs.length === 0) {
-        container.innerHTML = `<p class="text-slate-500 text-center py-6">No admin or auto-moderation logs recorded yet.</p>`;
+        container.innerHTML = `<p class="text-slate-500 text-center py-4">No moderation or auto-mod logs recorded yet.</p>`;
         return;
       }
 
-      container.innerHTML = logs.map(l => `
-        <div class="p-2.5 rounded-xl bg-eclipse-950 border border-darkBorder flex items-start justify-between gap-2">
-          <div class="space-y-0.5 min-w-0">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-bold text-[10px]">${escapeHTML(l.action)}</span>
-              <span class="text-white font-bold">@${escapeHTML(l.actor)}</span>
-              <span class="text-slate-500">→</span>
-              <span class="text-indigo-300 font-bold">@${escapeHTML(l.target)}</span>
-            </div>
-            <p class="text-slate-400 break-words">${escapeHTML(l.details)}</p>
-          </div>
-          <span class="text-[10px] text-slate-500 shrink-0">${formatTime(l.ts)}</span>
-        </div>
-      `).join('');
-    }
-
-    // SETTINGS, CHANGE PASSWORD, 10 THEMES & SERVER RESTART
-    function openSettingsModal() {
-      const currentThemeId = localStorage.getItem('eclipse_theme_v1') || 'midnight';
-      const grid = document.getElementById('themeSelectorGrid');
-      grid.innerHTML = ECLIPSE_THEMES.map(t => {
-        const active = t.id === currentThemeId;
+      container.innerHTML = logs.map(log => {
+        const isAuto = String(log.action || '').startsWith('AUTO_');
         return `
-          <button type="button" onclick="selectAppTheme('${t.id}')" class="p-3 rounded-2xl border text-left transition-all flex items-center justify-between ${active ? 'border-white bg-white/10 shadow-lg' : 'border-darkBorder bg-eclipse-950/80 hover:border-slate-600'}">
-            <div class="flex items-center gap-2.5">
-              <span class="w-5 h-5 rounded-full border border-white/30 shrink-0" style="background: linear-gradient(135deg, ${t.a500}, ${t.bg900});"></span>
-              <span class="text-xs font-bold text-white">${escapeHTML(t.name)}</span>
+          <div class="p-2.5 rounded-xl bg-eclipse-950/90 border border-darkBorder flex flex-col gap-0.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-extrabold ${isAuto ? 'text-amber-400' : 'text-emerald-400'}">[${escapeHTML(log.action)}]</span>
+              <span class="text-[10px] text-slate-500">${formatTime(log.ts)}</span>
             </div>
-            ${active ? '<i class="fa-solid fa-check text-xs text-emerald-400"></i>' : ''}
-          </button>
+            <div class="text-slate-200">
+              <span class="text-indigo-300">@${escapeHTML(log.actor)}</span> → <span class="text-rose-300">@${escapeHTML(log.target)}</span>
+            </div>
+            <div class="text-slate-400 text-[10px]">${escapeHTML(log.details)}</div>
+          </div>
         `;
       }).join('');
-
-      const adminBox = document.getElementById('adminServerControls');
-      if (isAdminUser(currentUser)) adminBox.classList.remove('hidden');
-      else adminBox.classList.add('hidden');
-
-      document.getElementById('currentPasswordInput').value = '';
-      document.getElementById('newPasswordInput').value = '';
-      document.getElementById('confirmNewPasswordInput').value = '';
-
-      document.getElementById('settingsModal').classList.remove('hidden');
     }
 
-    function closeSettingsModal() {
-      document.getElementById('settingsModal').classList.add('hidden');
-    }
-
-    function selectAppTheme(themeId) {
-      applyTheme(themeId);
-      openSettingsModal();
-      showToast('Theme applied!', 'success');
-    }
-
-    async function changeAccountPassword(e) {
-      e.preventDefault();
-      if (!currentUser) return;
-
-      const currentPass = document.getElementById('currentPasswordInput').value;
-      const newPass = document.getElementById('newPasswordInput').value;
-      const confirmPass = document.getElementById('confirmNewPasswordInput').value;
-      const btn = document.getElementById('changePasswordSubmitBtn');
-
-      if (newPass.length < 6 || newPass.length > 20) {
-        showToast('New password must be 6-20 characters long.', 'error');
-        return;
-      }
-
-      if (newPass !== confirmPass) {
-        showToast('New passwords do not match.', 'error');
-        return;
-      }
-
-      if (btn) {
-        btn.disabled = true;
-        btn.innerText = 'Updating...';
-      }
-
-      try {
-        const lower = currentUser.username_lower;
-        let dbUser = null;
-
-        if (supabaseClient) {
-          const { data: rows, error: fetchErr } = await supabaseClient
-            .from('users')
-            .select('id, username, username_lower, password, role')
-            .ilike('username_lower', lower)
-            .limit(1);
-
-          if (fetchErr) {
-            showToast('Database error: ' + fetchErr.message, 'error');
-            return;
-          }
-          if (rows && rows.length > 0) dbUser = rows[0];
-        }
-
-        const storedPass = (dbUser && dbUser.password !== undefined)
-          ? dbUser.password
-          : (currentUser.password ?? savedAccountsVault[lower]?.password ?? '');
-
-        if (storedPass && String(storedPass).trim() !== String(currentPass).trim()) {
-          showToast('Current password is incorrect.', 'error');
-          return;
-        }
-
-        if (supabaseClient && dbUser && dbUser.id) {
-          const { error: updateErr } = await supabaseClient
-            .from('users')
-            .update({ password: newPass })
-            .eq('id', dbUser.id);
-
-          if (updateErr) {
-            showToast('Failed to update password: ' + updateErr.message, 'error');
-            return;
-          }
-        }
-
-        currentUser.password = newPass;
-        saveAccountToLocalVault(currentUser, newPass);
-        localStorage.setItem('eclipse_last_session_v1', JSON.stringify({
-          username_lower: lower,
-          password: newPass
-        }));
-
-        document.getElementById('currentPasswordInput').value = '';
-        document.getElementById('newPasswordInput').value = '';
-        document.getElementById('confirmNewPasswordInput').value = '';
-        showToast('Password changed successfully!', 'success');
-      } catch (err) {
-        showToast('Password update error: ' + (err.message || 'Unknown error'), 'error');
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerText = 'Update Password';
-        }
-      }
-    }
-
-    async function adminRestartServers() {
-      if (!isAdminUser(currentUser)) return;
-      await recordAdminLog('SERVER_RESTART', 'all_servers', 'Remotely restarted all Eclipse client sessions');
-      await broadcastSocialEvent('SERVER_RESTART', { by: currentUser.username_lower });
-      showToast('Restarting all Eclipse servers...', 'success');
-      setTimeout(() => location.reload(), 900);
-    }
-
-    // PATCH NOTES & LIGHTBOX MODALS
+    // MODALS: PATCH NOTES, SETTINGS & PASSWORD CHANGER
     function openPatchNotesModal() {
       document.getElementById('patchNotesModal').classList.remove('hidden');
     }
@@ -4467,36 +4644,204 @@
       document.getElementById('lightboxImg').src = '';
     }
 
-    // BACKGROUND POLLING LOOP (Low-Egress 7000ms Interval)
+    function openSettingsModal() {
+      const currentTheme = localStorage.getItem('eclipse_theme_v1') || 'midnight';
+      const grid = document.getElementById('themeSelectorGrid');
+      grid.innerHTML = ECLIPSE_THEMES.map(t => {
+        const isSelected = t.id === currentTheme;
+        return `
+          <button type="button" onclick="selectAppTheme('${t.id}')" class="p-3 rounded-2xl border text-left transition-all flex items-center gap-3 ${isSelected ? 'border-white bg-white/10 shadow-lg' : 'border-darkBorder bg-eclipse-950/80 hover:border-slate-500'}">
+            <div class="w-8 h-8 rounded-full shrink-0 border border-white/20 shadow-inner flex items-center justify-center" style="background: linear-gradient(135deg, ${t.bg950} 35%, ${t.a500} 100%);">
+              ${isSelected ? '<i class="fa-solid fa-check text-white text-xs"></i>' : ''}
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-extrabold text-white truncate">${t.name}</div>
+              <div class="text-[10px] text-slate-400">${isSelected ? 'Active' : 'Tap to apply'}</div>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('currentPasswordInput').value = '';
+      document.getElementById('newPasswordInput').value = '';
+      document.getElementById('confirmNewPasswordInput').value = '';
+
+      const adminControls = document.getElementById('adminServerControls');
+      if (isAdminUser(currentUser)) adminControls.classList.remove('hidden');
+      else adminControls.classList.add('hidden');
+
+      document.getElementById('settingsModal').classList.remove('hidden');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    }
+
+    async function changeAccountPassword(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+      const currPass = document.getElementById('currentPasswordInput').value;
+      const newPass = document.getElementById('newPasswordInput').value;
+      const confirmPass = document.getElementById('confirmNewPasswordInput').value;
+      const btn = document.getElementById('changePasswordSubmitBtn');
+
+      if (newPass.length < 6 || newPass.length > 20) {
+        showToast('New password must be 6-20 characters long.', 'error');
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        showToast('New passwords do not match.', 'error');
+        return;
+      }
+
+      const lower = currentUser.username_lower;
+      const knownCurrent = currentUser.password || savedAccountsVault[lower]?.password || '';
+      if (knownCurrent && String(knownCurrent).trim() !== String(currPass).trim()) {
+        showToast('Current password is incorrect.', 'error');
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Updating...';
+      }
+
+      try {
+        if (supabaseClient) {
+          const { data: dbUser } = await supabaseClient
+            .from('users')
+            .select('id, password')
+            .eq('username_lower', lower)
+            .maybeSingle();
+
+          if (dbUser && dbUser.password && String(dbUser.password).trim() !== String(currPass).trim()) {
+            showToast('Current password is incorrect.', 'error');
+            return;
+          }
+
+          if (dbUser && dbUser.id) {
+            const { error: updErr } = await supabaseClient
+              .from('users')
+              .update({ password: newPass })
+              .eq('id', dbUser.id);
+            if (updErr) {
+              showToast('Failed to update password: ' + updErr.message, 'error');
+              return;
+            }
+          } else {
+            await supabaseClient
+              .from('users')
+              .upsert([{
+                username: currentUser.username,
+                username_lower: lower,
+                password: newPass,
+                role: isAdminUser(currentUser) ? 'Admin' : (currentUser.role || 'Member')
+              }], { onConflict: 'username_lower' });
+          }
+        }
+
+        currentUser.password = newPass;
+        saveAccountToLocalVault(currentUser, newPass);
+        localStorage.setItem('eclipse_last_session_v1', JSON.stringify({
+          username_lower: lower,
+          password: newPass
+        }));
+
+        document.getElementById('currentPasswordInput').value = '';
+        document.getElementById('newPasswordInput').value = '';
+        document.getElementById('confirmNewPasswordInput').value = '';
+        showToast('Password updated successfully!', 'success');
+      } catch (err) {
+        showToast('Error updating password: ' + (err.message || 'Unknown error'), 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = 'Update Password';
+        }
+      }
+    }
+
+    function selectAppTheme(themeId) {
+      applyTheme(themeId);
+      openSettingsModal();
+      showToast('Theme updated!', 'success');
+    }
+
+    async function adminRestartServers() {
+      if (!isAdminUser(currentUser)) return;
+      const btn = document.querySelector('#adminServerControls button');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Restarting Servers...';
+      }
+
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('global_messages').delete().like('content', `%${SOCIAL_EVENT_PREFIX}%`);
+          await supabaseClient.from('global_messages').delete().like('content', `%${LEGACY_SOCIAL_EVENT_PREFIX}%`);
+        } catch (e) {}
+      }
+
+      socialState.posts = [];
+      saveSocialStateLocal();
+
+      await broadcastSocialEvent('SERVER_RESTART', { by: currentUser.username_lower });
+      await recordAdminLog('SERVER_RESTART', 'all_nodes', 'Restarted Eclipse servers & purged event queue');
+
+      showToast('Servers restarted! Refreshing...', 'success');
+      setTimeout(() => location.reload(), 1000);
+    }
+
+    // POLLING & STARTUP BOOT
     function startPollingFallback() {
       if (pollingInterval) clearInterval(pollingInterval);
       pollingInterval = setInterval(async () => {
-        if (!currentUser || document.hidden) return;
+        if (!currentUser) return;
         await syncSocialEventsFromDB();
         if (activeTab === 'global') {
-          await renderGlobalMessages(true);
+          renderGlobalMessages(true);
         } else if (activeTab === 'dms') {
-          await renderDMSidebar();
-          if (activeChatId) await renderDMMessages(true);
+          renderDMSidebar();
+          if (activeChatId) renderDMMessages(true);
         } else if (activeTab === 'support' && isAdminUser(currentUser)) {
           renderAdminSupportInbox();
+          renderActiveIpBansList();
           renderAdminAuditLogs();
-        } else {
-          await renderGlobalMessages(true);
         }
-      }, 7000);
+      }, 3500);
     }
 
-    // PREFILL LAST SAVED USERNAME ON LOAD
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       try {
-        const lastSess = JSON.parse(localStorage.getItem('eclipse_last_session_v1') || 'null');
-        if (lastSess && lastSess.username_lower) {
-          const loginInput = document.getElementById('loginUser');
-          if (loginInput && !loginInput.value) loginInput.value = lastSess.username_lower;
+        await detectClientPublicIp();
+        const savedSession = JSON.parse(localStorage.getItem('eclipse_last_session_v1') || 'null');
+        if (savedSession && savedSession.username_lower) {
+          const lower = savedSession.username_lower.toLowerCase();
+          if (checkClientIpOrDeviceBanned(lower)) {
+            localStorage.removeItem('eclipse_last_session_v1');
+            return;
+          }
+          let user = savedAccountsVault[lower] || allUsersCache.find(u => (u.username_lower || '').toLowerCase() === lower);
+
+          if (!user && supabaseClient) {
+            const { data: rows } = await supabaseClient
+              .from('users')
+              .select('id, username, username_lower, password, role')
+              .eq('username_lower', lower)
+              .limit(1);
+            if (rows && rows.length > 0) {
+              user = rows[0];
+              saveAccountToLocalVault(user, savedSession.password || '');
+            }
+          }
+
+          if (user && !isAccountBanned(lower)) {
+            currentUser = await ensureFareedAdmin(user);
+            openApp(false);
+          }
         }
       } catch (e) {}
-      loadAllUsersCache();
     });
   </script>
 </body>
