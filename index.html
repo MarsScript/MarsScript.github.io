@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Eclipse Chat • v1.7.3</title>
-  <link rel="icon" type="image/png" href="favicon.ico"/>
+  <link rel="icon" type="image/png" href="Eclipse.png" />
 
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2588,8 +2588,12 @@
     function handleChatFileSelect(e, target) {
       const file = e.target.files[0];
       if (!file) return;
-      if (file.size > 2 * 1024 * 1024) {
-        showToast('Please select a file under 2MB.', 'error');
+      if (file.type && file.type.startsWith('image/')) {
+        handleChatImageSelect(e, target);
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        showToast('Please select a non-image file under 10MB.', 'error');
         e.target.value = '';
         return;
       }
@@ -2654,7 +2658,14 @@
           try {
             const parsed = JSON.parse(trimmed);
             const fileUrl = parsed.__eclipse_file;
-            const fileName = escapeHTML(parsed.name || 'Download Attachment');
+            const rawName = parsed.name || 'Download Attachment';
+            const isImageFile = (typeof fileUrl === 'string' && fileUrl.startsWith('data:image/')) || /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(rawName);
+            if (isImageFile && fileUrl) {
+              const imgHtml = `<img src="${fileUrl}" onclick="openImageLightbox(this.src)" alt="${escapeHTML(rawName)}" class="max-w-[230px] sm:max-w-[280px] max-h-64 rounded-xl object-cover cursor-pointer border border-white/15 shadow-md ${parsed.text ? 'mb-2' : ''}">`;
+              const textHtml = parsed.text ? `<div class="break-words">${escapeHTML(parsed.text)}</div>` : '';
+              return `${imgHtml}${textHtml}`;
+            }
+            const fileName = escapeHTML(rawName);
             const fileSize = escapeHTML(parsed.size || '');
             const fileCardHtml = `
               <a href="${fileUrl}" download="${fileName}" class="flex items-center gap-3 p-2.5 rounded-xl bg-black/30 hover:bg-black/45 border border-white/15 transition-all ${parsed.text ? 'mb-2' : ''}">
@@ -2693,6 +2704,10 @@
       if (trimmed.startsWith('{"__eclipse_file":')) {
         try {
           const parsed = JSON.parse(trimmed);
+          const isImageFile = (typeof parsed.__eclipse_file === 'string' && parsed.__eclipse_file.startsWith('data:image/')) || /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(parsed.name || '');
+          if (isImageFile) {
+            return parsed.text ? `📷 ${parsed.text}` : '📷 Sent a photo';
+          }
           return parsed.text ? `📎 ${parsed.text}` : `📎 ${parsed.name || 'Sent an attachment'}`;
         } catch (e) { return '📎 Sent an attachment'; }
       }
