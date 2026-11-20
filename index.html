@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Eclipse Chat • v1.7.3</title>
-  <link rel="icon" type="image/png" href="favicon.ico" />
-  <link rel="apple-touch-icon" href="favicon.ico">
+  <title>Eclipse Chat • v1.7.4</title>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="favicon.ico" />
+
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -206,14 +207,14 @@
     <header id="appHeader" class="px-4 py-2.5 bg-eclipse-950/90 border-b border-darkBorder flex items-center justify-between shrink-0 z-20">
       <div class="flex items-center gap-2.5">
         <div class="relative">
-          <img src="Eclipse.png" alt="Eclipse" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-9 h-9 rounded-xl object-cover border border-eclipse-500/40 shadow-md">
+          <img src="favicon.ico" alt="Eclipse" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-9 h-9 rounded-xl object-cover border border-eclipse-500/40 shadow-md">
           <div style="display:none;" class="w-9 h-9 rounded-xl bg-gradient-to-br from-eclipse-500 to-purple-600 items-center justify-center font-extrabold text-white text-base shadow-md">E</div>
           <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-eclipse-950"></span>
         </div>
         <div>
           <div class="flex items-center gap-2">
             <h1 class="font-extrabold text-sm sm:text-base tracking-tight text-white">ECLIPSE</h1>
-            <span class="px-2 py-0.5 rounded-md bg-eclipse-500/20 border border-eclipse-400/40 text-eclipse-400 font-mono text-[10px] font-extrabold tracking-wide">v1.7.3</span>
+            <span class="px-2 py-0.5 rounded-md bg-eclipse-500/20 border border-eclipse-400/40 text-eclipse-400 font-mono text-[10px] font-extrabold tracking-wide">v1.7.4</span>
           </div>
           <p id="headerSubtitle" class="text-[11px] text-slate-400">Global Lounge • Live</p>
         </div>
@@ -235,7 +236,7 @@
       <div class="glass-card rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 animate-slide-up">
         <div class="text-center space-y-1.5">
           <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-eclipse-500/15 border border-eclipse-400/30 text-eclipse-400 font-mono text-[10px] font-bold mb-1">
-            <span>ECLIPSE PLATFORM • v1.7.3</span>
+            <span>ECLIPSE PLATFORM • v1.7.4</span>
           </div>
           <h2 class="text-2xl font-extrabold text-white tracking-tight">Welcome to Eclipse</h2>
           <p class="text-xs text-slate-400">Chat, share clips, customize themes, and connect with friends.</p>
@@ -288,6 +289,9 @@
           <span>Global Chat is currently in Admin Slow/Lockdown Mode. Only Admins can send messages.</span>
         </div>
 
+        <!-- ACTIVE 10-MINUTE GLOBAL POLLS BAR -->
+        <div id="activeGlobalPollsContainer" class="hidden px-3 pt-2.5 pb-1 space-y-2 bg-eclipse-950/75 border-b border-darkBorder max-h-64 overflow-y-auto shrink-0 z-10"></div>
+
         <div id="globalMessageFeed" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 flex flex-col-reverse" style="overflow-anchor: auto;"></div>
 
         <!-- Pending Photo / File Attachment Preview -->
@@ -313,6 +317,9 @@
             </button>
             <button type="button" onclick="document.getElementById('globalFileInput').click()" title="Attach File" class="w-10 h-10 rounded-2xl bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-300 hover:text-emerald-400 flex items-center justify-center transition-all shrink-0 active:scale-95">
               <i class="fa-solid fa-paperclip text-sm"></i>
+            </button>
+            <button type="button" onclick="openCreatePollModal()" title="Create Global Poll" class="w-10 h-10 rounded-2xl bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-300 hover:text-amber-400 flex items-center justify-center transition-all shrink-0 active:scale-95">
+              <i class="fa-solid fa-square-poll-vertical text-base"></i>
             </button>
             <input type="text" id="globalInput" maxlength="200" placeholder="Type a message in Global Chat (max 200 chars)..." autocomplete="off" class="flex-1 bg-darkCard border border-darkBorder rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-eclipse-500 transition-all">
             <button type="submit" class="w-11 h-11 rounded-2xl bg-eclipse-600 hover:bg-eclipse-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-lg shadow-eclipse-600/30 shrink-0">
@@ -548,8 +555,96 @@
           </div>
         </div>
 
+        <!-- MODERATOR VIEW -->
+        <div id="modSupportContainer" class="space-y-6 hidden">
+          <!-- 1. 2-MINUTE TIMEOUT & BAN REQUESTS -->
+          <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center text-base">
+                <i class="fa-solid fa-user-shield"></i>
+              </div>
+              <div>
+                <h2 class="text-base font-extrabold text-white">Moderator Tools</h2>
+                <p class="text-[11px] text-slate-400">Issue 2-minute chat timeouts or request a Ban / Temp Ban from Admins</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1.5">Target Username</label>
+                <input type="text" id="modTargetUserInput" placeholder="Enter username..." class="w-full px-3.5 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1.5">Reason</label>
+                <input type="text" id="modReasonInput" placeholder="e.g. Spamming / rule violation" class="w-full px-3.5 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <button type="button" onclick="modApplyTwoMinTimeout()" class="py-3 px-3 bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-extrabold rounded-xl text-xs shadow-lg transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-hourglass-half"></i> Timeout (2 Mins)
+              </button>
+              <div class="flex items-center gap-1.5 bg-eclipse-950 border border-darkBorder rounded-xl px-2.5">
+                <select id="modBanReqType" onchange="toggleModTempDurationField()" class="w-full bg-transparent text-xs font-bold text-white py-2.5 focus:outline-none">
+                  <option value="Temp Ban" class="bg-eclipse-950">Request Temp Ban</option>
+                  <option value="Perma Ban" class="bg-eclipse-950">Request Perma Ban</option>
+                </select>
+                <input type="text" id="modTempDurationInput" value="1 Hour" placeholder="Duration" class="w-24 bg-darkCard border border-darkBorder rounded-lg px-2 py-1 text-[11px] text-amber-300 font-mono focus:outline-none">
+              </div>
+              <button type="button" onclick="modSubmitBanRequest()" class="py-3 px-3 bg-amber-600 hover:bg-amber-500 active:scale-98 text-white font-extrabold rounded-xl text-xs shadow-lg transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-paper-plane"></i> Send Ban Request
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. MODERATOR SUPPORT INBOX (CAN REPLY FOR MORE INFO) -->
+          <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-inbox text-indigo-400"></i>
+                <h3 class="text-sm font-extrabold text-white">Support Inbox (Reply to Gather Info)</h3>
+              </div>
+              <span id="modInboxCountBadge" class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-extrabold">0 Open</span>
+            </div>
+            <div id="modSupportInboxList" class="space-y-3 max-h-96 overflow-y-auto pr-1"></div>
+          </div>
+        </div>
+
         <!-- ADMIN VIEW -->
         <div id="adminSupportContainer" class="space-y-6 hidden">
+          <!-- 0. MODERATOR RANK MANAGER & BAN REQUESTS QUEUE -->
+          <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center text-base">
+                  <i class="fa-solid fa-user-check"></i>
+                </div>
+                <div>
+                  <h2 class="text-base font-extrabold text-white">Moderator Rank &amp; Ban Requests</h2>
+                  <p class="text-[11px] text-slate-400">Assign/remove Moderators and review their Ban or Temp Ban requests</p>
+                </div>
+              </div>
+              <span id="adminBanReqCountBadge" class="px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-extrabold">0 Pending</span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="text" id="adminModAssignInput" placeholder="Enter username to promote/demote Moderator..." class="flex-1 px-3.5 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+              <button type="button" onclick="adminSetModeratorRank(true)" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-plus"></i> Assign Mod
+              </button>
+              <button type="button" onclick="adminSetModeratorRank(false)" class="px-4 py-2.5 bg-darkCard hover:bg-slate-800 border border-darkBorder text-rose-300 font-extrabold rounded-xl text-xs transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-minus"></i> Remove Mod
+              </button>
+            </div>
+
+            <div id="activeModeratorsList" class="flex flex-wrap gap-2"></div>
+
+            <div class="pt-3 border-t border-darkBorder space-y-2">
+              <h4 class="text-xs font-extrabold text-amber-300 uppercase tracking-wider">Moderator Ban &amp; Temp Ban Requests</h4>
+              <div id="adminBanRequestsList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+            </div>
+          </div>
+
           <!-- 1. SUPPORT INBOX -->
           <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-4">
             <div class="flex items-center justify-between flex-wrap gap-2">
@@ -752,38 +847,75 @@
       <div class="px-5 py-4 border-b border-darkBorder bg-eclipse-950 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
           <i class="fa-solid fa-scroll text-eclipse-400"></i>
-          <h3 class="font-extrabold text-sm sm:text-base text-white">Eclipse Patch Notes • v1.7.3</h3>
+          <h3 class="font-extrabold text-sm sm:text-base text-white">Eclipse Patch Notes • v1.7.4</h3>
         </div>
         <button onclick="closePatchNotesModal()" class="w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center text-sm font-bold shadow">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div class="p-5 overflow-y-auto space-y-4 text-xs text-slate-300 leading-relaxed">
+        <div class="p-3.5 rounded-2xl bg-indigo-600/15 border border-indigo-500/35 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-white text-sm">v1.7.4 — Global Chat Polls, Moderator Rank &amp; Support Replies</span>
+            <span class="px-2 py-0.5 rounded bg-indigo-600 text-white font-mono text-[10px] font-bold">LATEST</span>
+          </div>
+          <ul class="list-disc pl-4 space-y-1 text-slate-200">
+            <li><strong>Global Chat Polls:</strong> Create live interactive polls in Global Lounge that last for 10 minutes! Members can post 1 poll every 5 minutes (up to 4 options), while Admins have unlimited options and no cooldown.</li>
+            <li><strong>Assignable Moderator Rank:</strong> Admins can promote or demote Moderators who can issue 2-minute timeouts and send Ban / Temp Ban requests.</li>
+            <li><strong>Threaded Support Replies:</strong> Staff and users can reply back and forth inside Support tickets for more details.</li>
+          </ul>
+        </div>
         <div class="p-3.5 rounded-2xl bg-rose-600/15 border border-rose-500/35 space-y-1.5">
           <div class="flex items-center justify-between">
             <span class="font-extrabold text-white text-sm">v1.7.3 — IP &amp; Device Bans, Auto-Censor Tags &amp; Anti-Spam</span>
-            <span class="px-2 py-0.5 rounded bg-rose-600 text-white font-mono text-[10px] font-bold">LATEST</span>
           </div>
           <ul class="list-disc pl-4 space-y-1 text-slate-200">
-            <li><strong>IP + Device Ban Enforcement:</strong> Admins can issue full IP + Hardware Device Bans that block rule-breakers from logging in or creating alt accounts on their network/device.</li>
-            <li><strong>Automatic Swearing Tags:</strong> Swear words are automatically tagged and censored with <code class="text-rose-300">***</code> in real time across chats and bios.</li>
-            <li><strong>Anti-Spam Rate Limit &amp; 200-Char Cap:</strong> Enforced a strict 200-character limit per message and a 3 messages per 10 seconds rate limit with an instant warning popup.</li>
+            <li><strong>IP &amp; Device Bans:</strong> Admins can permanently ban offending networks and devices from logging in or creating alt accounts.</li>
+            <li><strong>Auto Swearing Tags &amp; Anti-Spam:</strong> Swear words are automatically tagged with <code>***</code>, messages are capped at 200 characters, and users are limited to 3 messages per 10 seconds.</li>
           </ul>
-        </div>
-        <div class="p-3.5 rounded-2xl bg-eclipse-600/15 border border-eclipse-500/30 space-y-1.5">
-          <div class="flex items-center justify-between">
-            <span class="font-extrabold text-white text-sm">v1.7 — Admin Email 2FA &amp; Account Password Changer</span>
-          </div>
-          <ul class="list-disc pl-4 space-y-1 text-slate-200">
-            <li><strong>Admin-Only Email Verification:</strong> Admin account logins trigger a 6-digit security verification code sent via Brevo to the owner email before granting access.</li>
-            <li><strong>Working Change Password:</strong> Added a dedicated Change Password section inside <strong>Profile → Settings</strong>.</li>
-          </ul>
-        </div>
-        <div class="p-3.5 rounded-2xl bg-eclipse-950/80 border border-darkBorder space-y-1">
-          <h4 class="font-extrabold text-white">v1.6.2 — UI Remake, 6th Support/Admin Tab &amp; Auto-Mod</h4>
-          <p>Added refreshed dark-glass panels, 6th Support/Admin tab with 2-slider Temp Ban builder, Quick Perma Ban, feature restrictions, and automatic word moderation.</p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- CREATE GLOBAL POLL MODAL -->
+  <div id="createPollModal" onclick="closeCreatePollModal()" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div onclick="event.stopPropagation()" class="glass-card border border-darkBorder rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-slide-up">
+      <div class="px-5 py-4 border-b border-darkBorder bg-eclipse-950 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-square-poll-vertical text-amber-400"></i>
+          <h3 class="text-base font-extrabold text-white">Create Global Poll</h3>
+        </div>
+        <button type="button" onclick="closeCreatePollModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form onsubmit="submitNewGlobalPoll(event)" class="p-5 overflow-y-auto space-y-4">
+        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-200 flex items-center justify-between">
+          <span><i class="fa-regular fa-clock mr-1"></i> Poll stays live for <strong>10 minutes</strong></span>
+          <span id="pollRoleLimitBadge" class="font-mono font-bold">Max 4 options • 5m cooldown</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1.5">Poll Question</label>
+          <input type="text" id="pollQuestionInput" required maxlength="140" placeholder="Ask Global Chat a question..." class="w-full px-3.5 py-2.5 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-amber-500">
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold text-slate-300">Options</label>
+            <span id="pollOptionCountHint" class="text-[10px] text-slate-400 font-mono">2 / 4 options</span>
+          </div>
+          <div id="pollOptionsInputsList" class="space-y-2"></div>
+          <button type="button" id="addPollOptionBtn" onclick="addPollOptionInput()" class="w-full py-2 rounded-xl bg-darkCard hover:bg-slate-800 border border-dashed border-darkBorder text-xs font-bold text-indigo-300 hover:text-white transition-all flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-plus"></i> Add Option
+          </button>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-amber-600 hover:bg-amber-500 active:scale-98 text-white font-extrabold rounded-xl text-xs shadow-lg shadow-amber-600/25 transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i> Post Poll to Global Chat
+        </button>
+      </form>
     </div>
   </div>
 
@@ -1045,7 +1177,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'v1.7.3';
+    const APP_VERSION = 'v1.7.4';
 
     // PRIMARY SUPABASE CONFIGURATION (All NEW data writes here)
     const SUPABASE_URL = 'https://ktifvnsfbcnccbreleeb.supabase.co';
@@ -1357,8 +1489,11 @@
       deviceBans: {},
       userTelemetry: {},
       restrictions: {},
+      moderators: {},
+      banRequests: [],
       supportTickets: [],
       adminLogs: [],
+      polls: [],
       globalLockdown: false
     };
 
@@ -1443,10 +1578,24 @@
       return lower === 'fareed' || lower === 'testbot' || userOrName.role === 'Admin';
     }
 
+    function isModeratorUser(userOrName) {
+      if (!userOrName || isAdminUser(userOrName)) return false;
+      let lower = '';
+      if (typeof userOrName === 'string') {
+        lower = userOrName.toLowerCase().replace(/^@/, '').replace(/@eclipse\.internal$/i, '').trim();
+      } else {
+        lower = (userOrName.username_lower || userOrName.username || '').toLowerCase().replace(/^@/, '').trim();
+        if (userOrName.role === 'Mod' || userOrName.role === 'Moderator') return true;
+      }
+      if (!lower) return false;
+      if (socialState.moderators && socialState.moderators[lower]) return true;
+      const found = allUsersCache.find(u => (u.username_lower || '').toLowerCase() === lower);
+      return !!(found && (found.role === 'Mod' || found.role === 'Moderator'));
+    }
+
     async function ensureFareedAdmin(userObj) {
       if (!userObj) return userObj;
-      const lower = (userObj.username_lower || userObj.username || '').toLowerCase();
-      if ((lower === 'fareed' || lower === 'testbot') && userObj.role !== 'Admin') {
+      if (isAdminUser(userObj)) {
         userObj.role = 'Admin';
         if (supabaseClient && userObj.id && !String(userObj.id).startsWith('local_')) {
           try {
@@ -1778,14 +1927,56 @@
       } else if (evt.type === 'SUPPORT_TICKET' && evt.ticket && evt.ticket.id) {
         if (!socialState.supportTickets.some(t => t.id === evt.ticket.id)) {
           socialState.supportTickets.unshift(evt.ticket);
-          if (currentUser && isAdminUser(currentUser) && activeTab !== 'support') {
+          if (currentUser && (isAdminUser(currentUser) || isModeratorUser(currentUser)) && activeTab !== 'support') {
             const dot = document.getElementById('supportUnreadDot');
             if (dot) dot.classList.remove('hidden');
+          }
+        }
+      } else if (evt.type === 'TICKET_REPLY' && evt.ticketId && evt.reply) {
+        const tkt = socialState.supportTickets.find(t => t.id === evt.ticketId);
+        if (tkt) {
+          if (!Array.isArray(tkt.replies)) tkt.replies = [];
+          if (!tkt.replies.some(r => r.id === evt.reply.id)) {
+            tkt.replies.push(evt.reply);
+            if (currentUser && tkt.reporter === currentUser.username_lower && evt.reply.sender !== currentUser.username_lower && activeTab !== 'support') {
+              const dot = document.getElementById('supportUnreadDot');
+              if (dot) dot.classList.remove('hidden');
+            }
           }
         }
       } else if (evt.type === 'TICKET_RESOLVE' && evt.ticketId) {
         const tkt = socialState.supportTickets.find(t => t.id === evt.ticketId);
         if (tkt) tkt.status = evt.status || 'Resolved';
+      } else if (evt.type === 'MOD_ROLE_TOGGLE' && evt.target) {
+        const t = evt.target.toLowerCase();
+        if (!socialState.moderators) socialState.moderators = {};
+        if (evt.isMod) {
+          socialState.moderators[t] = true;
+        } else {
+          delete socialState.moderators[t];
+        }
+        const cachedU = allUsersCache.find(u => (u.username_lower || '').toLowerCase() === t);
+        if (cachedU && !isAdminUser(cachedU)) {
+          cachedU.role = evt.isMod ? 'Mod' : 'Member';
+        }
+        if (currentUser && currentUser.username_lower === t && !isAdminUser(currentUser)) {
+          currentUser.role = evt.isMod ? 'Mod' : 'Member';
+          updateSupportNavTabLabel();
+        }
+      } else if (evt.type === 'BAN_REQUEST' && evt.request && evt.request.id) {
+        if (!Array.isArray(socialState.banRequests)) socialState.banRequests = [];
+        if (!socialState.banRequests.some(r => r.id === evt.request.id)) {
+          socialState.banRequests.unshift(evt.request);
+          if (currentUser && isAdminUser(currentUser) && activeTab !== 'support') {
+            const dot = document.getElementById('supportUnreadDot');
+            if (dot) dot.classList.remove('hidden');
+          }
+        }
+      } else if (evt.type === 'BAN_REQUEST_RESOLVE' && evt.requestId) {
+        if (Array.isArray(socialState.banRequests)) {
+          const req = socialState.banRequests.find(r => r.id === evt.requestId);
+          if (req) req.status = evt.status || 'Dismissed';
+        }
       } else if (evt.type === 'ADMIN_LOG' && evt.entry && evt.entry.id) {
         if (!socialState.adminLogs.some(l => l.id === evt.entry.id)) {
           socialState.adminLogs.unshift(evt.entry);
@@ -1794,6 +1985,22 @@
       } else if (evt.type === 'GLOBAL_LOCKDOWN') {
         socialState.globalLockdown = !!evt.locked;
         updateGlobalLockdownUI();
+      } else if (evt.type === 'NEW_POLL' && evt.poll && evt.poll.id) {
+        if (!Array.isArray(socialState.polls)) socialState.polls = [];
+        if (!socialState.polls.some(p => p.id === evt.poll.id)) {
+          socialState.polls.unshift(evt.poll);
+        }
+        renderActiveGlobalPolls();
+      } else if (evt.type === 'POLL_VOTE' && evt.pollId && evt.user !== undefined && evt.optionIndex !== undefined) {
+        const poll = (socialState.polls || []).find(p => p.id === evt.pollId);
+        if (poll && Date.now() < poll.expiresAt) {
+          if (!poll.votes || typeof poll.votes !== 'object') poll.votes = {};
+          poll.votes[String(evt.user).toLowerCase()] = Number(evt.optionIndex);
+          renderActiveGlobalPolls();
+        }
+      } else if (evt.type === 'DELETE_POLL' && evt.pollId) {
+        socialState.polls = (socialState.polls || []).filter(p => p.id !== evt.pollId);
+        renderActiveGlobalPolls();
       } else if (evt.type === 'SERVER_RESTART' && evt.ts && window.__eclipseBootTs && evt.ts > window.__eclipseBootTs + 1500) {
         showToast('Admin restarted servers. Reloading...', 'info');
         setTimeout(() => location.reload(), 1000);
@@ -2416,17 +2623,7 @@
       if (showIpNotice) {
         showIpBanLoginNoticeModal();
       }
-
-      const navSupportLabel = document.getElementById('navSupportLabel');
-      const navSupportIcon = document.getElementById('navSupportIcon');
-      if (isAdminUser(currentUser)) {
-        navSupportLabel.innerText = 'Admin';
-        navSupportIcon.className = 'fa-solid fa-shield-halved text-sm sm:text-base text-amber-400';
-      } else {
-        navSupportLabel.innerText = 'Support';
-        navSupportIcon.className = 'fa-solid fa-life-ring text-sm sm:text-base';
-      }
-
+      updateSupportNavTabLabel();
       updateGlobalLockdownUI();
       viewingProfileUsername = currentUser.username_lower;
       switchMainTab('global');
@@ -2486,7 +2683,9 @@
         dms: 'Apple Messages & Group Chats',
         friends: 'Friends & Requests',
         profile: 'Profile & Custom Themes',
-        support: isAdminUser(currentUser) ? 'Admin Support Inbox & Moderation' : 'Bug & User Support Center'
+        support: isAdminUser(currentUser)
+          ? 'Admin Support Inbox & Moderation'
+          : (isModeratorUser(currentUser) ? 'Moderator Tools & Support Inbox' : 'Bug & User Support Center')
       };
 
       tabs.forEach(t => {
@@ -2504,6 +2703,7 @@
       document.getElementById('headerSubtitle').innerText = subtitles[tab] || 'Eclipse';
 
       if (tab === 'global') {
+        renderActiveGlobalPolls();
         renderGlobalMessages(false);
         const feed = document.getElementById('globalMessageFeed');
         if (feed) feed.scrollTop = 0;
@@ -2511,6 +2711,7 @@
         renderSocialFeed();
       } else if (tab === 'dms') {
         renderDMSidebar();
+        if (activeChatId) renderDMMessages(false);
       } else if (tab === 'friends') {
         renderFriendsTab();
       } else if (tab === 'profile') {
@@ -2519,6 +2720,22 @@
         const dot = document.getElementById('supportUnreadDot');
         if (dot) dot.classList.add('hidden');
         renderSupportTab();
+      }
+    }
+
+    function updateSupportNavTabLabel() {
+      const iconEl = document.getElementById('navSupportIcon');
+      const labelEl = document.getElementById('navSupportLabel');
+      if (!iconEl || !labelEl || !currentUser) return;
+      if (isAdminUser(currentUser)) {
+        iconEl.className = 'fa-solid fa-shield-halved text-sm sm:text-base text-rose-400';
+        labelEl.innerText = 'Admin';
+      } else if (isModeratorUser(currentUser)) {
+        iconEl.className = 'fa-solid fa-user-shield text-sm sm:text-base text-emerald-400';
+        labelEl.innerText = 'Mod';
+      } else {
+        iconEl.className = 'fa-solid fa-life-ring text-sm sm:text-base';
+        labelEl.innerText = 'Support';
       }
     }
 
@@ -2636,89 +2853,374 @@
       }
     }
 
-    function encodeMessagePayload(text, attachmentObj) {
-      if (attachmentObj) {
-        if (attachmentObj.kind === 'image') {
-          return JSON.stringify({ __eclipse_img: attachmentObj.dataUrl, text: text || '' });
-        }
+    function encodeMessagePayload(text, attachment) {
+      if (!attachment) return text;
+      if (attachment.kind === 'image') {
         return JSON.stringify({
-          __eclipse_file: attachmentObj.dataUrl,
-          name: attachmentObj.name || 'attachment',
-          size: attachmentObj.size || '',
+          __eclipse_img: attachment.dataUrl,
+          name: attachment.name || 'image.webp',
           text: text || ''
         });
       }
-      return text;
+      return JSON.stringify({
+        __eclipse_file: attachment.dataUrl,
+        name: attachment.name || 'attachment',
+        size: attachment.size || '',
+        text: text || ''
+      });
     }
 
     function renderMessageBodyHtml(rawContent) {
-      if (typeof rawContent === 'string') {
-        const trimmed = rawContent.trim();
-        if (trimmed.startsWith('{"__eclipse_file":')) {
-          try {
-            const parsed = JSON.parse(trimmed);
-            const fileUrl = parsed.__eclipse_file;
-            const rawName = parsed.name || 'Download Attachment';
-            const isImageFile = (typeof fileUrl === 'string' && fileUrl.startsWith('data:image/')) || /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(rawName);
-            if (isImageFile && fileUrl) {
-              const imgHtml = `<img src="${fileUrl}" onclick="openImageLightbox(this.src)" alt="${escapeHTML(rawName)}" class="max-w-[230px] sm:max-w-[280px] max-h-64 rounded-xl object-cover cursor-pointer border border-white/15 shadow-md ${parsed.text ? 'mb-2' : ''}">`;
-              const textHtml = parsed.text ? `<div class="break-words">${escapeHTML(parsed.text)}</div>` : '';
-              return `${imgHtml}${textHtml}`;
-            }
-            const fileName = escapeHTML(rawName);
-            const fileSize = escapeHTML(parsed.size || '');
-            const fileCardHtml = `
-              <a href="${fileUrl}" download="${fileName}" class="flex items-center gap-3 p-2.5 rounded-xl bg-black/30 hover:bg-black/45 border border-white/15 transition-all ${parsed.text ? 'mb-2' : ''}">
-                <div class="w-9 h-9 rounded-lg bg-indigo-500/25 text-indigo-300 flex items-center justify-center shrink-0">
-                  <i class="fa-solid fa-file-arrow-down text-base"></i>
-                </div>
-                <div class="min-w-0 flex-1 text-left">
-                  <div class="text-xs font-bold text-white truncate">${fileName}</div>
-                  <div class="text-[10px] text-slate-300">${fileSize ? fileSize + ' • ' : ''}Tap to download</div>
-                </div>
-              </a>
-            `;
-            const textHtml = parsed.text ? `<div class="break-words">${escapeHTML(parsed.text)}</div>` : '';
-            return `${fileCardHtml}${textHtml}`;
-          } catch (err) {}
-        }
-        if (trimmed.startsWith('{"__eclipse_img":') || trimmed.startsWith('__ECLIPSE_IMG__::')) {
-          try {
-            const jsonPart = trimmed.startsWith('__ECLIPSE_IMG__::') ? trimmed.slice('__ECLIPSE_IMG__::'.length) : trimmed;
-            const parsed = JSON.parse(jsonPart);
-            const imgSrc = parsed.__eclipse_img || parsed.img;
-            if (imgSrc) {
-              const imgHtml = `<img src="${imgSrc}" onclick="openImageLightbox(this.src)" alt="Shared photo" class="max-w-[230px] sm:max-w-[280px] max-h-64 rounded-xl object-cover cursor-pointer border border-white/15 shadow-md ${parsed.text ? 'mb-2' : ''}">`;
-              const textHtml = parsed.text ? `<div class="break-words">${escapeHTML(parsed.text)}</div>` : '';
-              return `${imgHtml}${textHtml}`;
-            }
-          } catch (err) {}
-        }
+      if (typeof rawContent !== 'string') return '';
+      const trimmed = rawContent.trim();
+
+      if (trimmed.startsWith('{"__eclipse_poll":')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          const poll = (socialState.polls || []).find(p => p.id === parsed.__eclipse_poll);
+          if (!poll) {
+            return `<div class="text-xs italic text-slate-300"><i class="fa-solid fa-square-poll-vertical mr-1 text-amber-400"></i> Poll ended</div>`;
+          }
+          return buildPollCardInnerHtml(poll, true);
+        } catch (err) {}
       }
+
+      if (trimmed.startsWith('{"__eclipse_file":')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          const fileUrl = parsed.__eclipse_file;
+          const fileName = parsed.name || 'Attachment';
+          const isImgFile = typeof fileUrl === 'string' && fileUrl.startsWith('data:image/');
+          if (isImgFile) {
+            return `
+              <img src="${fileUrl}" alt="${escapeHTML(fileName)}" onclick="openImageLightbox(this.src)" class="max-w-[240px] sm:max-w-[280px] max-h-64 rounded-xl object-cover cursor-pointer border border-white/15 hover:opacity-95 transition ${parsed.text ? 'mb-2' : ''}">
+              ${parsed.text ? `<div class="break-words">${escapeHTML(parsed.text)}</div>` : ''}
+            `;
+          }
+          return `
+            <a href="${fileUrl}" download="${escapeHTML(fileName)}" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-black/25 hover:bg-black/40 border border-white/15 transition ${parsed.text ? 'mb-2' : ''}">
+              <div class="w-8 h-8 rounded-lg bg-indigo-500/25 text-indigo-300 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-file-arrow-down text-sm"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-white truncate underline">${escapeHTML(fileName)}</div>
+                ${parsed.size ? `<div class="text-[10px] text-slate-300 font-mono">${escapeHTML(parsed.size)} • Tap to download</div>` : ''}
+              </div>
+            </a>
+            ${parsed.text ? `<div class="break-words">${escapeHTML(parsed.text)}</div>` : ''}
+          `;
+        } catch (err) {}
+      }
+
+      if (trimmed.startsWith('{"__eclipse_img":') || trimmed.startsWith('__ECLIPSE_IMG__::')) {
+        try {
+          const jsonStr = trimmed.startsWith('__ECLIPSE_IMG__::')
+            ? trimmed.slice('__ECLIPSE_IMG__::'.length)
+            : trimmed;
+          const parsed = JSON.parse(jsonStr);
+          const imgSrc = parsed.__eclipse_img || parsed.img;
+          if (imgSrc) {
+            return `
+              <img src="${imgSrc}" alt="Photo" onclick="openImageLightbox(this.src)" class="max-w-[240px] sm:max-w-[280px] max-h-64 rounded-xl object-cover cursor-pointer border border-white/15 hover:opacity-95 transition ${parsed.text ? 'mb-2' : ''}">
+              ${parsed.text ? `<div class="break-words">${escapeHTML(parsed.text)}</div>` : ''}
+            `;
+          }
+        } catch (err) {}
+      }
+
       return `<div class="break-words">${escapeHTML(rawContent)}</div>`;
     }
 
     function getPlainMessagePreview(rawContent) {
       if (typeof rawContent !== 'string') return '';
       const trimmed = rawContent.trim();
+      if (trimmed.startsWith('{"__eclipse_poll":')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          const poll = (socialState.polls || []).find(p => p.id === parsed.__eclipse_poll);
+          return poll ? `📊 Poll: ${poll.question}` : '📊 Global Poll';
+        } catch (err) {}
+      }
       if (trimmed.startsWith('{"__eclipse_file":')) {
         try {
           const parsed = JSON.parse(trimmed);
-          const isImageFile = (typeof parsed.__eclipse_file === 'string' && parsed.__eclipse_file.startsWith('data:image/')) || /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(parsed.name || '');
-          if (isImageFile) {
-            return parsed.text ? `📷 ${parsed.text}` : '📷 Sent a photo';
-          }
-          return parsed.text ? `📎 ${parsed.text}` : `📎 ${parsed.name || 'Sent an attachment'}`;
-        } catch (e) { return '📎 Sent an attachment'; }
+          const isImg = typeof parsed.__eclipse_file === 'string' && parsed.__eclipse_file.startsWith('data:image/');
+          const prefix = isImg ? '📷 Photo' : `📎 ${parsed.name || 'File'}`;
+          return parsed.text ? `${prefix}: ${parsed.text}` : prefix;
+        } catch (err) {}
       }
       if (trimmed.startsWith('{"__eclipse_img":') || trimmed.startsWith('__ECLIPSE_IMG__::')) {
         try {
-          const jsonPart = trimmed.startsWith('__ECLIPSE_IMG__::') ? trimmed.slice('__ECLIPSE_IMG__::'.length) : trimmed;
-          const parsed = JSON.parse(jsonPart);
-          return parsed.text ? `📷 ${parsed.text}` : '📷 Sent a photo';
-        } catch (e) { return '📷 Sent a photo'; }
+          const jsonStr = trimmed.startsWith('__ECLIPSE_IMG__::')
+            ? trimmed.slice('__ECLIPSE_IMG__::'.length)
+            : trimmed;
+          const parsed = JSON.parse(jsonStr);
+          return parsed.text ? `📷 Photo: ${parsed.text}` : '📷 Sent a photo';
+        } catch (err) {}
       }
-      return trimmed;
+      return rawContent;
+    }
+
+    // GLOBAL CHAT POLLS (10-MIN LIFESPAN, 5-MIN COOLDOWN / 4 MAX OPTIONS FOR NON-ADMINS)
+    const POLL_DURATION_MS = 10 * 60 * 1000;
+    const POLL_COOLDOWN_MS = 5 * 60 * 1000;
+
+    function getRemainingPollCooldownMs() {
+      if (!currentUser || isAdminUser(currentUser)) return 0;
+      const me = currentUser.username_lower;
+      const localKey = `eclipse_last_poll_ts_${me}`;
+      const localTs = Number(localStorage.getItem(localKey) || 0);
+      const syncedTs = (socialState.polls || [])
+        .filter(p => p.creator === me)
+        .reduce((max, p) => Math.max(max, Number(p.createdAt) || 0), 0);
+      const lastTs = Math.max(localTs, syncedTs);
+      if (!lastTs) return 0;
+      const elapsed = Date.now() - lastTs;
+      return elapsed < POLL_COOLDOWN_MS ? (POLL_COOLDOWN_MS - elapsed) : 0;
+    }
+
+    function openCreatePollModal() {
+      if (!currentUser) return;
+      if (socialState.globalLockdown && !isAdminUser(currentUser)) {
+        showToast('Global Chat is currently locked by an Admin.', 'error');
+        return;
+      }
+      const restr = getUserRestrictions(currentUser.username_lower);
+      if (restr.chatMutedUntil && Date.now() < restr.chatMutedUntil && !isAdminUser(currentUser)) {
+        showToast(`You are muted from chat for ${formatRemainingDuration(restr.chatMutedUntil)}.`, 'error');
+        return;
+      }
+
+      const remMs = getRemainingPollCooldownMs();
+      if (remMs > 0) {
+        const mins = Math.floor(remMs / 60000);
+        const secs = Math.ceil((remMs % 60000) / 1000);
+        showToast(`Poll cooldown active! Wait ${mins}m ${secs}s before creating another poll.`, 'error');
+        return;
+      }
+
+      const isAdm = isAdminUser(currentUser);
+      const badge = document.getElementById('pollRoleLimitBadge');
+      if (badge) {
+        badge.innerText = isAdm ? 'Admin: Unlimited options • No cooldown' : 'Max 4 options • 5m cooldown';
+      }
+
+      document.getElementById('pollQuestionInput').value = '';
+      const list = document.getElementById('pollOptionsInputsList');
+      list.innerHTML = '';
+      addPollOptionInput();
+      addPollOptionInput();
+      document.getElementById('createPollModal').classList.remove('hidden');
+    }
+
+    function closeCreatePollModal() {
+      document.getElementById('createPollModal').classList.add('hidden');
+    }
+
+    function updatePollOptionsUI() {
+      const list = document.getElementById('pollOptionsInputsList');
+      const hint = document.getElementById('pollOptionCountHint');
+      const addBtn = document.getElementById('addPollOptionBtn');
+      if (!list) return;
+      const count = list.children.length;
+      const isAdm = isAdminUser(currentUser);
+      if (hint) {
+        hint.innerText = isAdm ? `${count} options (Unlimited)` : `${count} / 4 options`;
+      }
+      if (addBtn) {
+        if (!isAdm && count >= 4) {
+          addBtn.classList.add('hidden');
+        } else {
+          addBtn.classList.remove('hidden');
+        }
+      }
+    }
+
+    function addPollOptionInput() {
+      const list = document.getElementById('pollOptionsInputsList');
+      if (!list) return;
+      const isAdm = isAdminUser(currentUser);
+      const idx = list.children.length;
+      if (!isAdm && idx >= 4) {
+        showToast('Non-admins can add at most 4 poll options.', 'error');
+        return;
+      }
+
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-2';
+      row.innerHTML = `
+        <input type="text" maxlength="60" placeholder="Option ${idx + 1}" class="poll-option-field flex-1 px-3 py-2 bg-eclipse-950 border border-darkBorder rounded-xl text-xs text-white focus:outline-none focus:border-amber-500">
+        ${idx >= 2 ? `
+          <button type="button" onclick="this.parentElement.remove(); updatePollOptionsUI();" class="w-8 h-8 rounded-xl bg-red-500/15 hover:bg-red-500/30 text-red-400 flex items-center justify-center text-xs shrink-0">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        ` : ''}
+      `;
+      list.appendChild(row);
+      updatePollOptionsUI();
+    }
+
+    async function submitNewGlobalPoll(e) {
+      e.preventDefault();
+      if (!currentUser || !supabaseClient) return;
+
+      const remMs = getRemainingPollCooldownMs();
+      if (remMs > 0) {
+        showToast('You can only create 1 poll every 5 minutes.', 'error');
+        return;
+      }
+
+      const rawQuestion = (document.getElementById('pollQuestionInput').value || '').trim();
+      const isAdm = isAdminUser(currentUser);
+      const rawOptions = Array.from(document.querySelectorAll('#pollOptionsInputsList .poll-option-field'))
+        .map(el => el.value.trim())
+        .filter(Boolean);
+
+      if (!rawQuestion) {
+        showToast('Please enter a poll question.', 'error');
+        return;
+      }
+      if (rawOptions.length < 2) {
+        showToast('Please enter at least 2 poll options.', 'error');
+        return;
+      }
+      if (!isAdm && rawOptions.length > 4) {
+        showToast('Non-admins can have at most 4 options.', 'error');
+        return;
+      }
+
+      const cleanQuestion = autoTagSwearing(rawQuestion).cleaned;
+      const cleanOptions = rawOptions.map(opt => autoTagSwearing(opt).cleaned);
+      const now = Date.now();
+
+      const poll = {
+        id: 'poll_' + now + '_' + Math.random().toString(36).slice(2, 6),
+        creator: currentUser.username_lower,
+        question: cleanQuestion,
+        options: cleanOptions,
+        votes: {},
+        createdAt: now,
+        expiresAt: now + POLL_DURATION_MS
+      };
+
+      if (!isAdm) {
+        try { localStorage.setItem(`eclipse_last_poll_ts_${currentUser.username_lower}`, String(now)); } catch (err) {}
+      }
+
+      closeCreatePollModal();
+      await broadcastSocialEvent('NEW_POLL', { poll });
+
+      await supabaseClient.from('global_messages').insert([{
+        sender_username: currentUser.username,
+        sender_role: currentUser.role,
+        content: JSON.stringify({ __eclipse_poll: poll.id })
+      }]);
+
+      renderActiveGlobalPolls();
+      renderGlobalMessages(true);
+      showToast('Poll posted to Global Chat (active for 10 mins)!', 'success');
+    }
+
+    async function voteOnGlobalPoll(pollId, optionIndex) {
+      if (!currentUser) return;
+      const poll = (socialState.polls || []).find(p => p.id === pollId);
+      if (!poll) return;
+      if (Date.now() >= poll.expiresAt) {
+        showToast('This 10-minute poll has already ended.', 'info');
+        renderActiveGlobalPolls();
+        return;
+      }
+      await broadcastSocialEvent('POLL_VOTE', {
+        pollId,
+        optionIndex,
+        user: currentUser.username_lower
+      });
+      renderActiveGlobalPolls();
+    }
+
+    async function deleteGlobalPoll(pollId) {
+      await broadcastSocialEvent('DELETE_POLL', { pollId });
+      showToast('Poll closed.', 'info');
+    }
+
+    function buildPollCardInnerHtml(poll, isInlineMessage = false) {
+      const now = Date.now();
+      const expired = now >= poll.expiresAt;
+      const votesObj = poll.votes || {};
+      const totalVotes = Object.keys(votesObj).length;
+      const myVote = currentUser ? votesObj[currentUser.username_lower] : undefined;
+      const canClose = currentUser && (isAdminUser(currentUser) || poll.creator === currentUser.username_lower);
+
+      const remSecTotal = Math.max(0, Math.ceil((poll.expiresAt - now) / 1000));
+      const remMin = Math.floor(remSecTotal / 60);
+      const remSec = remSecTotal % 60;
+      const timerText = expired ? 'Ended' : `${remMin}m ${remSec < 10 ? '0' : ''}${remSec}s left`;
+
+      const optionsHtml = (poll.options || []).map((optText, idx) => {
+        const count = Object.values(votesObj).filter(v => Number(v) === idx).length;
+        const pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+        const isSelected = Number(myVote) === idx;
+
+        return `
+          <button type="button" ${expired ? 'disabled' : `onclick="voteOnGlobalPoll('${poll.id}', ${idx})"`} class="w-full relative overflow-hidden rounded-xl border ${isSelected ? 'border-amber-400 bg-amber-500/15' : 'border-white/15 bg-black/30 hover:bg-black/45'} px-3 py-2 text-left transition-all ${expired ? 'cursor-default' : 'active:scale-[0.99]'}">
+            <div class="absolute inset-y-0 left-0 ${isSelected ? 'bg-amber-500/30' : 'bg-indigo-500/25'} transition-all duration-300" style="width: ${pct}%;"></div>
+            <div class="relative z-10 flex items-center justify-between gap-2 text-xs">
+              <span class="font-bold text-white flex items-center gap-1.5 truncate">
+                ${isSelected ? '<i class="fa-solid fa-circle-check text-amber-400 text-[11px]"></i>' : '<i class="fa-regular fa-circle text-slate-400 text-[11px]"></i>'}
+                <span class="truncate">${escapeHTML(optText)}</span>
+              </span>
+              <span class="font-mono text-[11px] font-extrabold text-slate-200 shrink-0">${pct}% (${count})</span>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      return `
+        <div class="${isInlineMessage ? 'min-w-[230px] sm:min-w-[280px]' : ''} space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-300">
+                <i class="fa-solid fa-square-poll-vertical"></i>
+                <span>Global Poll • by @${escapeHTML(poll.creator)}</span>
+              </div>
+              <h4 class="text-xs sm:text-sm font-extrabold text-white mt-0.5 break-words">${escapeHTML(poll.question)}</h4>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <span class="px-2 py-0.5 rounded-full ${expired ? 'bg-slate-700 text-slate-300' : 'bg-amber-500/20 border border-amber-400/40 text-amber-300'} font-mono text-[10px] font-bold">${timerText}</span>
+              ${canClose && !expired ? `
+                <button type="button" onclick="deleteGlobalPoll('${poll.id}')" title="End Poll" class="w-6 h-6 rounded-full bg-red-500/20 hover:bg-red-500/40 text-red-300 flex items-center justify-center text-[10px]">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+          <div class="space-y-1.5">${optionsHtml}</div>
+          <div class="text-[10px] text-slate-300 font-semibold flex items-center justify-between">
+            <span>${totalVotes} total ${totalVotes === 1 ? 'vote' : 'votes'}</span>
+            <span>${expired ? 'Final results' : 'Tap an option to vote'}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderActiveGlobalPolls() {
+      const container = document.getElementById('activeGlobalPollsContainer');
+      if (!container) return;
+      const now = Date.now();
+      const activePolls = (socialState.polls || []).filter(p => p && p.expiresAt && now < p.expiresAt);
+
+      if (activePolls.length === 0) {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+        return;
+      }
+
+      container.classList.remove('hidden');
+      container.innerHTML = activePolls.map(poll => `
+        <div class="p-3 rounded-2xl bg-darkCard/95 border border-amber-500/40 shadow-lg animate-fade-in">
+          ${buildPollCardInnerHtml(poll, false)}
+        </div>
+      `).join('');
     }
 
     // GLOBAL CHAT RENDERING & SENDING
@@ -2726,22 +3228,27 @@
       const senderLower = (msg.sender_username || '').toLowerCase();
       const isMe = currentUser && senderLower === currentUser.username_lower;
       const isSenderAdmin = isAdminUser(senderLower);
+      const isSenderMod = isModeratorUser(senderLower);
       const displayName = getUserDisplayName(senderLower);
-      const canDelete = currentUser && (isAdminUser(currentUser) || isMe);
+      const canDelete = currentUser && (isAdminUser(currentUser) || isSenderMod || isMe);
 
       const wrapper = document.createElement('div');
       wrapper.dataset.msgId = msg.id;
       wrapper.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} animate-fade-in`;
+
+      const roleBadgeHtml = isSenderAdmin
+        ? `<span class="px-1.5 py-0.2 rounded bg-red-500/20 text-red-400 text-[9px] font-extrabold">ADMIN</span>`
+        : (isSenderMod ? `<span class="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-extrabold">MOD</span>` : '');
 
       const metaRow = `
         <div class="flex items-center gap-1.5 mb-1 ${isMe ? 'flex-row-reverse' : ''}">
           <button type="button" onclick="openUserProfile('${escapeHTML(senderLower)}')" class="shrink-0">
             ${getAvatarIconHtml(senderLower, 'w-6 h-6 text-[10px]')}
           </button>
-          <button type="button" onclick="openUserProfile('${escapeHTML(senderLower)}')" class="text-[11px] font-bold ${isSenderAdmin ? 'text-rose-400' : 'text-slate-200'} hover:underline">
+          <button type="button" onclick="openUserProfile('${escapeHTML(senderLower)}')" class="text-[11px] font-bold ${isSenderAdmin ? 'text-rose-400' : (isSenderMod ? 'text-emerald-300' : 'text-slate-200')} hover:underline">
             ${escapeHTML(displayName)}
           </button>
-          ${isSenderAdmin ? `<span class="px-1.5 py-0.2 rounded bg-red-500/20 text-red-400 text-[9px] font-extrabold">ADMIN</span>` : ''}
+          ${roleBadgeHtml}
           <span class="text-[10px] text-slate-500">${formatTime(msg.created_at)}</span>
           ${canDelete && !String(msg.id).startsWith('temp_') ? `
             <button type="button" onclick="deleteGlobalMessage('${msg.id}')" title="Delete Message" class="text-[10px] text-slate-500 hover:text-red-400 ml-1">
@@ -3083,8 +3590,17 @@
       else verifiedBadge.classList.add('hidden');
 
       const adminBadge = document.getElementById('profileAdminBadge');
-      if (isAdminUser(targetUserObj)) adminBadge.classList.remove('hidden');
-      else adminBadge.classList.add('hidden');
+      if (isAdminUser(targetUserObj)) {
+        adminBadge.classList.remove('hidden');
+        adminBadge.className = 'px-2.5 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30 text-[10px] font-extrabold uppercase tracking-wider';
+        adminBadge.innerHTML = '<i class="fa-solid fa-shield"></i> Admin';
+      } else if (isModeratorUser(targetUserObj)) {
+        adminBadge.classList.remove('hidden');
+        adminBadge.className = 'px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[10px] font-extrabold uppercase tracking-wider';
+        adminBadge.innerHTML = '<i class="fa-solid fa-user-shield"></i> Moderator';
+      } else {
+        adminBadge.classList.add('hidden');
+      }
 
       const bannedBadge = document.getElementById('profileBannedBadge');
       if (isAccountBanned(targetLower)) bannedBadge.classList.remove('hidden');
@@ -3149,9 +3665,19 @@
 
           let adminQuickHtml = '';
           if (isAdminUser(currentUser) && !isAdminUser(targetUserObj)) {
+            const targetIsMod = isModeratorUser(targetUserObj);
             adminQuickHtml = `
+              <button onclick="adminToggleUserModFromProfile('${targetLower}')" class="px-3.5 py-2 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 font-bold rounded-xl text-xs transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-user-shield"></i> ${targetIsMod ? 'Remove Mod' : 'Make Mod'}
+              </button>
               <button onclick="jumpToAdminModerateUser('${targetLower}')" class="px-3.5 py-2 bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/40 font-bold rounded-xl text-xs transition-all flex items-center gap-1.5">
                 <i class="fa-solid fa-gavel"></i> Admin Mod
+              </button>
+            `;
+          } else if (isModeratorUser(currentUser) && !isAdminUser(targetUserObj) && !isModeratorUser(targetUserObj)) {
+            adminQuickHtml = `
+              <button onclick="quickModTimeoutFromProfile('${targetLower}')" class="px-3.5 py-2 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 font-bold rounded-xl text-xs transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-hourglass-half"></i> Timeout 2m
               </button>
             `;
           }
@@ -4224,21 +4750,30 @@
       });
     }
 
-    // 6TH TAB: SUPPORT (NON-ADMINS) & ADMIN SUPPORT / MODERATION PANEL (ADMINS)
+    // 6TH TAB: SUPPORT (NON-ADMINS), MODERATOR PANEL (MODS) & ADMIN PANEL (ADMINS)
     function renderSupportTab() {
       const isAdm = isAdminUser(currentUser);
+      const isMod = isModeratorUser(currentUser);
       const memberView = document.getElementById('memberSupportContainer');
+      const modView = document.getElementById('modSupportContainer');
       const adminView = document.getElementById('adminSupportContainer');
 
+      memberView.classList.add('hidden');
+      if (modView) modView.classList.add('hidden');
+      adminView.classList.add('hidden');
+
       if (isAdm) {
-        memberView.classList.add('hidden');
         adminView.classList.remove('hidden');
         updateBanSliderPreview();
+        renderActiveModeratorsList();
+        renderAdminBanRequestsList();
         renderActiveIpBansList();
         renderAdminSupportInbox();
         renderAdminAuditLogs();
+      } else if (isMod && modView) {
+        modView.classList.remove('hidden');
+        renderModSupportInbox();
       } else {
-        adminView.classList.add('hidden');
         memberView.classList.remove('hidden');
         renderMemberSubmittedTickets();
       }
@@ -4264,6 +4799,7 @@
         type,
         targetUser: type === 'User Report' ? targetUser : '',
         description,
+        replies: [],
         status: 'Open',
         createdAt: Date.now()
       };
@@ -4275,6 +4811,64 @@
       renderMemberSubmittedTickets();
     }
 
+    async function submitSupportTicketReply(e, ticketId, inputId) {
+      e.preventDefault();
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+
+      const roleLabel = isAdminUser(currentUser) ? 'Admin' : (isModeratorUser(currentUser) ? 'Mod' : 'Member');
+      const reply = {
+        id: 'trpl_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5),
+        sender: currentUser.username_lower,
+        role: roleLabel,
+        text,
+        ts: Date.now()
+      };
+
+      input.value = '';
+      await broadcastSocialEvent('TICKET_REPLY', { ticketId, reply });
+      showToast('Reply sent!', 'success');
+      renderSupportTab();
+    }
+
+    function buildTicketRepliesHtml(ticket, inputPrefix) {
+      const replies = ticket.replies || [];
+      const repliesListHtml = replies.length > 0 ? `
+        <div class="mt-2.5 pl-3 border-l-2 border-indigo-500/40 space-y-2">
+          ${replies.map(r => {
+            const isStaff = r.role === 'Admin' || r.role === 'Mod';
+            return `
+              <div class="p-2 rounded-xl ${isStaff ? 'bg-indigo-500/15 border border-indigo-500/30' : 'bg-white/5 border border-white/10'} text-xs space-y-0.5">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-extrabold ${r.role === 'Admin' ? 'text-rose-300' : (r.role === 'Mod' ? 'text-emerald-300' : 'text-slate-200')}">@${escapeHTML(r.sender)}</span>
+                    ${r.role === 'Admin' ? '<span class="px-1.5 py-0.2 rounded bg-red-500/25 text-red-300 text-[9px] font-extrabold">ADMIN</span>' : ''}
+                    ${r.role === 'Mod' ? '<span class="px-1.5 py-0.2 rounded bg-emerald-500/25 text-emerald-300 text-[9px] font-extrabold">MOD</span>' : ''}
+                  </div>
+                  <span class="text-[10px] text-slate-400 font-mono">${formatTime(r.ts)}</span>
+                </div>
+                <p class="text-slate-100 break-words">${escapeHTML(r.text)}</p>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      ` : '';
+
+      const isResolved = ticket.status === 'Resolved';
+      const replyFormHtml = !isResolved ? `
+        <form onsubmit="submitSupportTicketReply(event, '${ticket.id}', '${inputPrefix}_${ticket.id}')" class="mt-2.5 flex items-center gap-2">
+          <input type="text" id="${inputPrefix}_${ticket.id}" required maxlength="300" placeholder="${isAdminUser(currentUser) || isModeratorUser(currentUser) ? 'Reply to user for more info...' : 'Reply with more details...'}" class="flex-1 px-3 py-1.5 bg-darkCard border border-darkBorder rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+          <button type="submit" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition-all shrink-0">
+            <i class="fa-solid fa-reply mr-1"></i> Reply
+          </button>
+        </form>
+      ` : '';
+
+      return `${repliesListHtml}${replyFormHtml}`;
+    }
+
     function renderMemberSubmittedTickets() {
       const list = document.getElementById('memberSubmittedTicketsList');
       const mine = socialState.supportTickets.filter(t => t.reporter === currentUser.username_lower);
@@ -4283,15 +4877,48 @@
         return;
       }
       list.innerHTML = mine.map(t => `
-        <div class="p-3 rounded-2xl bg-eclipse-950 border border-darkBorder space-y-1">
+        <div class="p-3.5 rounded-2xl bg-eclipse-950 border border-darkBorder space-y-1.5">
           <div class="flex items-center justify-between">
             <span class="text-xs font-extrabold text-white">${escapeHTML(t.type)} ${t.targetUser ? `(@${escapeHTML(t.targetUser)})` : ''}</span>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${t.status === 'Resolved' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">${escapeHTML(t.status)}</span>
           </div>
           <p class="text-xs text-slate-300">${escapeHTML(t.description)}</p>
           <p class="text-[10px] text-slate-500 font-mono">${formatTime(t.createdAt)}</p>
+          ${buildTicketRepliesHtml(t, 'memberTicketReply')}
         </div>
       `).join('');
+    }
+
+    function renderModSupportInbox() {
+      const container = document.getElementById('modSupportInboxList');
+      const badge = document.getElementById('modInboxCountBadge');
+      if (!container) return;
+      const tickets = socialState.supportTickets || [];
+      const openCount = tickets.filter(t => t.status !== 'Resolved').length;
+      if (badge) badge.innerText = `${openCount} Open`;
+
+      if (tickets.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">No support tickets right now.</p>`;
+        return;
+      }
+
+      container.innerHTML = tickets.map(t => {
+        const isResolved = t.status === 'Resolved';
+        return `
+          <div class="p-3.5 rounded-2xl bg-eclipse-950/90 border ${isResolved ? 'border-darkBorder opacity-65' : 'border-indigo-500/35'} space-y-2">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold ${t.type === 'User Report' ? 'bg-red-500/20 text-red-300' : 'bg-indigo-500/20 text-indigo-300'}">${escapeHTML(t.type)}</span>
+                <span class="text-xs font-bold text-white">from @${escapeHTML(t.reporter)}</span>
+                ${t.targetUser ? `<span class="text-xs font-extrabold text-rose-400">→ Target: @${escapeHTML(t.targetUser)}</span>` : ''}
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono">${formatTime(t.createdAt)}</span>
+            </div>
+            <p class="text-xs text-slate-200 leading-relaxed">${escapeHTML(t.description)}</p>
+            ${buildTicketRepliesHtml(t, 'modTicketReply')}
+          </div>
+        `;
+      }).join('');
     }
 
     function renderAdminSupportInbox() {
@@ -4318,6 +4945,7 @@
               <span class="text-[10px] text-slate-400 font-mono">${formatTime(t.createdAt)}</span>
             </div>
             <p class="text-xs text-slate-200 leading-relaxed">${escapeHTML(t.description)}</p>
+            ${buildTicketRepliesHtml(t, 'adminTicketReply')}
             <div class="flex items-center justify-end gap-2 pt-1">
               ${t.targetUser ? `
                 <button type="button" onclick="jumpToAdminModerateUser('${escapeHTML(t.targetUser)}')" class="px-2.5 py-1 rounded-lg bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white text-[11px] font-bold transition-all">
@@ -4333,6 +4961,201 @@
           </div>
         `;
       }).join('');
+    }
+
+    // MODERATOR RANK ASSIGNMENT & BAN REQUEST WORKFLOW
+    async function adminSetModeratorRank(makeMod, explicitTarget = null) {
+      if (!isAdminUser(currentUser)) return;
+      const input = document.getElementById('adminModAssignInput');
+      const target = (explicitTarget || (input ? input.value : '') || '').trim().toLowerCase().replace(/^@/, '');
+      if (!target) {
+        showToast('Enter a username first.', 'error');
+        return;
+      }
+      if (isAdminUser(target)) {
+        showToast('User is already an Admin.', 'info');
+        return;
+      }
+      await broadcastSocialEvent('MOD_ROLE_TOGGLE', { target, isMod: !!makeMod });
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('users').update({ role: makeMod ? 'Mod' : 'Member' }).eq('username_lower', target);
+        } catch (e) {}
+      }
+      await recordAdminLog(makeMod ? 'ASSIGN_MOD' : 'REMOVE_MOD', target, makeMod ? 'Assigned Moderator rank' : 'Removed Moderator rank');
+      if (input && !explicitTarget) input.value = '';
+      renderActiveModeratorsList();
+      renderAdminAuditLogs();
+      showToast(makeMod ? `@${target} is now a Moderator!` : `Removed Moderator rank from @${target}.`, 'success');
+    }
+
+    async function adminToggleUserModFromProfile(targetLower) {
+      const next = !isModeratorUser(targetLower);
+      await adminSetModeratorRank(next, targetLower);
+      renderProfileTab();
+    }
+
+    function renderActiveModeratorsList() {
+      const container = document.getElementById('activeModeratorsList');
+      if (!container) return;
+      const mods = Object.keys(socialState.moderators || {}).filter(k => socialState.moderators[k] && !isAdminUser(k));
+      if (mods.length === 0) {
+        container.innerHTML = `<span class="text-[11px] text-slate-500">No active Moderators assigned yet.</span>`;
+        return;
+      }
+      container.innerHTML = mods.map(m => `
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-xs font-bold text-emerald-200">
+          <i class="fa-solid fa-user-shield text-[10px]"></i>
+          <span>@${escapeHTML(m)}</span>
+          <button type="button" onclick="adminSetModeratorRank(false, '${escapeHTML(m)}')" title="Remove Moderator" class="text-rose-300 hover:text-rose-200 ml-1">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function toggleModTempDurationField() {
+      const type = document.getElementById('modBanReqType').value;
+      const durInput = document.getElementById('modTempDurationInput');
+      if (durInput) {
+        if (type === 'Temp Ban') durInput.classList.remove('hidden');
+        else durInput.classList.add('hidden');
+      }
+    }
+
+    async function modApplyTwoMinTimeout(explicitTarget = null) {
+      if (!isModeratorUser(currentUser) && !isAdminUser(currentUser)) return;
+      const input = document.getElementById('modTargetUserInput');
+      const reasonInput = document.getElementById('modReasonInput');
+      const target = (explicitTarget || (input ? input.value : '') || '').trim().toLowerCase().replace(/^@/, '');
+      const reason = (reasonInput ? reasonInput.value : '').trim() || '2-minute Moderator timeout';
+      if (!target) {
+        showToast('Enter a target username first.', 'error');
+        return;
+      }
+      if (isAdminUser(target) || isModeratorUser(target)) {
+        showToast('Cannot timeout an Admin or Moderator.', 'error');
+        return;
+      }
+      const until = Date.now() + (2 * 60 * 1000);
+      await broadcastSocialEvent('RESTRICT_USER', { target, chatMutedUntil: until });
+      await recordAdminLog('MOD_TIMEOUT_2M', target, `Timed out for 2 minutes • Reason: ${reason}`);
+      if (input && !explicitTarget) input.value = '';
+      showToast(`Timed out @${target} for 2 minutes!`, 'success');
+    }
+
+    async function quickModTimeoutFromProfile(targetLower) {
+      await modApplyTwoMinTimeout(targetLower);
+    }
+
+    async function modSubmitBanRequest() {
+      if (!isModeratorUser(currentUser) && !isAdminUser(currentUser)) return;
+      const target = (document.getElementById('modTargetUserInput').value || '').trim().toLowerCase().replace(/^@/, '');
+      const reason = (document.getElementById('modReasonInput').value || '').trim() || 'Requested by Moderator';
+      const banType = document.getElementById('modBanReqType').value;
+      const duration = banType === 'Temp Ban' ? ((document.getElementById('modTempDurationInput').value || '').trim() || '1 Hour') : 'Permanent';
+
+      if (!target) {
+        showToast('Enter a target username first.', 'error');
+        return;
+      }
+      if (isAdminUser(target) || isModeratorUser(target)) {
+        showToast('Cannot request a ban on staff.', 'error');
+        return;
+      }
+
+      const request = {
+        id: 'breq_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5),
+        requestedBy: currentUser.username_lower,
+        target,
+        banType,
+        duration,
+        reason,
+        status: 'Pending',
+        ts: Date.now()
+      };
+
+      await broadcastSocialEvent('BAN_REQUEST', { request });
+      await recordAdminLog('MOD_BAN_REQUEST', target, `Requested ${banType} (${duration}) • Reason: ${reason}`);
+      document.getElementById('modTargetUserInput').value = '';
+      document.getElementById('modReasonInput').value = '';
+      showToast(`Sent ${banType} request for @${target} to Admins!`, 'success');
+    }
+
+    function renderAdminBanRequestsList() {
+      const container = document.getElementById('adminBanRequestsList');
+      const badge = document.getElementById('adminBanReqCountBadge');
+      if (!container) return;
+      const reqs = socialState.banRequests || [];
+      const pending = reqs.filter(r => r.status === 'Pending');
+      if (badge) badge.innerText = `${pending.length} Pending`;
+
+      if (reqs.length === 0) {
+        container.innerHTML = `<p class="text-[11px] text-slate-500">No Moderator ban requests right now.</p>`;
+        return;
+      }
+
+      container.innerHTML = reqs.map(r => {
+        const isPending = r.status === 'Pending';
+        return `
+          <div class="p-3 rounded-2xl bg-eclipse-950 border ${isPending ? 'border-amber-500/40' : 'border-darkBorder opacity-60'} flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-extrabold">${escapeHTML(r.banType)} (${escapeHTML(r.duration)})</span>
+                <span class="font-extrabold text-white">Target: @${escapeHTML(r.target)}</span>
+                <span class="text-[11px] text-slate-400">by Mod @${escapeHTML(r.requestedBy)}</span>
+              </div>
+              <p class="text-[11px] text-slate-300">Reason: ${escapeHTML(r.reason)}</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              ${isPending ? `
+                <button type="button" onclick="adminApproveBanRequest('${r.id}')" class="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-[11px] font-extrabold transition-all">
+                  Approve &amp; Ban
+                </button>
+                <button type="button" onclick="adminDismissBanRequest('${r.id}')" class="px-2.5 py-1.5 rounded-xl bg-darkCard hover:bg-slate-800 border border-darkBorder text-slate-300 text-[11px] font-bold transition-all">
+                  Dismiss
+                </button>
+              ` : `<span class="text-[11px] font-bold text-slate-400">${escapeHTML(r.status)}</span>`}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function adminApproveBanRequest(requestId) {
+      if (!isAdminUser(currentUser)) return;
+      const req = (socialState.banRequests || []).find(r => r.id === requestId);
+      if (!req) return;
+
+      if (req.banType === 'Perma Ban') {
+        await broadcastSocialEvent('BAN_TOGGLE', {
+          target: req.target,
+          banned: true,
+          permanent: true,
+          until: null,
+          reason: `${req.reason} (Approved Mod Request)`
+        });
+      } else {
+        await broadcastSocialEvent('BAN_TOGGLE', {
+          target: req.target,
+          banned: true,
+          permanent: false,
+          until: Date.now() + (60 * 60 * 1000),
+          reason: `${req.reason} (${req.duration} • Approved Mod Request)`
+        });
+      }
+      await broadcastSocialEvent('BAN_REQUEST_RESOLVE', { requestId, status: 'Approved' });
+      await recordAdminLog('APPROVE_BAN_REQ', req.target, `Approved Mod @${req.requestedBy}'s ${req.banType} request`);
+      renderAdminBanRequestsList();
+      renderAdminAuditLogs();
+      showToast(`Approved & banned @${req.target}!`, 'success');
+    }
+
+    async function adminDismissBanRequest(requestId) {
+      if (!isAdminUser(currentUser)) return;
+      await broadcastSocialEvent('BAN_REQUEST_RESOLVE', { requestId, status: 'Dismissed' });
+      renderAdminBanRequestsList();
+      showToast('Ban request dismissed.', 'info');
     }
 
     async function adminResolveSupportTicket(ticketId) {
@@ -4815,14 +5638,19 @@
         if (!currentUser) return;
         await syncSocialEventsFromDB();
         if (activeTab === 'global') {
+          renderActiveGlobalPolls();
           renderGlobalMessages(true);
         } else if (activeTab === 'dms') {
           renderDMSidebar();
           if (activeChatId) renderDMMessages(true);
         } else if (activeTab === 'support' && isAdminUser(currentUser)) {
           renderAdminSupportInbox();
+          renderActiveModeratorsList();
+          renderAdminBanRequestsList();
           renderActiveIpBansList();
           renderAdminAuditLogs();
+        } else if (activeTab === 'support' && isModeratorUser(currentUser)) {
+          renderModSupportInbox();
         }
       }, 3500);
     }
